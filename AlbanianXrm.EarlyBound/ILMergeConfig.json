@@ -1,0 +1,6 @@
+{
+  "Advanced": {
+    "CopyAttributes": false,
+    "AttributeFile": "$(TargetDir)AlbanianXrm.EarlyBound.dll"
+  }
+}
