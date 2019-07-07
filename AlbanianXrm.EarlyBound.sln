@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.705
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.EarlyBound", "AlbanianXrm.EarlyBound\AlbanianXrm.EarlyBound.csproj", "{E047E333-0237-4FD9-B80A-1757D706630F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.CrmSvcUtilExtensions", "AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj", "{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E047E333-0237-4FD9-B80A-1757D706630F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E047E333-0237-4FD9-B80A-1757D706630F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E047E333-0237-4FD9-B80A-1757D706630F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E047E333-0237-4FD9-B80A-1757D706630F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0C7AFA91-C6E5-4A8D-B256-0B0F008F3951}
+	EndGlobalSection
+EndGlobal
