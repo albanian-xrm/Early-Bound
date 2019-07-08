@@ -1,8 +1,3 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - master
 
@@ -10,10 +5,15 @@ pool:
   vmImage: 'vs2017-win2016'
 
 steps:
-- script: echo Hello, world!
+- script: echo Starting build pipeline!
   displayName: 'Hello from Albanian Xrm'
 
-- script: |
-    echo This pipeline configuration will be updated as soon as there will be code to build.
-    echo See https://aka.ms/yaml
-  displayName: 'Public Promise'
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+- task: MSBuild@1
+  inputs:
+    solution: '**/*.sln'
