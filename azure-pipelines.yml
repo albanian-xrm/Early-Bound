@@ -30,5 +30,4 @@ steps:
     command: 'pack'
     packagesToPack: '**/*.nuspec'
     packDestination: '$(Build.ArtifactStagingDirectory)'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')
-  
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))  
