@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD5FC625-EBE4-424A-9770-7E20A998FC55}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
+		Logo_32x32.png = Logo_32x32.png
 	EndProjectSection
 EndProject
 Global

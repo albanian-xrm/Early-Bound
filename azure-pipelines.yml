@@ -13,6 +13,7 @@ steps:
     versionSpec: '4.9.x' 
 
 - task: NuGetCommand@2
+  displayName: 'Restoring NuGet packages'
   inputs:
     command: 'restore'
     restoreSolution: '**/*.sln'
@@ -24,7 +25,15 @@ steps:
     configuration: release
 
 - task: NuGetCommand@2
+  displayName: 'Creating NuGet package'
   inputs:
     command: 'pack'
     packagesToPack: '**/*.nuspec'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publishing NuGet package in Pipeline'
+  inputs:
+    path: $(System.DefaultWorkingDirectory)/*.nupkg
+    artifact: 'NuGet Package'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
