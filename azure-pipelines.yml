@@ -29,11 +29,6 @@ steps:
   inputs:
     command: 'pack'
     packagesToPack: '**/*.nuspec'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-- task: PublishPipelineArtifact@1
-  displayName: 'Publishing NuGet package in Pipeline'
-  inputs:
-    path: $(System.DefaultWorkingDirectory)/*.nupkg
-    artifact: 'NuGet Package'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+    packDestination: '$(Build.ArtifactStagingDirectory)
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  
