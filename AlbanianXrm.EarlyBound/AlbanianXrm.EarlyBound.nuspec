@@ -1,0 +1,28 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>AlbanianXrm.EarlyBound</id>
+    <version>1.2019.7.01</version>
+    <title>Albanian Early Bound</title>
+    <authors>Betim Beja</authors>
+    <owners>Betim Beja</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/albanian-xrm/early-bound</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/albanian-xrm/early-bound/master/Logo_32x32.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Generates Early Bound Entities/Option Sets/Actions.  Uses CrmSvcUtil from the SDK, and shows command line used to create the classes.</description>
+    <releaseNotes>
+V1.2019.7.01
+First release.
+    </releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>XrmToolBox Plugins Xrm</tags>
+    <dependencies>
+      <dependency id="XrmToolBox" version="1.2017.2.13" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\ILMerge\AlbanianXrm.EarlyBound.dll" target="lib\net462\plugins" />
+    <file src="..\AlbanianXrm.CrmSvcUtilExtensions\bin\Release\AlbanianXrm.CrmSvcUtilExtensions.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
+  </files>
+</package>
