@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace AlbanianXrm.EarlyBound
 {
@@ -14,6 +13,7 @@ namespace AlbanianXrm.EarlyBound
     /// </remarks>
     public class Settings
     {
-        public string LastUsedOrganizationWebappUrl { get; set; }
+        public string OutputPath { get; set; }
+        public string Namespace { get; set; }
     }
 }

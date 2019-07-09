@@ -30,24 +30,20 @@ namespace AlbanianXrm.EarlyBound
 
         private void MyPluginControl_Load(object sender, EventArgs e)
         {
-            ShowInfoNotification("To contribute to this plugin visit this repository", new Uri("https://github.com/Albanian-Xrm/Early-Bound"));
+            ShowInfoNotification("To contribute to this plugin visit its code repository", new Uri("https://github.com/Albanian-Xrm/Early-Bound"));
 
             // Loads or creates the settings for the plugin
             if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))
             {
                 mySettings = new Settings();
-
                 LogWarning("Settings not found => a new settings file has been created!");
             }
             else
             {
                 LogInfo("Settings found and loaded");
+                txtNamespace.Text = mySettings.Namespace;
+                txtOutputPath.Text = mySettings.OutputPath;
             }
-        }
-
-        private void tsbClose_Click(object sender, EventArgs e)
-        {
-            CloseTool();
         }
 
         /// <summary>
@@ -58,6 +54,7 @@ namespace AlbanianXrm.EarlyBound
         private void MyPluginControl_OnCloseTool(object sender, EventArgs e)
         {
             // Before leaving, save the settings
+            LogInfo("Saving current settings");
             SettingsManager.Instance.Save(GetType(), mySettings);
         }
 
@@ -70,7 +67,6 @@ namespace AlbanianXrm.EarlyBound
 
             if (mySettings != null && detail != null)
             {
-                mySettings.LastUsedOrganizationWebappUrl = detail.WebApplicationUrl;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
         }
@@ -103,8 +99,8 @@ namespace AlbanianXrm.EarlyBound
                     var result = args.Result as RetrieveAllEntitiesResponse;
                     if (result != null)
                     {
-                        treeViewAdv1.Enabled = true;
-                        treeViewAdv1.Nodes.Clear();
+                        metadataTree.Enabled = true;
+                        metadataTree.Nodes.Clear();
                         foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))
                         {
                             if (item.DisplayName.LocalizedLabels.Count == 0) continue;
@@ -124,9 +120,9 @@ namespace AlbanianXrm.EarlyBound
                             node.InteractiveCheckBox = true;
                             node.Tag = item;
 
-                            treeViewAdv1.Nodes.Add(node);
+                            metadataTree.Nodes.Add(node);
                         }
-                        splitContainerAdv1.Panel1Collapsed = false;
+                        splitContainer.Panel1Collapsed = false;
                     }
                 }
             });
@@ -135,7 +131,7 @@ namespace AlbanianXrm.EarlyBound
         private void treeViewAdv1_BeforeExpand(object sender, TreeViewAdvCancelableNodeEventArgs e)
         {
             if (e.Node.ExpandedOnce) return;
-            treeViewAdv1.BeginEdit(e.Node);
+            metadataTree.BeginEdit(e.Node);
             var metadata = (EntityMetadata)e.Node.Parent.Tag;
             if (e.Node.Text == "Attributes")
             {
@@ -211,7 +207,7 @@ namespace AlbanianXrm.EarlyBound
                     }
                 });
             }
-            treeViewAdv1.EndEdit(cancel: false);
+            metadataTree.EndEdit(cancel: false);
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e)
@@ -263,7 +259,7 @@ namespace AlbanianXrm.EarlyBound
                     dir = Path.Combine(dir, folder);
                     Process process = new Process();
                     var connectionString = ConnectionDetail.GetConnectionStringWithPassword();
-                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions /out:Test.cs ";
+                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + (string.IsNullOrEmpty(txtNamespace.Text) ? "" : " /namespace:" + txtNamespace.Text) + " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions /out:" + (string.IsNullOrEmpty(txtOutputPath.Text) ? "Test.cs" : "\"" + Path.GetFullPath(txtOutputPath.Text) + "\"");
                     process.StartInfo.WorkingDirectory = dir;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
@@ -274,7 +270,7 @@ namespace AlbanianXrm.EarlyBound
                     List<string> allAttributes = new List<string>();
                     List<string> allRelationships = new List<string>();
 
-                    foreach (TreeNodeAdv entity in treeViewAdv1.Nodes)
+                    foreach (TreeNodeAdv entity in metadataTree.Nodes)
                     {
                         if (entity.CheckState != CheckState.Unchecked)
                         {
@@ -344,6 +340,22 @@ namespace AlbanianXrm.EarlyBound
                     MessageBox.Show((string)args.Result);
                 }
             });
+        }
+
+        private void txtOutputPath_TextChanged(object sender, EventArgs e)
+        {
+            mySettings.OutputPath = txtOutputPath.Text;
+        }
+
+        private void txtNamespace_TextChanged(object sender, EventArgs e)
+        {
+            mySettings.Namespace = txtNamespace.Text;
+        }
+
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            LogInfo("Saving current settings");
+            SettingsManager.Instance.Save(GetType(), mySettings);
         }
     }
 }
