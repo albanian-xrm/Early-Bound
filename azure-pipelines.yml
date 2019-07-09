@@ -7,6 +7,10 @@ pool:
 steps:
 - script: echo Starting build pipeline!
   displayName: 'Hello from Albanian Xrm'
+  
+- task: NuGetToolInstaller@0
+  inputs:
+    versionSpec: '4.9.x' 
 
 - task: NuGetCommand@2
   inputs:
