@@ -22,7 +22,7 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: '**/*.sln'
-    configuration: 'Azure Pipelines'
+    configuration: 'release'
 
 - task: VSTest@2
   inputs:
@@ -35,7 +35,7 @@ steps:
     codeCoverageEnabled: true
     testRunTitle: 'Unit Tests'
     platform: 'AnyCPU'
-    configuration: 'Azure Pipelines'
+    configuration: 'release'
 
 - task: NuGetCommand@2
   displayName: 'Creating NuGet package'
