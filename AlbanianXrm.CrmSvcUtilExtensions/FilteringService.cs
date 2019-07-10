@@ -33,6 +33,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         private HashSet<string> allRelationships;
         private Dictionary<string, HashSet<string>> entityAttributes;
         private Dictionary<string, HashSet<string>> entityRelationships;
+        internal object Test { get; set; }
 
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {
