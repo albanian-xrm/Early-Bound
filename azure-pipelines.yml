@@ -22,7 +22,20 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: '**/*.sln'
-    configuration: release
+    configuration: 'release'
+
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\*Tests.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    codeCoverageEnabled: true
+    testRunTitle: 'Unit Tests'
+    platform: 'AnyCPU'
+    configuration: 'release'
 
 - task: NuGetCommand@2
   displayName: 'Creating NuGet package'
@@ -30,4 +43,10 @@ steps:
     command: 'pack'
     packagesToPack: '**/*.nuspec'
     packDestination: '$(Build.ArtifactStagingDirectory)'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))  
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'NuGet Package'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))  
