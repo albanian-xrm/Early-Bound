@@ -39,7 +39,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             HashSet<string> attributes;
             if (!allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
                 entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out attributes) &&
-                attributes.Any() && !attributes.Contains(attributeMetadata.LogicalName))
+                !attributes.Contains(attributeMetadata.LogicalName))
             {
                 return false;
             }
@@ -71,7 +71,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             HashSet<string> relationships;
             if (!allRelationships.Contains(relationshipMetadata.SchemaName) &&
                 entityRelationships.TryGetValue(relationshipMetadata.SchemaName, out relationships) &&
-                relationships.Any() && !relationships.Contains(relationshipMetadata.SchemaName))
+                !relationships.Contains(relationshipMetadata.SchemaName))
             {
                 return false;
             }
