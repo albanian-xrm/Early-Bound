@@ -37,7 +37,7 @@
     <AssemblyOriginatorKeyFile>AlbanianXrm.CrmSvcUtilExtensions.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Azure Pipelines|AnyCPU'">
-    <OutputPath>bin\Azure Pipelines\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE;PIPELINES</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>

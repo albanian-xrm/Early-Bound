@@ -7,6 +7,11 @@ pool:
 steps:
 - script: echo Starting build pipeline!
   displayName: 'Hello from Albanian Xrm'
+
+- powershell: echo "##vso[task.setvariable variable=configuration;isOutput=true]$(IF($env:BRANCH -eq "refs/heads/master"){"Azure Pipelines"}else{"release"})"
+  name: MyVars
+  env: 
+    BRANCH: $(Build.SourceBranch)
   
 - task: NuGetToolInstaller@0
   inputs:
@@ -19,10 +24,29 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
 
+- task: DownloadSecureFile@1
+  name: TestSignKey 
+  inputs:
+    secureFile: 'AlbanianXrm.Pipelines.Tests.snk'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
+
+- powershell: echo "##vso[task.setvariable variable=Path;isOutput=true]$((get-item $env:SECURE_FILE).Directory.FullName)"
+  name: secretFolder
+  env:
+    Secure_File: $TestSignKey.secureFilePath
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
+
+- task: CopyFiles@2
+  inputs:
+    sourceFolder: $(secretFolder.Path)
+    contents: 'AlbanianXrm.Pipelines.Tests.snk' 
+    targetFolder: 'AlbanianXrm.CrmSvcUtilExtensions.Tests'
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
+
 - task: MSBuild@1
   inputs:
     solution: '**/*.sln'
-    configuration: 'release'
+    configuration: $(MyVars.configuration)
 
 - task: VSTest@2
   inputs:
@@ -35,7 +59,7 @@ steps:
     codeCoverageEnabled: true
     testRunTitle: 'Unit Tests'
     platform: 'AnyCPU'
-    configuration: 'release'
+    configuration: $(MyVars.configuration)
 
 - task: NuGetCommand@2
   displayName: 'Creating NuGet package'
