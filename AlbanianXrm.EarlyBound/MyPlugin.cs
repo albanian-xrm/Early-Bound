@@ -34,7 +34,7 @@ namespace AlbanianXrm.EarlyBound
         /// </summary>
         public MyPlugin()
         {
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Acquire License from Syncfusion");
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MTE3NjQxQDMxMzcyZTMxMmUzMEdMN2ZiSkdwMFFZQ1k2aFY5SE9xQWxxYjZLVG51UVA5WVBxY0RoNm9FWGc9");
             
             // If you have external assemblies that you need to load, uncomment the following to 
             // hook into the event that will fire when an Assembly fails to resolve

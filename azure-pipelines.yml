@@ -75,24 +75,6 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: $(secretFolder.Path)
-    contents: 'AlbanianXrm.Tests.snk' 
-    targetFolder: 'AlbanianXrm.EarlyBound.Tests'
-    overWrite: true 
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
-  displayName: 'Overwrite AlbanianXrm.EarlyBound.Tests SignKey'
-
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: $(secretFolder.Path)
-    contents: 'AlbanianXrm.EarlyBound.snk' 
-    targetFolder: 'AlbanianXrm.EarlyBound'
-    overWrite: true 
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
-  displayName: 'Overwrite AlbanianXrm.EarlyBound SignKey'
-
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: $(secretFolder.Path)
     contents: 'MyPlugin.cs' 
     targetFolder: 'AlbanianXrm.EarlyBound'
     overWrite: true 

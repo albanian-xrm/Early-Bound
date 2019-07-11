@@ -22,10 +22,13 @@ namespace AlbanianXrm.EarlyBound
     public partial class MyPluginControl : PluginControlBase
     {
         private Settings mySettings;
+        private TreeViewAdvBeforeCheckEventHandler treeEventHandler;
 
         public MyPluginControl()
         {
             InitializeComponent();
+            treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.metadataTree_BeforeCheck);
+            this.metadataTree.BeforeCheck += treeEventHandler;
         }
 
         private void MyPluginControl_Load(object sender, EventArgs e)
@@ -174,7 +177,7 @@ namespace AlbanianXrm.EarlyBound
             {
                 WorkAsync(new WorkAsyncInfo
                 {
-                    Message = $"Getting attributes for entity {metadata.LogicalName}",
+                    Message = $"Getting relationships for entity {metadata.LogicalName}",
                     Work = (worker, args) =>
                     {
                         args.Result = Service.Execute(new RetrieveEntityRequest()
@@ -306,16 +309,35 @@ namespace AlbanianXrm.EarlyBound
                                     }
                                     else if (item.CheckState == CheckState.Indeterminate)
                                     {
-                                        List<string> relationships = new List<string>();
+                                        List<string> relationships1N = new List<string>();
+                                        List<string> relationshipsN1 = new List<string>();
+                                        List<string> relationshipsNN = new List<string>();
                                         foreach (TreeNodeAdv relationship in item.Nodes)
                                         {
                                             if (relationship.Checked)
                                             {
-                                                var relationshipMetadata = (RelationshipMetadataBase)relationship.Tag;
-                                                relationships.Add(relationshipMetadata.SchemaName);
+                                                if (relationship.Tag is OneToManyRelationshipMetadata)
+                                                {
+                                                    var relationshipMetadata = (OneToManyRelationshipMetadata)relationship.Tag;
+                                                    if (relationshipMetadata.ReferencingEntity == metadata.LogicalName)
+                                                    {
+                                                        relationships1N.Add(relationshipMetadata.SchemaName);
+                                                    }
+                                                    else
+                                                    {
+                                                        relationshipsN1.Add(relationshipMetadata.SchemaName);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    var relationshipMetadata = (RelationshipMetadataBase)relationship.Tag;
+                                                    relationshipsNN.Add(relationshipMetadata.SchemaName);
+                                                }
                                             }
                                         }
-                                        process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:Relationships:" + metadata.LogicalName, string.Join(",", relationships));
+                                        if (relationships1N.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:Relationships1N:" + metadata.LogicalName, string.Join(",", relationships1N.Distinct()));
+                                        if (relationshipsN1.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:RelationshipsN1:" + metadata.LogicalName, string.Join(",", relationshipsN1.Distinct()));
+                                        if (relationshipsNN.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:RelationshipsNN:" + metadata.LogicalName, string.Join(",", relationshipsNN.Distinct()));
                                     }
                                 }
                             }
@@ -356,6 +378,104 @@ namespace AlbanianXrm.EarlyBound
         {
             LogInfo("Saving current settings");
             SettingsManager.Instance.Save(GetType(), mySettings);
+        }
+
+        private void metadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
+        {
+         
+            if(e.Node.Tag is RelationshipMetadataBase)
+            {
+                string entity1;
+                string entity2;
+                string schemaName;
+                MessageBox.Show($"{sender}");
+                if (e.Node.Tag is OneToManyRelationshipMetadata)
+                {
+                    var metadata = (OneToManyRelationshipMetadata)e.Node.Tag;
+                    entity1 = metadata.ReferencingEntity;
+                    entity2 = metadata.ReferencedEntity;
+                    schemaName = metadata.SchemaName;
+                }
+                else
+                {
+                    var metadata = (ManyToManyRelationshipMetadata)e.Node.Tag;
+                    entity1 = metadata.Entity1LogicalName;
+                    entity2 = metadata.Entity2LogicalName;
+                    schemaName = metadata.SchemaName;
+                }
+
+                MessageBox.Show($"{schemaName} {entity1} {entity2}");
+
+                foreach (TreeNodeAdv entity in metadataTree.Nodes)
+                {
+                    var entityName = ((EntityMetadata)entity.Tag).LogicalName;
+                    if (entityName == entity1 || entityName == entity2)
+                    {
+                        foreach (TreeNodeAdv item in entity.Nodes)
+                        {
+                            if (item.Text == "Relationships")
+                            {
+                                if (!item.ExpandedOnce)
+                                {
+                                    WorkAsync(new WorkAsyncInfo
+                                    {
+                                        Message = $"Getting relationships for entity {entityName}",
+                                        Work = (worker, args) =>
+                                        {
+                                            args.Result = Service.Execute(new RetrieveEntityRequest()
+                                            {
+                                                EntityFilters = EntityFilters.Relationships,
+                                                LogicalName = entityName
+                                            });
+                                        },
+                                        PostWorkCallBack = (args) =>
+                                        {
+                                            if (args.Error != null)
+                                            {
+                                                MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                            }
+                                            var result = args.Result as RetrieveEntityResponse;
+                                            if (result != null)
+                                            {
+                                                item.ExpandedOnce = true;
+                                                foreach (var relationship in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
+                                                                     result.EntityMetadata.OneToManyRelationships).Union(
+                                                                     result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
+                                                {
+                                                    TreeNodeAdv node = new TreeNodeAdv($"{relationship.SchemaName}");
+                                                    node.ExpandedOnce = true;
+                                                    node.ShowCheckBox = true;
+                                                    node.Tag = relationship;
+                                                    if (schemaName == relationship.SchemaName)
+                                                    {
+                                                        node.CheckState = e.NewCheckState;
+                                                    }
+                                                    item.Nodes.Add(node);
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                                else
+                                {
+                                    foreach (TreeNodeAdv relationship in item.Nodes)
+                                    {
+                                        if (relationship == e.Node) continue;
+                                        if (((RelationshipMetadataBase)relationship.Tag).SchemaName == schemaName)
+                                        {
+                                            MessageBox.Show($"{schemaName} {entityName}");
+                                            this.metadataTree.BeforeCheck -= treeEventHandler;
+                                            relationship.CheckState = e.NewCheckState;
+                                            treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.metadataTree_BeforeCheck);
+                                            this.metadataTree.BeforeCheck += treeEventHandler;
+                                        }
+                                    }
+                                }                             
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
