@@ -33,7 +33,7 @@ steps:
 - powershell: echo "##vso[task.setvariable variable=Path;isOutput=true]$((get-item $env:SECURE_FILE).Directory.FullName)"
   name: secretFolder
   env:
-    Secure_File: $TestSignKey.secureFilePath
+    Secure_File: $(TestSignKey.secureFilePath)
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
 
 - task: CopyFiles@2
