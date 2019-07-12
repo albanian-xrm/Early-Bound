@@ -30,5 +30,10 @@ namespace AlbanianXrm.EarlyBound.Factories
         {
             return new RelationshipMetadataHandler(myPlugin);
         }
+
+        public EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree)
+        {
+            return new EntityGeneratorHandler(myPlugin, metadataTree);
+        }
     }
 }
