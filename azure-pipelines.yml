@@ -43,7 +43,7 @@ steps:
 - task: DownloadSecureFile@1
   name: MyPlugin 
   inputs:
-    secureFile: 'MyPlugin.cs'
+    secureFile: 'SecretKeeper.cs'
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
   displayName: 'Syncfusion Secret'
 
@@ -75,7 +75,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: $(secretFolder.Path)
-    contents: 'MyPlugin.cs' 
+    contents: 'SecretKeeper.cs' 
     targetFolder: 'AlbanianXrm.EarlyBound'
     overWrite: true 
   condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')  
