@@ -179,6 +179,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectionDetailExtensions.cs" />
+    <Compile Include="Factories\MyPluginFactory.cs" />
+    <Compile Include="Interfaces\IMyPluginFactory.cs" />
+    <Compile Include="Logic\AttributeMetadataHandler.cs" />
+    <Compile Include="Logic\CoreToolsDownloader.cs" />
+    <Compile Include="Logic\EntityMetadataHandler.cs" />
+    <Compile Include="Logic\RelationshipMetadataHandler.cs" />
     <Compile Include="MyPlugin.cs" />
     <Compile Include="MyPluginControl.cs">
       <SubType>UserControl</SubType>

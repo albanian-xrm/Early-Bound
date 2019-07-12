@@ -23,11 +23,21 @@ namespace AlbanianXrm.EarlyBound
     {
         private Settings mySettings;
         private TreeViewAdvBeforeCheckEventHandler treeEventHandler;
+        private Factories.MyPluginFactory MyPluginFactory;
+        private Logic.EntityMetadataHandler EntityMetadataHandler;
+        private Logic.AttributeMetadataHandler AttributeMetadataHandler;
+        private Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
+        private Logic.CoreToolsDownloader CoreToolsDownloader;
 
         public MyPluginControl()
         {
             InitializeComponent();
-            treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.metadataTree_BeforeCheck);
+            MyPluginFactory = new Factories.MyPluginFactory();
+            AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler(this);
+            CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader(this);
+            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree);
+            RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler(this);
+            treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
         }
 
@@ -74,182 +84,33 @@ namespace AlbanianXrm.EarlyBound
             }
         }
 
-
-
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void BtnGetMetadata_Click(object sender, EventArgs e)
         {
-            GetEntityList();
+            EntityMetadataHandler.GetEntityList();
         }
 
-        private void GetEntityList()
-        {
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = "Getting entity list",
-                Work = (worker, args) =>
-                {
-                    args.Result = Service.Execute(new RetrieveAllEntitiesRequest()
-                    {
-                        EntityFilters = EntityFilters.Entity
-                    });
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    var result = args.Result as RetrieveAllEntitiesResponse;
-                    if (result != null)
-                    {
-                        metadataTree.Enabled = true;
-                        metadataTree.Nodes.Clear();
-                        foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))
-                        {
-                            if (item.DisplayName.LocalizedLabels.Count == 0) continue;
-
-                            TreeNodeAdv attributes = new TreeNodeAdv("Attributes");
-                            attributes.ShowCheckBox = true;
-                            attributes.InteractiveCheckBox = true;
-
-                            TreeNodeAdv relationships = new TreeNodeAdv("Relationships");
-                            relationships.ShowCheckBox = true;
-                            relationships.InteractiveCheckBox = true;
-
-                            TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}",
-                                new TreeNodeAdv[] { attributes, relationships });
-                            node.ExpandedOnce = true;
-                            node.ShowCheckBox = true;
-                            node.InteractiveCheckBox = true;
-                            node.Tag = item;
-
-                            metadataTree.Nodes.Add(node);
-                        }
-                        splitContainer.Panel1Collapsed = false;
-                    }
-                }
-            });
-        }
-
-        private void treeViewAdv1_BeforeExpand(object sender, TreeViewAdvCancelableNodeEventArgs e)
+        private void TreeViewAdv1_BeforeExpand(object sender, TreeViewAdvCancelableNodeEventArgs e)
         {
             if (e.Node.ExpandedOnce) return;
-            metadataTree.BeginEdit(e.Node);
+            metadataTree.BeginUpdate();
             var metadata = (EntityMetadata)e.Node.Parent.Tag;
             if (e.Node.Text == "Attributes")
             {
-                WorkAsync(new WorkAsyncInfo
-                {
-                    Message = $"Getting attributes for entity {metadata.LogicalName}",
-                    Work = (worker, args) =>
-                    {
-                        args.Result = Service.Execute(new RetrieveEntityRequest()
-                        {
-                            EntityFilters = EntityFilters.Attributes,
-                            LogicalName = metadata.LogicalName
-                        });
-                    },
-                    PostWorkCallBack = (args) =>
-                    {
-                        if (args.Error != null)
-                        {
-                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        var result = args.Result as RetrieveEntityResponse;
-                        if (result != null)
-                        {
-                            foreach (var item in result.EntityMetadata.Attributes.OrderBy(x => x.LogicalName))
-                            {
-                                if (item.DisplayName.LocalizedLabels.Count == 0) continue;
-
-                                TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}");
-                                node.ExpandedOnce = true;
-                                node.ShowCheckBox = true;
-                                node.Tag = item;
-
-                                e.Node.Nodes.Add(node);
-                            }
-                        }
-                    }
-                });
+                AttributeMetadataHandler.GetAttributes(metadata.LogicalName, e.Node);
             }
             else if (e.Node.Text == "Relationships")
             {
-                WorkAsync(new WorkAsyncInfo
-                {
-                    Message = $"Getting relationships for entity {metadata.LogicalName}",
-                    Work = (worker, args) =>
-                    {
-                        args.Result = Service.Execute(new RetrieveEntityRequest()
-                        {
-                            EntityFilters = EntityFilters.Relationships,
-                            LogicalName = metadata.LogicalName
-                        });
-                    },
-                    PostWorkCallBack = (args) =>
-                    {
-                        if (args.Error != null)
-                        {
-                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        var result = args.Result as RetrieveEntityResponse;
-                        if (result != null)
-                        {
-                            foreach (var item in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
-                                                 result.EntityMetadata.OneToManyRelationships).Union(
-                                                 result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
-                            {
-                                TreeNodeAdv node = new TreeNodeAdv($"{item.SchemaName}");
-                                node.ExpandedOnce = true;
-                                node.ShowCheckBox = true;
-                                node.Tag = item;
-
-                                e.Node.Nodes.Add(node);
-                            }
-                        }
-                    }
-                });
+                RelationshipMetadataHandler.GetRelationships(metadata.LogicalName, e.Node);
             }
-            metadataTree.EndEdit(cancel: false);
+            metadataTree.EndUpdate(true);
         }
 
-        private void toolStripButton2_Click(object sender, EventArgs e)
+        private void BtnCoreTools_Click(object sender, EventArgs e)
         {
-            WorkAsync(new WorkAsyncInfo
-            {
-                Message = $"Getting latest version of Core Tools",
-                Work = (worker, args) =>
-                {
-                    //ID of the package to be looked 
-                    string packageID = "Microsoft.CrmSdk.CoreTools";
-
-                    //Connect to the official package repository IPackageRepository
-                    var repo = NuGet.PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
-
-                    string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToLower();
-                    string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
-                    dir = Path.Combine(dir, folder);
-                    Directory.CreateDirectory(dir);
-                    NuGet.PackageManager packageManager = new NuGet.PackageManager(repo, dir);
-                    var package = repo.GetPackages().Where(x => x.Id == packageID && x.IsLatestVersion).FirstOrDefault();
-                    foreach (var file in package.GetFiles())
-                    {
-                        using (var stream = File.Create(Path.Combine(dir, Path.GetFileName(file.Path))))
-                            file.GetStream().CopyTo(stream);
-                    }
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    if (args.Error != null)
-                    {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                }
-            });
-
+            CoreToolsDownloader.DownloadCoreTools();
         }
 
-        private void toolStripButton3_Click(object sender, EventArgs e)
+        private void ToolStripButton3_Click(object sender, EventArgs e)
         {
 
             WorkAsync(new WorkAsyncInfo()
@@ -364,26 +225,26 @@ namespace AlbanianXrm.EarlyBound
             });
         }
 
-        private void txtOutputPath_TextChanged(object sender, EventArgs e)
+        private void TxtOutputPath_TextChanged(object sender, EventArgs e)
         {
             mySettings.OutputPath = txtOutputPath.Text;
         }
 
-        private void txtNamespace_TextChanged(object sender, EventArgs e)
+        private void TxtNamespace_TextChanged(object sender, EventArgs e)
         {
             mySettings.Namespace = txtNamespace.Text;
         }
 
-        private void toolStripButton4_Click(object sender, EventArgs e)
+        private void ToolStripButton4_Click(object sender, EventArgs e)
         {
             LogInfo("Saving current settings");
             SettingsManager.Instance.Save(GetType(), mySettings);
         }
 
-        private void metadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
+        private void MetadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
         {
-         
-            if(e.Node.Tag is RelationshipMetadataBase)
+
+            if (e.Node.Tag is RelationshipMetadataBase)
             {
                 string entity1;
                 string entity2;
@@ -442,10 +303,12 @@ namespace AlbanianXrm.EarlyBound
                                                                      result.EntityMetadata.OneToManyRelationships).Union(
                                                                      result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
                                                 {
-                                                    TreeNodeAdv node = new TreeNodeAdv($"{relationship.SchemaName}");
-                                                    node.ExpandedOnce = true;
-                                                    node.ShowCheckBox = true;
-                                                    node.Tag = relationship;
+                                                    TreeNodeAdv node = new TreeNodeAdv($"{relationship.SchemaName}")
+                                                    {
+                                                        ExpandedOnce = true,
+                                                        ShowCheckBox = true,
+                                                        Tag = relationship
+                                                    };
                                                     if (schemaName == relationship.SchemaName)
                                                     {
                                                         node.CheckState = e.NewCheckState;
@@ -466,11 +329,11 @@ namespace AlbanianXrm.EarlyBound
                                             MessageBox.Show($"{schemaName} {entityName}");
                                             this.metadataTree.BeforeCheck -= treeEventHandler;
                                             relationship.CheckState = e.NewCheckState;
-                                            treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.metadataTree_BeforeCheck);
+                                            treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
                                             this.metadataTree.BeforeCheck += treeEventHandler;
                                         }
                                     }
-                                }                             
+                                }
                             }
                         }
                     }
