@@ -182,6 +182,7 @@
     <Compile Include="Factories\MyPluginFactory.cs" />
     <Compile Include="Interfaces\IMyPluginFactory.cs" />
     <Compile Include="Logic\AttributeMetadataHandler.cs" />
+    <Compile Include="Logic\EntityGeneratorHandler.cs" />
     <Compile Include="Logic\CoreToolsDownloader.cs" />
     <Compile Include="Logic\EntityMetadataHandler.cs" />
     <Compile Include="Logic\RelationshipMetadataHandler.cs" />
