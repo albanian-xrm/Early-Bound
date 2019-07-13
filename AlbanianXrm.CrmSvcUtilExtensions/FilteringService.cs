@@ -23,14 +23,14 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             entity1NRelationships = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(all1NRelationships))
             {
-                entity1NRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:1NRelationships:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                entity1NRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:Relationships1N:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
             }
 
             allN1Relationships = new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:AllN1Relationships") ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
             entityN1Relationships = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(allN1Relationships))
             {
-                entityN1Relationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:N1Relationships:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                entityN1Relationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:RelationshipsN1:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
             }
 
             allNNRelationships = new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:AllNNRelationships") ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
@@ -56,7 +56,8 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {
             HashSet<string> attributes;
-            if (!allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
+            if (attributeMetadata.LogicalName != "statecode" &&
+                !allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
                 entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out attributes) &&
                 !attributes.Contains(attributeMetadata.LogicalName))
             {
@@ -91,14 +92,18 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             if (relationshipMetadata is OneToManyRelationshipMetadata)
             {
                 var oneToManyMetadata = (OneToManyRelationshipMetadata)relationshipMetadata;
-                if (!all1NRelationships.Contains(oneToManyMetadata.ReferencingEntity) &&
-                    entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
+                Console.WriteLine($"[OneToManyRelationship] {relationshipMetadata.SchemaName} {oneToManyMetadata.ReferencingEntity} {oneToManyMetadata.ReferencedEntity} {otherEntityMetadata.LogicalName}");
+                if ((oneToManyMetadata.ReferencedEntity != otherEntityMetadata.LogicalName ||
+                     oneToManyMetadata.ReferencedEntity == oneToManyMetadata.ReferencingEntity) &&
+                    !all1NRelationships.Contains(oneToManyMetadata.ReferencedEntity) &&
+                    entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
                     !relationships.Contains(oneToManyMetadata.SchemaName))
                 {
                     return false;
                 }
-                if (!allN1Relationships.Contains(oneToManyMetadata.ReferencedEntity) &&
-                    entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
+                if (oneToManyMetadata.ReferencingEntity != otherEntityMetadata.LogicalName &&
+                    !allN1Relationships.Contains(oneToManyMetadata.ReferencingEntity) &&
+                    entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
                     !relationships.Contains(oneToManyMetadata.SchemaName))
                 {
                     return false;
@@ -107,13 +112,16 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             else if (relationshipMetadata is ManyToManyRelationshipMetadata)
             {
                 var manyToManyMetadata = (ManyToManyRelationshipMetadata)relationshipMetadata;
-                if (!allNNRelationships.Contains(manyToManyMetadata.Entity1LogicalName) &&
+                if ((manyToManyMetadata.Entity1LogicalName != otherEntityMetadata.LogicalName ||
+                      manyToManyMetadata.Entity1LogicalName == manyToManyMetadata.Entity2LogicalName) &&
+                    !allNNRelationships.Contains(manyToManyMetadata.Entity1LogicalName) &&
                     entityNNRelationships.TryGetValue(manyToManyMetadata.Entity1LogicalName, out relationships) &&
                     !relationships.Contains(manyToManyMetadata.SchemaName))
                 {
                     return false;
                 }
-                if (!allNNRelationships.Contains(manyToManyMetadata.Entity2LogicalName) &&
+                if (manyToManyMetadata.Entity2LogicalName != otherEntityMetadata.LogicalName &&
+                    !allNNRelationships.Contains(manyToManyMetadata.Entity2LogicalName) &&
                     entityNNRelationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
                     !relationships.Contains(manyToManyMetadata.SchemaName))
                 {

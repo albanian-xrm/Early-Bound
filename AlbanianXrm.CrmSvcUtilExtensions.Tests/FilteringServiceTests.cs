@@ -165,5 +165,40 @@ namespace AlbanianXrm.CrmSvcUtilExtensions.Tests
             A.CallTo(() => fakeFilterService.FakedObject.GenerateAttribute(A<AttributeMetadata>._, A<IServiceProvider>._)).MustHaveHappenedOnceExactly();
             Assert.True(shouldGenerateLastName);
         }
+
+        [Fact]
+        public void Generate1NRelationshipIfParameterIsSpecified()
+        {
+            var fakeFilterService = new Fake<ICodeWriterFilterService>();
+            fakeFilterService.AnyCall().WithReturnType<bool>().Returns(true);
+
+            var fakeServiceProvider = new Fake<IServiceProvider>();
+            Environment.SetEnvironmentVariable("AlbanianXrm.EarlyBound:Entities", "contact");
+            Environment.SetEnvironmentVariable("AlbanianXrm.EarlyBound:Relationships1N:contact", "account_primary_contact");
+
+            var metadata = new OneToManyRelationshipMetadata()
+            {
+                MetadataId = Guid.NewGuid(),
+                SchemaName = "account_primary_contact",
+                ReferencingEntity = "account",
+                ReferencingAttribute = "primarycontactid",
+                ReferencedEntity = "contact",
+                ReferencedAttribute = "contactid"
+            };
+
+            var otherEntity = new EntityMetadata()
+            {
+                LogicalName = "account"
+            };
+
+            var filteringService = new FilteringService(fakeFilterService.FakedObject);
+            var shouldGenerateRelationship = (filteringService as ICodeWriterFilterService).GenerateRelationship(metadata, otherEntity, fakeServiceProvider.FakedObject);
+
+            Environment.SetEnvironmentVariable("AlbanianXrm.EarlyBound:Entities", null);
+            Environment.SetEnvironmentVariable("AlbanianXrm.EarlyBound:Relationships1N:contact", null);
+
+            A.CallTo(() => fakeFilterService.FakedObject.GenerateRelationship(A<RelationshipMetadataBase>._, A<EntityMetadata>._, A<IServiceProvider>._)).MustHaveHappenedOnceExactly();
+            Assert.True(shouldGenerateRelationship);
+        }
     }
 }
