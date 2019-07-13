@@ -141,7 +141,6 @@ namespace AlbanianXrm.EarlyBound
                 string entity1;
                 string entity2;
                 string schemaName;
-                MessageBox.Show($"{sender}");
                 if (e.Node.Tag is OneToManyRelationshipMetadata)
                 {
                     var metadata = (OneToManyRelationshipMetadata)e.Node.Tag;
@@ -157,8 +156,7 @@ namespace AlbanianXrm.EarlyBound
                     schemaName = metadata.SchemaName;
                 }
 
-                MessageBox.Show($"{schemaName} {entity1} {entity2}");
-
+             
                 foreach (TreeNodeAdv entity in metadataTree.Nodes)
                 {
                     var entityName = ((EntityMetadata)entity.Tag).LogicalName;
@@ -218,7 +216,6 @@ namespace AlbanianXrm.EarlyBound
                                         if (relationship == e.Node) continue;
                                         if (((RelationshipMetadataBase)relationship.Tag).SchemaName == schemaName)
                                         {
-                                            MessageBox.Show($"{schemaName} {entityName}");
                                             this.metadataTree.BeforeCheck -= treeEventHandler;
                                             relationship.CheckState = e.NewCheckState;
                                             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);

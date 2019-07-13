@@ -102,11 +102,11 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                     var relationshipMetadata = (OneToManyRelationshipMetadata)relationship.Tag;
                                                     if (relationshipMetadata.ReferencingEntity == metadata.LogicalName)
                                                     {
-                                                        relationships1N.Add(relationshipMetadata.SchemaName);
+                                                        relationshipsN1.Add(relationshipMetadata.SchemaName);
                                                     }
                                                     else
                                                     {
-                                                        relationshipsN1.Add(relationshipMetadata.SchemaName);
+                                                        relationships1N.Add(relationshipMetadata.SchemaName);
                                                     }
                                                 }
                                                 else
