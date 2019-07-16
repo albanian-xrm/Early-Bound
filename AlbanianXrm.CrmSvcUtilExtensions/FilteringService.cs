@@ -55,10 +55,9 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {
-            HashSet<string> attributes;
             if (attributeMetadata.LogicalName != "statecode" &&
                 !allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
-                entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out attributes) &&
+                entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out HashSet<string> attributes) &&
                 !attributes.Contains(attributeMetadata.LogicalName))
             {
                 return false;
@@ -89,10 +88,8 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         IServiceProvider services)
         {
             HashSet<string> relationships;
-            if (relationshipMetadata is OneToManyRelationshipMetadata)
+            if (relationshipMetadata is OneToManyRelationshipMetadata oneToManyMetadata)
             {
-                var oneToManyMetadata = (OneToManyRelationshipMetadata)relationshipMetadata;
-                Console.WriteLine($"[OneToManyRelationship] {relationshipMetadata.SchemaName} {oneToManyMetadata.ReferencingEntity} {oneToManyMetadata.ReferencedEntity} {otherEntityMetadata.LogicalName}");
                 if ((oneToManyMetadata.ReferencedEntity != otherEntityMetadata.LogicalName ||
                      oneToManyMetadata.ReferencedEntity == oneToManyMetadata.ReferencingEntity) &&
                     !all1NRelationships.Contains(oneToManyMetadata.ReferencedEntity) &&
@@ -109,9 +106,8 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     return false;
                 }
             }
-            else if (relationshipMetadata is ManyToManyRelationshipMetadata)
+            else if (relationshipMetadata is ManyToManyRelationshipMetadata manyToManyMetadata)
             {
-                var manyToManyMetadata = (ManyToManyRelationshipMetadata)relationshipMetadata;
                 if ((manyToManyMetadata.Entity1LogicalName != otherEntityMetadata.LogicalName ||
                       manyToManyMetadata.Entity1LogicalName == manyToManyMetadata.Entity2LogicalName) &&
                     !allNNRelationships.Contains(manyToManyMetadata.Entity1LogicalName) &&

@@ -40,8 +40,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    var result = args.Result as RetrieveAllEntitiesResponse;
-                    if (result != null)
+                    if (args.Result is RetrieveAllEntitiesResponse result)
                     {
                         metadataTree.Enabled = true;
                         metadataTree.Nodes.Clear();
@@ -49,20 +48,26 @@ namespace AlbanianXrm.EarlyBound.Logic
                         {
                             if (item.DisplayName.LocalizedLabels.Count == 0) continue;
 
-                            TreeNodeAdv attributes = new TreeNodeAdv("Attributes");
-                            attributes.ShowCheckBox = true;
-                            attributes.InteractiveCheckBox = true;
+                            TreeNodeAdv attributes = new TreeNodeAdv("Attributes")
+                            {
+                                ShowCheckBox = true,
+                                InteractiveCheckBox = true
+                            };
 
-                            TreeNodeAdv relationships = new TreeNodeAdv("Relationships");
-                            relationships.ShowCheckBox = true;
-                            relationships.InteractiveCheckBox = true;
+                            TreeNodeAdv relationships = new TreeNodeAdv("Relationships")
+                            {
+                                ShowCheckBox = true,
+                                InteractiveCheckBox = true
+                            };
 
                             TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}",
-                                new TreeNodeAdv[] { attributes, relationships });
-                            node.ExpandedOnce = true;
-                            node.ShowCheckBox = true;
-                            node.InteractiveCheckBox = true;
-                            node.Tag = item;
+                                new TreeNodeAdv[] { attributes, relationships })
+                            {
+                                ExpandedOnce = true,
+                                ShowCheckBox = true,
+                                InteractiveCheckBox = true,
+                                Tag = item
+                            };
 
                             metadataTree.Nodes.Add(node);
                         }

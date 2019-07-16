@@ -21,7 +21,6 @@ namespace AlbanianXrm.EarlyBound
 {
     public partial class MyPluginControl : PluginControlBase
     {
-        private Settings mySettings;
         private TreeViewAdvBeforeCheckEventHandler treeEventHandler;
         private Factories.MyPluginFactory MyPluginFactory;
         private Logic.EntityMetadataHandler EntityMetadataHandler;
@@ -29,14 +28,16 @@ namespace AlbanianXrm.EarlyBound
         private Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
         private Logic.CoreToolsDownloader CoreToolsDownloader;
         private Logic.EntityGeneratorHandler EntityGeneratorHandler;
+        private Options options;
 
         public MyPluginControl()
         {
             InitializeComponent();
+
             MyPluginFactory = new Factories.MyPluginFactory();
             AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler(this);
             CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader(this);
-            EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(this, metadataTree);
+            EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(this, metadataTree, txtOutput);
             EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler(this);
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
@@ -45,20 +46,17 @@ namespace AlbanianXrm.EarlyBound
 
         private void MyPluginControl_Load(object sender, EventArgs e)
         {
-            ShowInfoNotification("To contribute to this plugin visit its code repository", new Uri("https://github.com/Albanian-Xrm/Early-Bound"));
-
             // Loads or creates the settings for the plugin
-            if (!SettingsManager.Instance.TryLoad(GetType(), out mySettings))
+            if (!SettingsManager.Instance.TryLoad(GetType(), out options))
             {
-                mySettings = new Settings();
+                options = new Options();
                 LogWarning("Settings not found => a new settings file has been created!");
             }
             else
             {
                 LogInfo("Settings found and loaded");
-                txtNamespace.Text = mySettings.Namespace;
-                txtOutputPath.Text = mySettings.OutputPath;
             }
+            propertyGrid1.SelectedObject = options;
         }
 
         /// <summary>
@@ -69,8 +67,9 @@ namespace AlbanianXrm.EarlyBound
         private void MyPluginControl_OnCloseTool(object sender, EventArgs e)
         {
             // Before leaving, save the settings
+            ShowInfoNotification("To contribute to this plugin visit its code repository", new Uri("https://github.com/Albanian-Xrm/Early-Bound"));
             LogInfo("Saving current settings");
-            SettingsManager.Instance.Save(GetType(), mySettings);
+            SettingsManager.Instance.Save(GetType(), options);
         }
 
         /// <summary>
@@ -80,7 +79,7 @@ namespace AlbanianXrm.EarlyBound
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
 
-            if (mySettings != null && detail != null)
+            if (options != null && detail != null)
             {
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
@@ -114,23 +113,13 @@ namespace AlbanianXrm.EarlyBound
 
         private void BtnGenerateEntities_Click(object sender, EventArgs e)
         {
-            EntityGeneratorHandler.GenerateEntities(txtNamespace.Text, txtOutputPath.Text);
-        }
-
-        private void TxtOutputPath_TextChanged(object sender, EventArgs e)
-        {
-            mySettings.OutputPath = txtOutputPath.Text;
-        }
-
-        private void TxtNamespace_TextChanged(object sender, EventArgs e)
-        {
-            mySettings.Namespace = txtNamespace.Text;
+            EntityGeneratorHandler.GenerateEntities(options);
         }
 
         private void ToolStripButton4_Click(object sender, EventArgs e)
         {
             LogInfo("Saving current settings");
-            SettingsManager.Instance.Save(GetType(), mySettings);
+            SettingsManager.Instance.Save(GetType(), options);
         }
 
         private void MetadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
@@ -138,25 +127,22 @@ namespace AlbanianXrm.EarlyBound
 
             if (e.Node.Tag is RelationshipMetadataBase)
             {
-                string entity1;
-                string entity2;
-                string schemaName;
-                if (e.Node.Tag is OneToManyRelationshipMetadata)
+                string entity1 = "";
+                string entity2 = "";
+                string schemaName = "";
+                if (e.Node.Tag is OneToManyRelationshipMetadata oneToMany)
                 {
-                    var metadata = (OneToManyRelationshipMetadata)e.Node.Tag;
-                    entity1 = metadata.ReferencingEntity;
-                    entity2 = metadata.ReferencedEntity;
-                    schemaName = metadata.SchemaName;
+                    entity1 = oneToMany.ReferencingEntity;
+                    entity2 = oneToMany.ReferencedEntity;
+                    schemaName = oneToMany.SchemaName;
                 }
-                else
+                else if (e.Node.Tag is ManyToManyRelationshipMetadata manyToMany)
                 {
-                    var metadata = (ManyToManyRelationshipMetadata)e.Node.Tag;
-                    entity1 = metadata.Entity1LogicalName;
-                    entity2 = metadata.Entity2LogicalName;
-                    schemaName = metadata.SchemaName;
+                    entity1 = manyToMany.Entity1LogicalName;
+                    entity2 = manyToMany.Entity2LogicalName;
+                    schemaName = manyToMany.SchemaName;
                 }
 
-             
                 foreach (TreeNodeAdv entity in metadataTree.Nodes)
                 {
                     var entityName = ((EntityMetadata)entity.Tag).LogicalName;
@@ -185,8 +171,7 @@ namespace AlbanianXrm.EarlyBound
                                             {
                                                 MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }
-                                            var result = args.Result as RetrieveEntityResponse;
-                                            if (result != null)
+                                            if (args.Result is RetrieveEntityResponse result)
                                             {
                                                 item.ExpandedOnce = true;
                                                 foreach (var relationship in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
