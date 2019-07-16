@@ -49,11 +49,27 @@ namespace AlbanianXrm.EarlyBound
             // Loads or creates the settings for the plugin
             if (!SettingsManager.Instance.TryLoad(GetType(), out options))
             {
-                options = new Options();
+                options = new Options
+                {
+                    CurrentOrganizationOptions = new OrganizationOptions()
+                    {
+                        Key = ConnectionDetail.Organization
+                    }
+                };
+                options.OrganizationOptions.Add(options.CurrentOrganizationOptions.Key, options.CurrentOrganizationOptions);
                 LogWarning("Settings not found => a new settings file has been created!");
             }
             else
             {
+                if (!options.OrganizationOptions.TryGetValue(ConnectionDetail.Organization, out OrganizationOptions current))
+                {
+                    current = new OrganizationOptions()
+                    {
+                        Key = ConnectionDetail.Organization
+                    };
+                    options.OrganizationOptions.Add(current.Key, current);
+                }
+                options.CurrentOrganizationOptions = current;
                 LogInfo("Settings found and loaded");
             }
             propertyGrid1.SelectedObject = options;
@@ -81,6 +97,16 @@ namespace AlbanianXrm.EarlyBound
 
             if (options != null && detail != null)
             {
+                if (!options.OrganizationOptions.TryGetValue(detail.Organization, out OrganizationOptions current))
+                {
+                    current = new OrganizationOptions()
+                    {
+                        Key = detail.Organization
+                    };
+                    options.OrganizationOptions.Add(current.Key, current);
+                }
+                options.CurrentOrganizationOptions = current;
+                propertyGrid1.SelectedObject = options;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
         }

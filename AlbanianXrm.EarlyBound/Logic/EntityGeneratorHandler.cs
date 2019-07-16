@@ -46,7 +46,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     dir = Path.Combine(dir, folder);
                     Process process = new Process();
                     var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
-                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + (string.IsNullOrEmpty(options.Namespace) ? "" : " /namespace:" + options.Namespace) + " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions /out:" + (string.IsNullOrEmpty(options.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.Output) + "\"") + (options.Language == LanguageEnum.VB ? " /language:VB" : "");
+                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) + " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions /out:" + (string.IsNullOrEmpty(options.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.Output) + "\"") + (options.Language == LanguageEnum.VB ? " /language:VB" : "");
                     process.StartInfo.WorkingDirectory = dir;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;

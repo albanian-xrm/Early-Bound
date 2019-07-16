@@ -217,6 +217,7 @@
       <DependentUpon>MyPluginControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Options.cs" />
+    <Compile Include="OrganizationOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SecretKeeper.cs" />
   </ItemGroup>
