@@ -16,22 +16,25 @@ using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System.IO;
 using System.Diagnostics;
-
+using AlbanianXrm.EarlyBound.Extensions;
+using AlbanianXrm.EarlyBound.Helpers;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
-    internal class EntityGeneratorHandler 
+    internal class EntityGeneratorHandler
     {
         MyPluginControl myPlugin;
         TreeViewAdv metadataTree;
+        TextBoxExt output;
 
-        public EntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree)
+        public EntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, TextBoxExt output)
         {
             this.myPlugin = myPlugin;
             this.metadataTree = metadataTree;
+            this.output = output;
         }
 
-        public void GenerateEntities(string txtNamespace, string txtOutputPath)
+        public void GenerateEntities(Options options)
         {
             myPlugin.WorkAsync(new WorkAsyncInfo()
             {
@@ -43,7 +46,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     dir = Path.Combine(dir, folder);
                     Process process = new Process();
                     var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
-                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + (string.IsNullOrEmpty(txtNamespace) ? "" : " /namespace:" + txtNamespace) + " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions /out:" + (string.IsNullOrEmpty(txtOutputPath) ? "Test.cs" : "\"" + Path.GetFullPath(txtOutputPath) + "\"");
+                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + (string.IsNullOrEmpty(options.Namespace) ? "" : " /namespace:" + options.Namespace) + " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions /out:" + (string.IsNullOrEmpty(options.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.Output) + "\"") + (options.Language == LanguageEnum.VB ? " /language:VB" : "");
                     process.StartInfo.WorkingDirectory = dir;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
@@ -140,7 +143,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    MessageBox.Show((string)args.Result);
+                    output.Text = (string)args.Result;
                 }
             });
 

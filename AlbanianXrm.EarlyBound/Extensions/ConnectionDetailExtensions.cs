@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace AlbanianXrm.EarlyBound
+namespace AlbanianXrm.EarlyBound.Extensions
 {
     static class ConnectionDetailExtensions
     {

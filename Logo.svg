@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="300" height="300">
+  <defs>
+    <circle id="Circle0" r="16" cy="0" cx="0" stroke-width="8" fill="transparent" stroke="gold"/>
+    <circle id="Circle1" r="5" cy="-100" cx="0" stroke-width="5" fill="transparent" stroke="gold"/>  
+    <circle id="Circle2" r="3" cy="-83.8672" cx="25.5" stroke-width="3" fill="transparent" stroke="gold"/>  
+    <circle id="Circle3" r="3" cy="-83.8672" cx="-25.5" stroke-width="3" fill="transparent" stroke="gold"/>     
+    
+    <line id="Line1" x1="0" y1="-16" x2="0" y2="-95" stroke-width="8" stroke="gold"/>
+    <path id="Path1" d="M8 -13.856416 L16 -27.7128 L16 -67.7128 L24 -81.2692" stroke-width="5" fill="transparent" stroke="gold"/>
+    <path id="Path2" d="M-8 -13.856416 L-16 -27.7128 L-16 -67.7128 L-24 -81.2692" stroke-width="5" fill="transparent" stroke="gold"/>
+  </defs>
+
+  <rect x="35" y="35" width="230" height="230" stroke="darkgreen" stroke-width="5" fill="green" rx="15" ry="15" />
+  
+  <use x="150" y="150" xlink:href="#Circle0" />
+    
+  <use xlink:href="#Line1" transform="translate(150,150)" />
+  <use xlink:href="#Circle1" transform="translate(150,150)"/> 
+  <use xlink:href="#Path1" transform="translate(150,150)" />
+  <use xlink:href="#Path2" transform="translate(150,150)" />
+  <use xlink:href="#Circle2" transform="translate(150,150)"/> 
+  <use xlink:href="#Circle3" transform="translate(150,150)"/> 
+ 
+  
+  <use xlink:href="#Line1" transform="translate(150,150) rotate(60)" />
+  <use xlink:href="#Circle1" transform="translate(150,150) rotate(60)"/> 
+  <use xlink:href="#Path1" transform="translate(150,150) rotate(60)" />
+  <use xlink:href="#Path2" transform="translate(150,150) rotate(60)" />
+  <use xlink:href="#Circle2" transform="translate(150,150) rotate(60)"/> 
+  <use xlink:href="#Circle3" transform="translate(150,150) rotate(60)"/> 
+  
+  
+  <use xlink:href="#Line1" transform="translate(150,150) rotate(120)" />
+  <use xlink:href="#Circle1" transform="translate(150,150) rotate(120)"/> 
+  <use xlink:href="#Path1" transform="translate(150,150) rotate(120)" />
+  <use xlink:href="#Path2" transform="translate(150,150) rotate(120)" />
+  <use xlink:href="#Circle2" transform="translate(150,150) rotate(120)"/> 
+  <use xlink:href="#Circle3" transform="translate(150,150) rotate(120)"/> 
+  
+  <use xlink:href="#Line1" transform="translate(150,150) rotate(180)" />
+  <use xlink:href="#Circle1" transform="translate(150,150) rotate(180)"/> 
+  <use xlink:href="#Path1" transform="translate(150,150) rotate(180)" />
+  <use xlink:href="#Path2" transform="translate(150,150) rotate(180)" />
+  <use xlink:href="#Circle2" transform="translate(150,150) rotate(180)"/> 
+  <use xlink:href="#Circle3" transform="translate(150,150) rotate(180)"/> 
+  
+  <use xlink:href="#Line1" transform="translate(150,150) rotate(240)" />
+  <use xlink:href="#Circle1" transform="translate(150,150) rotate(240)"/> 
+  <use xlink:href="#Path1" transform="translate(150,150) rotate(240)" />
+  <use xlink:href="#Path2" transform="translate(150,150) rotate(240)" />
+  <use xlink:href="#Circle2" transform="translate(150,150) rotate(240)"/> 
+  <use xlink:href="#Circle3" transform="translate(150,150) rotate(240)"/> 
+  
+  <use xlink:href="#Line1" transform="translate(150,150) rotate(300)" />
+  <use xlink:href="#Circle1" transform="translate(150,150) rotate(300)"/> 
+  <use xlink:href="#Path1" transform="translate(150,150) rotate(300)" />
+  <use xlink:href="#Path2" transform="translate(150,150) rotate(300)" />
+  <use xlink:href="#Circle2" transform="translate(150,150) rotate(300)"/> 
+  <use xlink:href="#Circle3" transform="translate(150,150) rotate(300)"/> 
+ 
+</svg>

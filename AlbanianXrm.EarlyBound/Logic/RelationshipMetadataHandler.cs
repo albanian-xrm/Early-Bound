@@ -35,8 +35,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
-                    var result = args.Result as RetrieveEntityResponse;
-                    if (result != null)
+                    if (args.Result is RetrieveEntityResponse result)
                     {
                         foreach (var item in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
                                              result.EntityMetadata.OneToManyRelationships).Union(
