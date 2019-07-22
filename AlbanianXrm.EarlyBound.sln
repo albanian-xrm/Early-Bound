@@ -19,7 +19,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.CrmSvcUtilExten
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.EarlyBound.Tests", "AlbanianXrm.EarlyBound.Tests\AlbanianXrm.EarlyBound.Tests.csproj", "{E499D864-F617-4C04-8BE7-DF7A93EC11FC}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AlbanianXrm.Common.Shared", "AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.shproj", "{8664D2B2-4CDE-40AC-8E44-F2F4F308592B}"
+EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{8664d2b2-4cde-40ac-8e44-f2f4f308592b}*SharedItemsImports = 13
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{e047e333-0237-4fd9-b80a-1757d706630f}*SharedItemsImports = 4
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{f3efcbf0-762e-493d-99ea-f7d2c56dd30b}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Azure Pipelines|Any CPU = Azure Pipelines|Any CPU
 		Debug|Any CPU = Debug|Any CPU

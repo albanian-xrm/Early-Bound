@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AlbanianXrm.Extensions;
 using Microsoft.Crm.Services.Utility;
 using Microsoft.Xrm.Sdk.Metadata;
 
@@ -11,33 +12,31 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         public FilteringService(ICodeWriterFilterService defaultService)
         {
             this.DefaultService = defaultService;
-            entities = new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:Entities") ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
-            allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:AllAttributes") ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+            entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
+            allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES) ?? "").Split(","));
             entityAttributes = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(allAttributes))
             {
-                entityAttributes.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:Attributes:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                entityAttributes.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, entity)) ?? "").Split(",")));
             }
 
-            all1NRelationships = new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:All1NRelationships") ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
+            allRelationships = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_RELATIONSHIPS) ?? "").Split(","));
             entity1NRelationships = new Dictionary<string, HashSet<string>>();
-            foreach (var entity in entities.Except(all1NRelationships))
+            foreach (var entity in entities.Except(allRelationships))
             {
-                entity1NRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:Relationships1N:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                entity1NRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, entity)) ?? "").Split(",")));
             }
 
-            allN1Relationships = new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:AllN1Relationships") ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
             entityN1Relationships = new Dictionary<string, HashSet<string>>();
-            foreach (var entity in entities.Except(allN1Relationships))
+            foreach (var entity in entities.Except(allRelationships))
             {
-                entityN1Relationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:RelationshipsN1:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                entityN1Relationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSN1, entity)) ?? "").Split(",")));
             }
 
-            allNNRelationships = new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:AllNNRelationships") ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries));
             entityNNRelationships = new Dictionary<string, HashSet<string>>();
-            foreach (var entity in entities.Except(allNNRelationships))
+            foreach (var entity in entities.Except(allRelationships))
             {
-                entityNNRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable("AlbanianXrm.EarlyBound:NNRelationships:" + entity) ?? "").Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries)));
+                entityNNRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSNN, entity)) ?? "").Split(",")));
             }
         }
 
@@ -45,9 +44,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         private HashSet<string> entities;
         private HashSet<string> allAttributes;
-        private HashSet<string> all1NRelationships;
-        private HashSet<string> allN1Relationships;
-        private HashSet<string> allNNRelationships;
+        private HashSet<string> allRelationships;
         private Dictionary<string, HashSet<string>> entityAttributes;
         private Dictionary<string, HashSet<string>> entity1NRelationships;
         private Dictionary<string, HashSet<string>> entityN1Relationships;
@@ -92,14 +89,14 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             {
                 if ((oneToManyMetadata.ReferencedEntity != otherEntityMetadata.LogicalName ||
                      oneToManyMetadata.ReferencedEntity == oneToManyMetadata.ReferencingEntity) &&
-                    !all1NRelationships.Contains(oneToManyMetadata.ReferencedEntity) &&
+                    !allRelationships.Contains(oneToManyMetadata.ReferencedEntity) &&
                     entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
                     !relationships.Contains(oneToManyMetadata.SchemaName))
                 {
                     return false;
                 }
                 if (oneToManyMetadata.ReferencingEntity != otherEntityMetadata.LogicalName &&
-                    !allN1Relationships.Contains(oneToManyMetadata.ReferencingEntity) &&
+                    !allRelationships.Contains(oneToManyMetadata.ReferencingEntity) &&
                     entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
                     !relationships.Contains(oneToManyMetadata.SchemaName))
                 {
@@ -110,14 +107,14 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             {
                 if ((manyToManyMetadata.Entity1LogicalName != otherEntityMetadata.LogicalName ||
                       manyToManyMetadata.Entity1LogicalName == manyToManyMetadata.Entity2LogicalName) &&
-                    !allNNRelationships.Contains(manyToManyMetadata.Entity1LogicalName) &&
+                    !allRelationships.Contains(manyToManyMetadata.Entity1LogicalName) &&
                     entityNNRelationships.TryGetValue(manyToManyMetadata.Entity1LogicalName, out relationships) &&
                     !relationships.Contains(manyToManyMetadata.SchemaName))
                 {
                     return false;
                 }
                 if (manyToManyMetadata.Entity2LogicalName != otherEntityMetadata.LogicalName &&
-                    !allNNRelationships.Contains(manyToManyMetadata.Entity2LogicalName) &&
+                    !allRelationships.Contains(manyToManyMetadata.Entity2LogicalName) &&
                     entityNNRelationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
                     !relationships.Contains(manyToManyMetadata.SchemaName))
                 {

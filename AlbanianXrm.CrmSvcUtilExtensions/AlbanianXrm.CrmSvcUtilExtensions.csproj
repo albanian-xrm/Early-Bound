@@ -81,5 +81,6 @@
     <None Include="AlbanianXrm.EarlyBound.snk" />
     <None Include="packages.config" />
   </ItemGroup>
+  <Import Project="..\AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
