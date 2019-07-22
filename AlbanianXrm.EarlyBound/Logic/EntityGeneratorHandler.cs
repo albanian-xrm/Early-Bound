@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
-using Microsoft.Xrm.Sdk.Query;
-using Microsoft.Xrm.Sdk;
-using McTools.Xrm.Connection;
-using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System.IO;
@@ -82,7 +72,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                 attributes.Add(attributeMetadata.LogicalName);
                                             }
                                         }
-                                        process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:Attributes:" + metadata.LogicalName, string.Join(",", attributes));
+                                        process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, metadata.LogicalName), string.Join(",", attributes));
                                     }
                                 }
                                 else if (item.Text == "Relationships")
@@ -119,18 +109,18 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                 }
                                             }
                                         }
-                                        if (relationships1N.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:Relationships1N:" + metadata.LogicalName, string.Join(",", relationships1N.Distinct()));
-                                        if (relationshipsN1.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:RelationshipsN1:" + metadata.LogicalName, string.Join(",", relationshipsN1.Distinct()));
-                                        if (relationshipsNN.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:RelationshipsNN:" + metadata.LogicalName, string.Join(",", relationshipsNN.Distinct()));
+                                        if (relationships1N.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, metadata.LogicalName), string.Join(",", relationships1N.Distinct()));
+                                        if (relationshipsN1.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSN1, metadata.LogicalName), string.Join(",", relationshipsN1.Distinct()));
+                                        if (relationshipsNN.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSNN, metadata.LogicalName), string.Join(",", relationshipsNN.Distinct()));
                                     }
                                 }
                             }
                         }
                     }
 
-                    if (entities.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:Entities", string.Join(",", entities));
-                    if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:AllAttributes", string.Join(",", allAttributes));
-                    if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add("AlbanianXrm.EarlyBound:AllRelationships", string.Join(",", allRelationships));
+                    if (entities.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ENTITIES, string.Join(",", entities));
+                    if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
+                    if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
                     process.EnableRaisingEvents = true;
                     process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
                     process.Start();
