@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo treeNodeAdvStyleInfo1 = new Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo();
+            Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo treeNodeAdvStyleInfo2 = new Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo();
             this.metadataTree = new Syncfusion.Windows.Forms.Tools.TreeViewAdv();
             this.toolStrip = new Syncfusion.Windows.Forms.Tools.ToolStripEx();
             this.btnGetMetadata = new System.Windows.Forms.ToolStripButton();
@@ -37,7 +37,7 @@
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer = new Syncfusion.Windows.Forms.Tools.SplitContainerAdv();
             this.splitContainerVertical = new Syncfusion.Windows.Forms.Tools.SplitContainerAdv();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.optionsGrid = new System.Windows.Forms.PropertyGrid();
             this.txtOutput = new Syncfusion.Windows.Forms.Tools.TextBoxExt();
             ((System.ComponentModel.ISupportInitialize)(this.metadataTree)).BeginInit();
             this.toolStrip.SuspendLayout();
@@ -55,15 +55,17 @@
             // metadataTree
             // 
             this.metadataTree.AllowMouseBasedSelection = true;
-            treeNodeAdvStyleInfo1.CheckBoxTickThickness = 1;
-            treeNodeAdvStyleInfo1.CheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo1.EnsureDefaultOptionedChild = true;
-            treeNodeAdvStyleInfo1.IntermediateCheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo1.OptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo1.SelectedOptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
+            this.metadataTree.BackgroundImage = global::AlbanianXrm.EarlyBound.Properties.Resources.Logo;
+            this.metadataTree.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            treeNodeAdvStyleInfo2.CheckBoxTickThickness = 1;
+            treeNodeAdvStyleInfo2.CheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo2.EnsureDefaultOptionedChild = true;
+            treeNodeAdvStyleInfo2.IntermediateCheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo2.OptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo2.SelectedOptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
             this.metadataTree.BaseStylePairs.AddRange(new Syncfusion.Windows.Forms.Tools.StyleNamePair[] {
-            new Syncfusion.Windows.Forms.Tools.StyleNamePair("Standard", treeNodeAdvStyleInfo1)});
-            this.metadataTree.BeforeTouchSize = new System.Drawing.Size(200, 275);
+            new Syncfusion.Windows.Forms.Tools.StyleNamePair("Standard", treeNodeAdvStyleInfo2)});
+            this.metadataTree.BeforeTouchSize = new System.Drawing.Size(407, 538);
             this.metadataTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.metadataTree.Enabled = false;
             // 
@@ -73,7 +75,7 @@
             this.metadataTree.HelpTextControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.metadataTree.HelpTextControl.Location = new System.Drawing.Point(0, 0);
             this.metadataTree.HelpTextControl.Name = "helpText";
-            this.metadataTree.HelpTextControl.Size = new System.Drawing.Size(49, 15);
+            this.metadataTree.HelpTextControl.Size = new System.Drawing.Size(96, 27);
             this.metadataTree.HelpTextControl.TabIndex = 0;
             this.metadataTree.HelpTextControl.Text = "help text";
             this.metadataTree.InactiveSelectedNodeForeColor = System.Drawing.SystemColors.ControlText;
@@ -81,10 +83,11 @@
             this.metadataTree.ItemHeight = 27;
             this.metadataTree.LoadOnDemand = true;
             this.metadataTree.Location = new System.Drawing.Point(0, 0);
+            this.metadataTree.Margin = new System.Windows.Forms.Padding(6);
             this.metadataTree.MetroColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(165)))), ((int)(((byte)(220)))));
             this.metadataTree.Name = "metadataTree";
             this.metadataTree.SelectedNodeForeColor = System.Drawing.SystemColors.HighlightText;
-            this.metadataTree.Size = new System.Drawing.Size(200, 275);
+            this.metadataTree.Size = new System.Drawing.Size(407, 538);
             this.metadataTree.TabIndex = 0;
             this.metadataTree.Text = "treeViewAdv1";
             this.metadataTree.ThemeStyle.LineColor = System.Drawing.Color.FromArgb(((int)(((byte)(171)))), ((int)(((byte)(171)))), ((int)(((byte)(171)))));
@@ -102,7 +105,7 @@
             this.metadataTree.ToolTipControl.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.metadataTree.ToolTipControl.Location = new System.Drawing.Point(0, 0);
             this.metadataTree.ToolTipControl.Name = "toolTip";
-            this.metadataTree.ToolTipControl.Size = new System.Drawing.Size(41, 15);
+            this.metadataTree.ToolTipControl.Size = new System.Drawing.Size(79, 27);
             this.metadataTree.ToolTipControl.TabIndex = 1;
             this.metadataTree.ToolTipControl.Text = "toolTip";
             this.metadataTree.BeforeExpand += new Syncfusion.Windows.Forms.Tools.TreeViewAdvCancelableNodeEventHandler(this.TreeViewAdv1_BeforeExpand);
@@ -119,10 +122,12 @@
             this.btnGenerateEntities,
             this.toolStripButton4});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
+            this.toolStrip.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Office12Mode = false;
+            this.toolStrip.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.toolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.toolStrip.Size = new System.Drawing.Size(559, 25);
+            this.toolStrip.Size = new System.Drawing.Size(1118, 39);
             this.toolStrip.TabIndex = 6;
             // 
             // btnGetMetadata
@@ -130,7 +135,7 @@
             this.btnGetMetadata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.btnGetMetadata.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnGetMetadata.Name = "btnGetMetadata";
-            this.btnGetMetadata.Size = new System.Drawing.Size(82, 22);
+            this.btnGetMetadata.Size = new System.Drawing.Size(164, 36);
             this.btnGetMetadata.Text = "Get Metadata";
             this.btnGetMetadata.Click += new System.EventHandler(this.BtnGetMetadata_Click);
             // 
@@ -139,7 +144,7 @@
             this.btnCoreTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.btnCoreTools.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnCoreTools.Name = "btnCoreTools";
-            this.btnCoreTools.Size = new System.Drawing.Size(85, 22);
+            this.btnCoreTools.Size = new System.Drawing.Size(168, 36);
             this.btnCoreTools.Text = "Get CoreTools";
             this.btnCoreTools.Click += new System.EventHandler(this.BtnCoreTools_Click);
             // 
@@ -148,7 +153,7 @@
             this.btnGenerateEntities.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.btnGenerateEntities.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnGenerateEntities.Name = "btnGenerateEntities";
-            this.btnGenerateEntities.Size = new System.Drawing.Size(58, 22);
+            this.btnGenerateEntities.Size = new System.Drawing.Size(116, 36);
             this.btnGenerateEntities.Text = "Generate";
             this.btnGenerateEntities.Click += new System.EventHandler(this.BtnGenerateEntities_Click);
             // 
@@ -157,7 +162,7 @@
             this.toolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(80, 22);
+            this.toolStripButton4.Size = new System.Drawing.Size(162, 36);
             this.toolStripButton4.Text = "Save Settings";
             this.toolStripButton4.Click += new System.EventHandler(this.ToolStripButton4_Click);
             // 
@@ -166,22 +171,22 @@
             this.splitContainer.BeforeTouchSize = 7;
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer.FixedPanel = Syncfusion.Windows.Forms.Tools.Enums.FixedPanel.Panel2;
-            this.splitContainer.Location = new System.Drawing.Point(0, 25);
-            this.splitContainer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer.Location = new System.Drawing.Point(0, 39);
+            this.splitContainer.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer.Name = "splitContainer";
             // 
             // splitContainer.Panel1
             // 
             this.splitContainer.Panel1.Controls.Add(this.metadataTree);
-            this.splitContainer.Panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer.Panel1.Margin = new System.Windows.Forms.Padding(4);
             // 
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.splitContainerVertical);
-            this.splitContainer.Panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer.Panel2.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer.PanelToBeCollapsed = Syncfusion.Windows.Forms.Tools.Enums.CollapsedPanel.Panel1;
-            this.splitContainer.Size = new System.Drawing.Size(559, 275);
-            this.splitContainer.SplitterDistance = 200;
+            this.splitContainer.Size = new System.Drawing.Size(1118, 538);
+            this.splitContainer.SplitterDistance = 407;
             this.splitContainer.TabIndex = 7;
             this.splitContainer.Text = "splitContainer";
             this.splitContainer.ThemeName = "None";
@@ -191,57 +196,59 @@
             this.splitContainerVertical.BeforeTouchSize = 7;
             this.splitContainerVertical.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainerVertical.Location = new System.Drawing.Point(0, 0);
-            this.splitContainerVertical.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainerVertical.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainerVertical.Name = "splitContainerVertical";
             this.splitContainerVertical.Orientation = System.Windows.Forms.Orientation.Vertical;
             // 
             // splitContainerVertical.Panel1
             // 
-            this.splitContainerVertical.Panel1.Controls.Add(this.propertyGrid1);
-            this.splitContainerVertical.Panel1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainerVertical.Panel1.Controls.Add(this.optionsGrid);
+            this.splitContainerVertical.Panel1.Margin = new System.Windows.Forms.Padding(4);
             // 
             // splitContainerVertical.Panel2
             // 
             this.splitContainerVertical.Panel2.Controls.Add(this.txtOutput);
-            this.splitContainerVertical.Panel2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.splitContainerVertical.Size = new System.Drawing.Size(352, 275);
-            this.splitContainerVertical.SplitterDistance = 130;
+            this.splitContainerVertical.Panel2.Margin = new System.Windows.Forms.Padding(4);
+            this.splitContainerVertical.Size = new System.Drawing.Size(704, 538);
+            this.splitContainerVertical.SplitterDistance = 254;
             this.splitContainerVertical.TabIndex = 5;
             this.splitContainerVertical.Text = "splitContainerAdv1";
             this.splitContainerVertical.ThemeName = "None";
             // 
-            // propertyGrid1
+            // optionsGrid
             // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(352, 130);
-            this.propertyGrid1.TabIndex = 0;
+            this.optionsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.optionsGrid.Location = new System.Drawing.Point(0, 0);
+            this.optionsGrid.Margin = new System.Windows.Forms.Padding(4);
+            this.optionsGrid.Name = "optionsGrid";
+            this.optionsGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.optionsGrid.Size = new System.Drawing.Size(704, 254);
+            this.optionsGrid.TabIndex = 0;
             // 
             // txtOutput
             // 
             this.txtOutput.BackColor = System.Drawing.Color.Black;
-            this.txtOutput.BeforeTouchSize = new System.Drawing.Size(352, 138);
+            this.txtOutput.BeforeTouchSize = new System.Drawing.Size(704, 277);
             this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtOutput.ForeColor = System.Drawing.Color.White;
             this.txtOutput.Location = new System.Drawing.Point(0, 0);
-            this.txtOutput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.txtOutput.Margin = new System.Windows.Forms.Padding(4);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
             this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtOutput.Size = new System.Drawing.Size(352, 138);
+            this.txtOutput.Size = new System.Drawing.Size(704, 277);
             this.txtOutput.TabIndex = 0;
             // 
             // MyPluginControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer);
             this.Controls.Add(this.toolStrip);
+            this.Margin = new System.Windows.Forms.Padding(6);
             this.Name = "MyPluginControl";
-            this.Size = new System.Drawing.Size(559, 300);
+            this.Size = new System.Drawing.Size(1118, 577);
             this.OnCloseTool += new System.EventHandler(this.MyPluginControl_OnCloseTool);
             this.Load += new System.EventHandler(this.MyPluginControl_Load);
             ((System.ComponentModel.ISupportInitialize)(this.metadataTree)).EndInit();
@@ -271,7 +278,7 @@
         private System.Windows.Forms.ToolStripButton btnGenerateEntities;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private Syncfusion.Windows.Forms.Tools.SplitContainerAdv splitContainerVertical;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.PropertyGrid optionsGrid;
         private Syncfusion.Windows.Forms.Tools.TextBoxExt txtOutput;
     }
 }

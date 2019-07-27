@@ -1,21 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
-using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk;
 using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
-using System.IO;
-using System.Diagnostics;
 
 namespace AlbanianXrm.EarlyBound
 {
@@ -28,7 +20,7 @@ namespace AlbanianXrm.EarlyBound
         private Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
         private Logic.CoreToolsDownloader CoreToolsDownloader;
         private Logic.EntityGeneratorHandler EntityGeneratorHandler;
-        private Options options;
+        public Options options;
 
         public MyPluginControl()
         {
@@ -72,7 +64,7 @@ namespace AlbanianXrm.EarlyBound
                 options.CurrentOrganizationOptions = current;
                 LogInfo("Settings found and loaded");
             }
-            propertyGrid1.SelectedObject = options;
+            optionsGrid.SelectedObject = options;
         }
 
         /// <summary>
@@ -106,7 +98,7 @@ namespace AlbanianXrm.EarlyBound
                     options.OrganizationOptions.Add(current.Key, current);
                 }
                 options.CurrentOrganizationOptions = current;
-                propertyGrid1.SelectedObject = options;
+                optionsGrid.SelectedObject = options;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
         }
@@ -150,7 +142,7 @@ namespace AlbanianXrm.EarlyBound
 
         private void MetadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
         {
-
+            if (!options.CoupledRelationships) return;
             if (e.Node.Tag is RelationshipMetadataBase)
             {
                 string entity1 = "";
