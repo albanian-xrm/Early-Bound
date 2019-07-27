@@ -3,17 +3,17 @@
 
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="300" height="300">
   <defs>
-    <circle id="Circle0" r="16" cy="0" cx="0" stroke-width="8" fill="transparent" stroke="gold"/>
-    <circle id="Circle1" r="5" cy="-100" cx="0" stroke-width="5" fill="transparent" stroke="gold"/>  
-    <circle id="Circle2" r="3" cy="-83.8672" cx="25.5" stroke-width="3" fill="transparent" stroke="gold"/>  
-    <circle id="Circle3" r="3" cy="-83.8672" cx="-25.5" stroke-width="3" fill="transparent" stroke="gold"/>     
+    <circle id="Circle0" r="32" cy="0" cx="0" stroke-width="16" fill="green" stroke="gold"/>
+    <circle id="Circle1" r="10" cy="-120" cx="0" stroke-width="10" fill="green" stroke="gold"/>  
+    <circle id="Circle2" r="6" cy="-104.5499" cx="39" stroke-width="6" fill="green" stroke="gold"/>  
+    <circle id="Circle3" r="6" cy="-104.5499" cx="-39" stroke-width="6" fill="green" stroke="gold"/>     
     
-    <line id="Line1" x1="0" y1="-16" x2="0" y2="-95" stroke-width="8" stroke="gold"/>
-    <path id="Path1" d="M8 -13.856416 L16 -27.7128 L16 -67.7128 L24 -81.2692" stroke-width="5" fill="transparent" stroke="gold"/>
-    <path id="Path2" d="M-8 -13.856416 L-16 -27.7128 L-16 -67.7128 L-24 -81.2692" stroke-width="5" fill="transparent" stroke="gold"/>
+    <line id="Line1" x1="0" y1="-32" x2="0" y2="-110" stroke-width="16" stroke="gold"/>
+    <path id="Path1" d="M16 -27.71281 L28 -48.4974 L28 -84.4974 L36 -99.3538" stroke-width="10" fill="transparent" stroke="gold"/>
+    <path id="Path2" d="M-16 -27.71281 L-28 -48.4974 L-28 -84.4974 L-36 -99.3538" stroke-width="10" fill="transparent" stroke="gold"/>
   </defs>
 
-  <rect x="35" y="35" width="230" height="230" stroke="darkgreen" stroke-width="5" fill="green" rx="15" ry="15" />
+  <rect x="5" y="5" width="290" height="290" stroke="darkgreen" stroke-width="10" fill="green" rx="15" ry="15" />
   
   <use x="150" y="150" xlink:href="#Circle0" />
     
