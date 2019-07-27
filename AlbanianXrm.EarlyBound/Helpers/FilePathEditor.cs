@@ -20,7 +20,7 @@ namespace AlbanianXrm.EarlyBound.Helpers
                     dialog.ValidateNames = false;
                     dialog.CheckFileExists = false;
                     dialog.CheckPathExists = true;
-                    dialog.Filter = options.Language == LanguageEnum.CS ? "C# (*.cs)|*.cs" : "Visual Basic (*.vb)|*.vb";
+                    dialog.Filter = options.CurrentOrganizationOptions.Language == LanguageEnum.CS ? "C# (*.cs)|*.cs" : "Visual Basic (*.vb)|*.vb";
 
                     dialog.FileName = value as string;
 

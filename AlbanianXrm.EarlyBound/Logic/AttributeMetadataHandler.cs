@@ -39,9 +39,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         foreach (var item in result.EntityMetadata.Attributes.OrderBy(x => x.LogicalName))
                         {
-                            if (item.DisplayName.LocalizedLabels.Count == 0) continue;
+                            var name = item.DisplayName.LocalizedLabels.Count == 0 ? item.LogicalName : item.DisplayName.LocalizedLabels[0].Label;
 
-                            TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}")
+                            TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {name}")
                             {
                                 ExpandedOnce = true,
                                 ShowCheckBox = true,

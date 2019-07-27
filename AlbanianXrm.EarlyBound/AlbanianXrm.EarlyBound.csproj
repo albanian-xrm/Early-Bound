@@ -203,6 +203,7 @@
     <Compile Include="Factories\MyPluginFactory.cs" />
     <Compile Include="Helpers\FilePathEditor.cs" />
     <Compile Include="Helpers\LanguageEnum.cs" />
+    <Compile Include="Helpers\YesNoConverter.cs" />
     <Compile Include="Interfaces\IMyPluginFactory.cs" />
     <Compile Include="Logic\AttributeMetadataHandler.cs" />
     <Compile Include="Logic\EntityGeneratorHandler.cs" />
@@ -219,6 +220,11 @@
     <Compile Include="Options.cs" />
     <Compile Include="OrganizationOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SecretKeeper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +241,13 @@
     <EmbeddedResource Include="MyPluginControl.resx">
       <DependentUpon>MyPluginControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Logo.png" />
   </ItemGroup>
   <Import Project="..\AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

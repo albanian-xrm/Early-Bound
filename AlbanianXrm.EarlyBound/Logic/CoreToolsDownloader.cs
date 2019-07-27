@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -25,7 +26,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     string packageID = "Microsoft.CrmSdk.CoreTools";
 
                     //Connect to the official package repository IPackageRepository
-                    var repo = NuGet.PackageRepositoryFactory.Default.CreateRepository("https://packages.nuget.org/api/v2");
+                    var repo = NuGet.PackageRepositoryFactory.Default.CreateRepository(myPlugin.options.NuGetFeed);
 
                     string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToLower();
                     string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
@@ -33,6 +34,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                     Directory.CreateDirectory(dir);
                     NuGet.PackageManager packageManager = new NuGet.PackageManager(repo, dir);
                     var package = repo.GetPackages().Where(x => x.Id == packageID && x.IsLatestVersion).FirstOrDefault();
+                    if(package == null)
+                    {
+                        throw new Exception($"Microsoft.CrmSdk.CoreTools package not found on {myPlugin.options.NuGetFeed}");
+                    }
                     foreach (var file in package.GetFiles())
                     {
                         using (var stream = File.Create(Path.Combine(dir, Path.GetFileName(file.Path))))

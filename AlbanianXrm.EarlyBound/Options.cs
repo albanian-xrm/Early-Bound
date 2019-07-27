@@ -1,8 +1,6 @@
 ﻿using AlbanianXrm.EarlyBound.Helpers;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing.Design;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -10,22 +8,33 @@ namespace AlbanianXrm.EarlyBound
 {
     public class Options
     {
+        public static class Defaults
+        {
+            public const string NuGetFeed = "https://packages.nuget.org/api/v2";
+        }
+
         public Options()
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
         }
 
         [Category("General")]
-        [DisplayName("Output")]
-        [Description("Output path")]
-        [Editor(typeof(FilePathEditor), typeof(UITypeEditor))]
-        public string Output { get; set; }
+        [DisplayName("Coupled Relationships")]
+        [Description("Choosing one relationship also chooses the coupled relationship")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool CoupledRelationships { get; set; }
 
+        private string _NuGetFeed;
         [Category("General")]
-        [DisplayName("Language")]
-        [Description("Output file language")]
-        [TypeConverter(typeof(DescriptionEnumConverter))]
-        public LanguageEnum Language { get; set; }
+        [DisplayName("NuGet Feed")]
+        [Description("The path of the NuGet feed. You can use a directory or a private NuGet feed.")]
+        [DefaultValue(Defaults.NuGetFeed)]
+        public string NuGetFeed
+        {
+            get { return _NuGetFeed ?? Defaults.NuGetFeed; }
+            set { _NuGetFeed = string.IsNullOrEmpty(value) ? Defaults.NuGetFeed : value; }
+        }
 
         [Category("Organization")]
         [DisplayName("Organization Options")]

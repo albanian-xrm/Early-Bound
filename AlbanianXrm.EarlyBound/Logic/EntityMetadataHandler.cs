@@ -1,11 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
 
@@ -42,6 +38,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     }
                     if (args.Result is RetrieveAllEntitiesResponse result)
                     {
+                        metadataTree.BackgroundImage = null;
                         metadataTree.Enabled = true;
                         metadataTree.Nodes.Clear();
                         foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))

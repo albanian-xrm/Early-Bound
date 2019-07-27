@@ -37,7 +37,7 @@
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
             this.splitContainer = new Syncfusion.Windows.Forms.Tools.SplitContainerAdv();
             this.splitContainerVertical = new Syncfusion.Windows.Forms.Tools.SplitContainerAdv();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.optionsGrid = new System.Windows.Forms.PropertyGrid();
             this.txtOutput = new Syncfusion.Windows.Forms.Tools.TextBoxExt();
             ((System.ComponentModel.ISupportInitialize)(this.metadataTree)).BeginInit();
             this.toolStrip.SuspendLayout();
@@ -55,6 +55,8 @@
             // metadataTree
             // 
             this.metadataTree.AllowMouseBasedSelection = true;
+            this.metadataTree.BackgroundImage = global::AlbanianXrm.EarlyBound.Properties.Resources.Logo;
+            this.metadataTree.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             treeNodeAdvStyleInfo2.CheckBoxTickThickness = 1;
             treeNodeAdvStyleInfo2.CheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
             treeNodeAdvStyleInfo2.EnsureDefaultOptionedChild = true;
@@ -194,42 +196,48 @@
             this.splitContainerVertical.BeforeTouchSize = 7;
             this.splitContainerVertical.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainerVertical.Location = new System.Drawing.Point(0, 0);
+            this.splitContainerVertical.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainerVertical.Name = "splitContainerVertical";
             this.splitContainerVertical.Orientation = System.Windows.Forms.Orientation.Vertical;
             // 
             // splitContainerVertical.Panel1
             // 
-            this.splitContainerVertical.Panel1.Controls.Add(this.propertyGrid1);
+            this.splitContainerVertical.Panel1.Controls.Add(this.optionsGrid);
+            this.splitContainerVertical.Panel1.Margin = new System.Windows.Forms.Padding(4);
             // 
             // splitContainerVertical.Panel2
             // 
             this.splitContainerVertical.Panel2.Controls.Add(this.txtOutput);
+            this.splitContainerVertical.Panel2.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainerVertical.Size = new System.Drawing.Size(704, 538);
-            this.splitContainerVertical.SplitterDistance = 255;
+            this.splitContainerVertical.SplitterDistance = 254;
             this.splitContainerVertical.TabIndex = 5;
             this.splitContainerVertical.Text = "splitContainerAdv1";
             this.splitContainerVertical.ThemeName = "None";
             // 
-            // propertyGrid1
+            // optionsGrid
             // 
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(704, 255);
-            this.propertyGrid1.TabIndex = 0;
+            this.optionsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.optionsGrid.Location = new System.Drawing.Point(0, 0);
+            this.optionsGrid.Margin = new System.Windows.Forms.Padding(4);
+            this.optionsGrid.Name = "optionsGrid";
+            this.optionsGrid.PropertySort = System.Windows.Forms.PropertySort.Categorized;
+            this.optionsGrid.Size = new System.Drawing.Size(704, 254);
+            this.optionsGrid.TabIndex = 0;
             // 
             // txtOutput
             // 
             this.txtOutput.BackColor = System.Drawing.Color.Black;
-            this.txtOutput.BeforeTouchSize = new System.Drawing.Size(704, 276);
+            this.txtOutput.BeforeTouchSize = new System.Drawing.Size(704, 277);
             this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtOutput.Enabled = false;
             this.txtOutput.ForeColor = System.Drawing.Color.White;
             this.txtOutput.Location = new System.Drawing.Point(0, 0);
+            this.txtOutput.Margin = new System.Windows.Forms.Padding(4);
             this.txtOutput.Multiline = true;
             this.txtOutput.Name = "txtOutput";
+            this.txtOutput.ReadOnly = true;
             this.txtOutput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtOutput.Size = new System.Drawing.Size(704, 276);
+            this.txtOutput.Size = new System.Drawing.Size(704, 277);
             this.txtOutput.TabIndex = 0;
             // 
             // MyPluginControl
@@ -270,7 +278,7 @@
         private System.Windows.Forms.ToolStripButton btnGenerateEntities;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private Syncfusion.Windows.Forms.Tools.SplitContainerAdv splitContainerVertical;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.PropertyGrid optionsGrid;
         private Syncfusion.Windows.Forms.Tools.TextBoxExt txtOutput;
     }
 }
