@@ -11,5 +11,6 @@ namespace AlbanianXrm.EarlyBound.Interfaces
         EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree);
         RelationshipMetadataHandler NewRelationshipMetadataHandler(MyPluginControl myPlugin);
         EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, TextBoxExt txtOutput);
+        PluginViewModel NewPluginViewModel();
     }
 }

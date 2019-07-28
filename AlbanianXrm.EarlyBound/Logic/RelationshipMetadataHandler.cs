@@ -18,6 +18,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode)
         {
+            myPlugin.pluginViewModel.AllowRequests = false;
             myPlugin.WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Getting relationships for entity {entityName}",
@@ -51,6 +52,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                             relationshipsNode.Nodes.Add(node);
                         }
                     }
+                    myPlugin.pluginViewModel.AllowRequests = true;
                 }
             });
         }

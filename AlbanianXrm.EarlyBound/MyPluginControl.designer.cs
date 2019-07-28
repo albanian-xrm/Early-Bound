@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo treeNodeAdvStyleInfo2 = new Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo();
+            Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo treeNodeAdvStyleInfo1 = new Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo();
             this.metadataTree = new Syncfusion.Windows.Forms.Tools.TreeViewAdv();
             this.toolStrip = new Syncfusion.Windows.Forms.Tools.ToolStripEx();
             this.btnGetMetadata = new System.Windows.Forms.ToolStripButton();
@@ -57,14 +57,14 @@
             this.metadataTree.AllowMouseBasedSelection = true;
             this.metadataTree.BackgroundImage = global::AlbanianXrm.EarlyBound.Properties.Resources.Logo;
             this.metadataTree.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            treeNodeAdvStyleInfo2.CheckBoxTickThickness = 1;
-            treeNodeAdvStyleInfo2.CheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo2.EnsureDefaultOptionedChild = true;
-            treeNodeAdvStyleInfo2.IntermediateCheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo2.OptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo2.SelectedOptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
+            treeNodeAdvStyleInfo1.CheckBoxTickThickness = 1;
+            treeNodeAdvStyleInfo1.CheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo1.EnsureDefaultOptionedChild = true;
+            treeNodeAdvStyleInfo1.IntermediateCheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo1.OptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo1.SelectedOptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
             this.metadataTree.BaseStylePairs.AddRange(new Syncfusion.Windows.Forms.Tools.StyleNamePair[] {
-            new Syncfusion.Windows.Forms.Tools.StyleNamePair("Standard", treeNodeAdvStyleInfo2)});
+            new Syncfusion.Windows.Forms.Tools.StyleNamePair("Standard", treeNodeAdvStyleInfo1)});
             this.metadataTree.BeforeTouchSize = new System.Drawing.Size(407, 538);
             this.metadataTree.Dock = System.Windows.Forms.DockStyle.Fill;
             this.metadataTree.Enabled = false;
@@ -272,13 +272,13 @@
         #endregion
         private Syncfusion.Windows.Forms.Tools.TreeViewAdv metadataTree;
         private Syncfusion.Windows.Forms.Tools.ToolStripEx toolStrip;
-        private System.Windows.Forms.ToolStripButton btnGetMetadata;
         private Syncfusion.Windows.Forms.Tools.SplitContainerAdv splitContainer;
-        private System.Windows.Forms.ToolStripButton btnCoreTools;
         private System.Windows.Forms.ToolStripButton btnGenerateEntities;
         private System.Windows.Forms.ToolStripButton toolStripButton4;
         private Syncfusion.Windows.Forms.Tools.SplitContainerAdv splitContainerVertical;
         private System.Windows.Forms.PropertyGrid optionsGrid;
         private Syncfusion.Windows.Forms.Tools.TextBoxExt txtOutput;
+        internal System.Windows.Forms.ToolStripButton btnGetMetadata;
+        internal System.Windows.Forms.ToolStripButton btnCoreTools;
     }
 }

@@ -20,24 +20,53 @@ namespace AlbanianXrm.EarlyBound
         private Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
         private Logic.CoreToolsDownloader CoreToolsDownloader;
         private Logic.EntityGeneratorHandler EntityGeneratorHandler;
-        public Options options;
+        internal Logic.PluginViewModel pluginViewModel;
+        internal Options options;
 
         public MyPluginControl()
         {
             InitializeComponent();
-
             MyPluginFactory = new Factories.MyPluginFactory();
             AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler(this);
             CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader(this);
             EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(this, metadataTree, txtOutput);
             EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler(this);
+            pluginViewModel = MyPluginFactory.NewPluginViewModel();
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
+            btnGenerateEntities.Enabled = pluginViewModel.Generate_Enabled;
+            btnGetMetadata.Enabled = pluginViewModel.ActiveConnection;
+            DataBind();
+        }
+
+        private void DataBind()
+        {
+            metadataTree.DataBindings.Add(nameof(metadataTree.Enabled), pluginViewModel, nameof(pluginViewModel.MetadataTree_Enabled));
+            optionsGrid.DataBindings.Add(nameof(optionsGrid.Enabled), pluginViewModel, nameof(pluginViewModel.OptionsGrid_Enabled));
+            toolStrip.DataBindings.Add(nameof(toolStrip.Enabled), pluginViewModel, nameof(pluginViewModel.AllowRequests));       
+            pluginViewModel.PropertyChanged += PluginViewModel_PropertyChanged;
+        }
+
+        private void PluginViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(pluginViewModel.Generate_Enabled):
+                    btnGenerateEntities.Enabled = pluginViewModel.Generate_Enabled;
+                    break;
+                case nameof(pluginViewModel.ActiveConnection):
+                    btnGetMetadata.Enabled = pluginViewModel.ActiveConnection;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void MyPluginControl_Load(object sender, EventArgs e)
         {
+            pluginViewModel.ActiveConnection = ConnectionDetail != null;
+            var organization = ConnectionDetail?.Organization ?? "";
             // Loads or creates the settings for the plugin
             if (!SettingsManager.Instance.TryLoad(GetType(), out options))
             {
@@ -45,19 +74,20 @@ namespace AlbanianXrm.EarlyBound
                 {
                     CurrentOrganizationOptions = new OrganizationOptions()
                     {
-                        Key = ConnectionDetail.Organization
+                        Key = organization
                     }
                 };
                 options.OrganizationOptions.Add(options.CurrentOrganizationOptions.Key, options.CurrentOrganizationOptions);
+                options.PropertyChanged += Options_PropertyChanged;
                 LogWarning("Settings not found => a new settings file has been created!");
             }
             else
             {
-                if (!options.OrganizationOptions.TryGetValue(ConnectionDetail.Organization, out OrganizationOptions current))
+                if (!options.OrganizationOptions.TryGetValue(organization, out OrganizationOptions current))
                 {
                     current = new OrganizationOptions()
                     {
-                        Key = ConnectionDetail.Organization
+                        Key = organization
                     };
                     options.OrganizationOptions.Add(current.Key, current);
                 }
@@ -65,6 +95,14 @@ namespace AlbanianXrm.EarlyBound
                 LogInfo("Settings found and loaded");
             }
             optionsGrid.SelectedObject = options;
+        }
+
+        private void Options_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(options.CrmSvcUtils))
+            {
+                pluginViewModel.Generate_Enabled = options.CrmSvcUtils != null;
+            }
         }
 
         /// <summary>
@@ -86,21 +124,22 @@ namespace AlbanianXrm.EarlyBound
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
-
-            if (options != null && detail != null)
+            var organization =  "";
+            if (detail != null)
             {
-                if (!options.OrganizationOptions.TryGetValue(detail.Organization, out OrganizationOptions current))
-                {
-                    current = new OrganizationOptions()
-                    {
-                        Key = detail.Organization
-                    };
-                    options.OrganizationOptions.Add(current.Key, current);
-                }
-                options.CurrentOrganizationOptions = current;
-                optionsGrid.SelectedObject = options;
+                organization = detail.Organization;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
             }
+            if (!options.OrganizationOptions.TryGetValue(organization, out OrganizationOptions current))
+            {
+                current = new OrganizationOptions()
+                {
+                    Key = organization
+                };
+                options.OrganizationOptions.Add(current.Key, current);
+            }
+            options.CurrentOrganizationOptions = current;
+            pluginViewModel.ActiveConnection = detail != null;
         }
 
         private void BtnGetMetadata_Click(object sender, EventArgs e)
