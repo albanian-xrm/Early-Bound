@@ -12,25 +12,22 @@ namespace AlbanianXrm.EarlyBound.Helpers
         }
         public override object EditValue(ITypeDescriptorContext context, System.IServiceProvider provider, object value)
         {
-            var options = context.Instance as Options;
-            if (value != null)
+            var organizationOptions = context.Instance as OrganizationOptions;
+            using (OpenFileDialog dialog = new OpenFileDialog())
             {
-                using (OpenFileDialog dialog = new OpenFileDialog())
+                dialog.ValidateNames = false;
+                dialog.CheckFileExists = false;
+                dialog.CheckPathExists = true;
+                dialog.Filter = organizationOptions.Language == LanguageEnum.CS ? "C# (*.cs)|*.cs" : "Visual Basic (*.vb)|*.vb";
+
+                dialog.FileName = value as string;
+
+                if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    dialog.ValidateNames = false;
-                    dialog.CheckFileExists = false;
-                    dialog.CheckPathExists = true;
-                    dialog.Filter = options.CurrentOrganizationOptions.Language == LanguageEnum.CS ? "C# (*.cs)|*.cs" : "Visual Basic (*.vb)|*.vb";
-
-                    dialog.FileName = value as string;
-
-                    if (dialog.ShowDialog() == DialogResult.OK)
-                    {
-                        return dialog.FileName;
-                    }
+                    return dialog.FileName;
                 }
             }
-            return value; // can also replace the wrapper object here
+            return value;
         }
     }
 }

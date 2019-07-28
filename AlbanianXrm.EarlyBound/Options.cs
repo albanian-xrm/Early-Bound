@@ -1,12 +1,16 @@
 ﻿using AlbanianXrm.EarlyBound.Helpers;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing.Design;
+using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
 namespace AlbanianXrm.EarlyBound
 {
-    public class Options
+    public class Options : INotifyPropertyChanged
     {
         public static class Defaults
         {
@@ -16,6 +20,7 @@ namespace AlbanianXrm.EarlyBound
         public Options()
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
+            _CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(_CrmSvcUtils);
         }
 
         [Category("General")]
@@ -36,12 +41,42 @@ namespace AlbanianXrm.EarlyBound
             set { _NuGetFeed = string.IsNullOrEmpty(value) ? Defaults.NuGetFeed : value; }
         }
 
+        Version _CrmSvcUtils;
+
+        [Category("General")]
+        [DisplayName("Core Tools")]
+        [Description("The version of the CRM Service Utility.")]
+        [Editor(typeof(CrmSvcUtilsEditor), typeof(UITypeEditor))]
+        public Version CrmSvcUtils
+        {
+            get { return _CrmSvcUtils; }
+            set
+            {
+                if (_CrmSvcUtils == value) return;
+                _CrmSvcUtils = value;
+                RaisePropertyChanged(nameof(CrmSvcUtils));
+            }
+        }
+
+        private OrganizationOptions _CurrentOrganizationOptions;
         [Category("Organization")]
         [DisplayName("Organization Options")]
         [Description("Current organization options")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [XmlIgnore]
-        public OrganizationOptions CurrentOrganizationOptions { get; set; }
+        public OrganizationOptions CurrentOrganizationOptions
+        {
+            get
+            {
+                return _CurrentOrganizationOptions;
+            }
+            set
+            {
+                if (_CurrentOrganizationOptions == value) return;
+                _CurrentOrganizationOptions = value;
+                RaisePropertyChanged(nameof(CurrentOrganizationOptions));
+            }
+        }
 
         [Browsable(false)]
         public OrganizationOptions[] OrganizationOptionsList
@@ -65,6 +100,12 @@ namespace AlbanianXrm.EarlyBound
                     }
                 }
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         [XmlIgnore]

@@ -35,5 +35,10 @@ namespace AlbanianXrm.EarlyBound.Factories
         {
             return new EntityGeneratorHandler(myPlugin, metadataTree, txtOutput);
         }
+
+        public PluginViewModel NewPluginViewModel()
+        {
+            return new PluginViewModel();
+        }
     }
 }

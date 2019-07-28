@@ -199,6 +199,7 @@
   <ItemGroup>
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ConnectionDetailExtensions.cs" />
+    <Compile Include="Helpers\CrmSvcUtilsEditor.cs" />
     <Compile Include="Helpers\EnumConverter.cs" />
     <Compile Include="Factories\MyPluginFactory.cs" />
     <Compile Include="Helpers\FilePathEditor.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="Logic\EntityGeneratorHandler.cs" />
     <Compile Include="Logic\CoreToolsDownloader.cs" />
     <Compile Include="Logic\EntityMetadataHandler.cs" />
+    <Compile Include="Logic\PluginViewModel.cs" />
     <Compile Include="Logic\RelationshipMetadataHandler.cs" />
     <Compile Include="MyPlugin.cs" />
     <Compile Include="MyPluginControl.cs">

@@ -18,6 +18,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GetAttributes(string entityName, TreeNodeAdv attributesNode)
         {
+            myPlugin.pluginViewModel.AllowRequests = false;
             myPlugin.WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Getting attributes for entity {entityName}",
@@ -39,7 +40,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         foreach (var item in result.EntityMetadata.Attributes.OrderBy(x => x.LogicalName))
                         {
-                            var name = item.DisplayName.LocalizedLabels.Count == 0 ? item.LogicalName : item.DisplayName.LocalizedLabels[0].Label;
+                            if (!item.DisplayName.LocalizedLabels.Any()) continue;
+                            var name = item.DisplayName.LocalizedLabels.First().Label;
 
                             TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {name}")
                             {
@@ -51,6 +53,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                             attributesNode.Nodes.Add(node);
                         }
                     }
+                    myPlugin.pluginViewModel.AllowRequests = true;
                 }
             });
         }

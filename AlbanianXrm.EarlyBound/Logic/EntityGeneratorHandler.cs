@@ -26,6 +26,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GenerateEntities(Options options)
         {
+            myPlugin.pluginViewModel.AllowRequests = false;
             myPlugin.WorkAsync(new WorkAsyncInfo()
             {
                 Message = $"Generating Early-Bound Classes",
@@ -134,6 +135,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     output.Text = (string)args.Result;
+                    myPlugin.pluginViewModel.AllowRequests = true;
                 }
             });
 

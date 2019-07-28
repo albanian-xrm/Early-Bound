@@ -20,6 +20,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GetEntityList()
         {
+            myPlugin.pluginViewModel.AllowRequests = false;
             myPlugin.WorkAsync(new WorkAsyncInfo
             {
                 Message = "Getting entity list",
@@ -65,10 +66,11 @@ namespace AlbanianXrm.EarlyBound.Logic
                                 InteractiveCheckBox = true,
                                 Tag = item
                             };
-
                             metadataTree.Nodes.Add(node);
                         }
+                        myPlugin.pluginViewModel.Generate_Enabled = true;
                     }
+                    myPlugin.pluginViewModel.AllowRequests = true;
                 }
             });
         }

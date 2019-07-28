@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AlbanianXrm.EarlyBound.Helpers;
+using System;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -17,6 +18,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void DownloadCoreTools()
         {
+            myPlugin.pluginViewModel.AllowRequests = false;
             myPlugin.WorkAsync(new WorkAsyncInfo
             {
                 Message = $"Getting latest version of Core Tools",
@@ -34,7 +36,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     Directory.CreateDirectory(dir);
                     NuGet.PackageManager packageManager = new NuGet.PackageManager(repo, dir);
                     var package = repo.GetPackages().Where(x => x.Id == packageID && x.IsLatestVersion).FirstOrDefault();
-                    if(package == null)
+                    if (package == null)
                     {
                         throw new Exception($"Microsoft.CrmSdk.CoreTools package not found on {myPlugin.options.NuGetFeed}");
                     }
@@ -42,7 +44,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         using (var stream = File.Create(Path.Combine(dir, Path.GetFileName(file.Path))))
                             file.GetStream().CopyTo(stream);
-                    }
+                    }                  
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -50,9 +52,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+                    myPlugin.options.CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(myPlugin.options.CrmSvcUtils);
+                    myPlugin.pluginViewModel.AllowRequests = true;
                 }
             });
-
         }
     }
 }
