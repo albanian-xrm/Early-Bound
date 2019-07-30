@@ -32,8 +32,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2019.7.0")]
-[assembly: AssemblyFileVersion("1.2019.7.0")]
+[assembly: AssemblyVersion("1.2019.7.1")]
+[assembly: AssemblyFileVersion("1.2019.7.1")]
 
 #if PIPELINES
 [assembly: InternalsVisibleTo("AlbanianXrm.CrmSvcUtilExtensions.Tests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079e41687e52c5a70e235a90f3ae3c6202338b7c7c28e3717284c541c17b7f7d1c1453e57f0ad55090a7dae47e8ce4d00fe3c65b9d8f3445832f5da3ec066e9ade8cb054f85fbe0cc9c4fc2971eb161450cfdb432a2a305c03b6ae56e811c0acdd439377e6c61a27234cacecb3b6566342db30152bfa2f8d41e356624ebe1aace")]
