@@ -44,7 +44,7 @@ namespace AlbanianXrm.EarlyBound
         {
             metadataTree.DataBindings.Add(nameof(metadataTree.Enabled), pluginViewModel, nameof(pluginViewModel.MetadataTree_Enabled));
             optionsGrid.DataBindings.Add(nameof(optionsGrid.Enabled), pluginViewModel, nameof(pluginViewModel.OptionsGrid_Enabled));
-            toolStrip.DataBindings.Add(nameof(toolStrip.Enabled), pluginViewModel, nameof(pluginViewModel.AllowRequests));       
+            toolStrip.DataBindings.Add(nameof(toolStrip.Enabled), pluginViewModel, nameof(pluginViewModel.AllowRequests));
             pluginViewModel.PropertyChanged += PluginViewModel_PropertyChanged;
         }
 
@@ -124,21 +124,20 @@ namespace AlbanianXrm.EarlyBound
         public override void UpdateConnection(IOrganizationService newService, ConnectionDetail detail, string actionName, object parameter)
         {
             base.UpdateConnection(newService, detail, actionName, parameter);
-            var organization =  "";
-            if (detail != null)
+            if (options != null && detail != null)
             {
-                organization = detail.Organization;
+                var organization = detail.Organization;
                 LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
-            }
-            if (!options.OrganizationOptions.TryGetValue(organization, out OrganizationOptions current))
-            {
-                current = new OrganizationOptions()
+                if (!options.OrganizationOptions.TryGetValue(organization, out OrganizationOptions current))
                 {
-                    Key = organization
-                };
-                options.OrganizationOptions.Add(current.Key, current);
+                    current = new OrganizationOptions()
+                    {
+                        Key = organization
+                    };
+                    options.OrganizationOptions.Add(current.Key, current);
+                }
+                options.CurrentOrganizationOptions = current;
             }
-            options.CurrentOrganizationOptions = current;
             pluginViewModel.ActiveConnection = detail != null;
         }
 

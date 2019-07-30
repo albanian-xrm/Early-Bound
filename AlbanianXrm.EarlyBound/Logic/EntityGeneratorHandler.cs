@@ -37,7 +37,12 @@ namespace AlbanianXrm.EarlyBound.Logic
                     dir = Path.Combine(dir, folder);
                     Process process = new Process();
                     var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
-                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) + " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") + (options.CurrentOrganizationOptions.Language == LanguageEnum.VB ? " /language:VB" : "");
+                    process.StartInfo.Arguments = "/connectionstring:" + connectionString +
+                                                  (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
+                                                  " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                                  " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") + 
+                                                  (options.CurrentOrganizationOptions.Language == LanguageEnum.VB ? " /language:VB" : "") +
+                                                  (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
                     process.StartInfo.WorkingDirectory = dir;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;

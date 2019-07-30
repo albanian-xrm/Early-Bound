@@ -47,6 +47,7 @@ namespace AlbanianXrm.EarlyBound
         [DisplayName("Core Tools")]
         [Description("The version of the CRM Service Utility.")]
         [Editor(typeof(CrmSvcUtilsEditor), typeof(UITypeEditor))]
+        [XmlIgnore]
         public Version CrmSvcUtils
         {
             get { return _CrmSvcUtils; }

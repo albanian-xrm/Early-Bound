@@ -26,6 +26,11 @@ namespace AlbanianXrm.EarlyBound
         [Description("Generated namespace")]
         public string Namespace { get; set; }
 
+        [Category("General")]
+        [DisplayName("Service Context")]
+        [Description("Serviec Context Name")]
+        public string ServiceContextName { get; set; }
+
         private string _Output;
 
         [Category("General")]
