@@ -8,6 +8,7 @@ using System.IO;
 using System.Diagnostics;
 using AlbanianXrm.EarlyBound.Extensions;
 using AlbanianXrm.EarlyBound.Helpers;
+using System;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
@@ -35,12 +36,15 @@ namespace AlbanianXrm.EarlyBound.Logic
                     string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToLower();
                     string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
                     dir = Path.Combine(dir, folder);
+
+
+                    if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe"))) throw new Exception("CrmSvcUtil.exe is missing. Please download CoreTools.");
                     Process process = new Process();
                     var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
                     process.StartInfo.Arguments = "/connectionstring:" + connectionString +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
                                                   " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                                  " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") + 
+                                                  " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
                                                   (options.CurrentOrganizationOptions.Language == LanguageEnum.VB ? " /language:VB" : "") +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
                     process.StartInfo.WorkingDirectory = dir;
@@ -135,12 +139,25 @@ namespace AlbanianXrm.EarlyBound.Logic
                 },
                 PostWorkCallBack = (args) =>
                 {
-                    if (args.Error != null)
+                    try
                     {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (args.Error != null)
+                        {
+                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            output.Text = (string)args.Result;
+                        }
                     }
-                    output.Text = (string)args.Result;
-                    myPlugin.pluginViewModel.AllowRequests = true;
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        myPlugin.pluginViewModel.AllowRequests = true;
+                    }
                 }
             });
 

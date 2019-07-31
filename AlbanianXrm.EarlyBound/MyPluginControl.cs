@@ -8,10 +8,11 @@ using McTools.Xrm.Connection;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
+using XrmToolBox.Extensibility.Interfaces;
 
 namespace AlbanianXrm.EarlyBound
 {
-    public partial class MyPluginControl : PluginControlBase
+    public partial class MyPluginControl : PluginControlBase, IGitHubPlugin
     {
         private TreeViewAdvBeforeCheckEventHandler treeEventHandler;
         private Factories.MyPluginFactory MyPluginFactory;
@@ -22,6 +23,10 @@ namespace AlbanianXrm.EarlyBound
         private Logic.EntityGeneratorHandler EntityGeneratorHandler;
         internal Logic.PluginViewModel pluginViewModel;
         internal Options options;
+
+        public string RepositoryName { get { return "Early-Bound"; } }
+
+        public string UserName { get { return "Albanian-Xrm"; } }
 
         public MyPluginControl()
         {

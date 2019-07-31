@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
+using System;
 using System.Linq;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -32,27 +33,37 @@ namespace AlbanianXrm.EarlyBound.Logic
                 },
                 PostWorkCallBack = (args) =>
                 {
-                    if (args.Error != null)
+                    try
                     {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    if (args.Result is RetrieveEntityResponse result)
-                    {
-                        foreach (var item in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
-                                             result.EntityMetadata.OneToManyRelationships).Union(
-                                             result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
+                        if (args.Error != null)
                         {
-                            TreeNodeAdv node = new TreeNodeAdv($"{item.SchemaName}")
+                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        if (args.Result is RetrieveEntityResponse result)
+                        {
+                            foreach (var item in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
+                                                 result.EntityMetadata.OneToManyRelationships).Union(
+                                                 result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
                             {
-                                ExpandedOnce = true,
-                                ShowCheckBox = true,
-                                Tag = item
-                            };
+                                TreeNodeAdv node = new TreeNodeAdv($"{item.SchemaName}")
+                                {
+                                    ExpandedOnce = true,
+                                    ShowCheckBox = true,
+                                    Tag = item
+                                };
 
-                            relationshipsNode.Nodes.Add(node);
+                                relationshipsNode.Nodes.Add(node);
+                            }
                         }
                     }
-                    myPlugin.pluginViewModel.AllowRequests = true;
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        myPlugin.pluginViewModel.AllowRequests = true;
+                    }
                 }
             });
         }

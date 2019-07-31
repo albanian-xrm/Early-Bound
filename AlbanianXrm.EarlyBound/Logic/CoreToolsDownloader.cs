@@ -44,16 +44,26 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         using (var stream = File.Create(Path.Combine(dir, Path.GetFileName(file.Path))))
                             file.GetStream().CopyTo(stream);
-                    }                  
+                    }
                 },
                 PostWorkCallBack = (args) =>
                 {
-                    if (args.Error != null)
+                    try
                     {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        if (args.Error != null)
+                        {
+                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        myPlugin.options.CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(myPlugin.options.CrmSvcUtils);
                     }
-                    myPlugin.options.CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(myPlugin.options.CrmSvcUtils);
-                    myPlugin.pluginViewModel.AllowRequests = true;
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        myPlugin.pluginViewModel.AllowRequests = true;
+                    }
                 }
             });
         }

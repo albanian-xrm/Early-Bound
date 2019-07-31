@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
+using System;
 using System.Linq;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -33,44 +34,54 @@ namespace AlbanianXrm.EarlyBound.Logic
                 },
                 PostWorkCallBack = (args) =>
                 {
-                    if (args.Error != null)
+                    try
                     {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    if (args.Result is RetrieveAllEntitiesResponse result)
-                    {
-                        metadataTree.BackgroundImage = null;
-                        metadataTree.Enabled = true;
-                        metadataTree.Nodes.Clear();
-                        foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))
+                        if (args.Error != null)
                         {
-                            if (item.DisplayName.LocalizedLabels.Count == 0) continue;
-
-                            TreeNodeAdv attributes = new TreeNodeAdv("Attributes")
-                            {
-                                ShowCheckBox = true,
-                                InteractiveCheckBox = true
-                            };
-
-                            TreeNodeAdv relationships = new TreeNodeAdv("Relationships")
-                            {
-                                ShowCheckBox = true,
-                                InteractiveCheckBox = true
-                            };
-
-                            TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}",
-                                new TreeNodeAdv[] { attributes, relationships })
-                            {
-                                ExpandedOnce = true,
-                                ShowCheckBox = true,
-                                InteractiveCheckBox = true,
-                                Tag = item
-                            };
-                            metadataTree.Nodes.Add(node);
+                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        myPlugin.pluginViewModel.Generate_Enabled = true;
+                        else if (args.Result is RetrieveAllEntitiesResponse result)
+                        {
+                            metadataTree.BackgroundImage = null;
+                            metadataTree.Enabled = true;
+                            metadataTree.Nodes.Clear();
+                            foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))
+                            {
+                                if (item.DisplayName.LocalizedLabels.Count == 0) continue;
+
+                                TreeNodeAdv attributes = new TreeNodeAdv("Attributes")
+                                {
+                                    ShowCheckBox = true,
+                                    InteractiveCheckBox = true
+                                };
+
+                                TreeNodeAdv relationships = new TreeNodeAdv("Relationships")
+                                {
+                                    ShowCheckBox = true,
+                                    InteractiveCheckBox = true
+                                };
+
+                                TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}",
+                                    new TreeNodeAdv[] { attributes, relationships })
+                                {
+                                    ExpandedOnce = true,
+                                    ShowCheckBox = true,
+                                    InteractiveCheckBox = true,
+                                    Tag = item
+                                };
+                                metadataTree.Nodes.Add(node);
+                            }
+                            myPlugin.pluginViewModel.Generate_Enabled = true;
+                        }
                     }
-                    myPlugin.pluginViewModel.AllowRequests = true;
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        myPlugin.pluginViewModel.AllowRequests = true;
+                    }
                 }
             });
         }

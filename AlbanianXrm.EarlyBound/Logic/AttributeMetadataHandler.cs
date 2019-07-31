@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
+using System;
 using System.Linq;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -32,28 +33,39 @@ namespace AlbanianXrm.EarlyBound.Logic
                 },
                 PostWorkCallBack = (args) =>
                 {
-                    if (args.Error != null)
+                    try
                     {
-                        MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    if (args.Result is RetrieveEntityResponse result)
-                    {
-                        foreach (var item in result.EntityMetadata.Attributes.OrderBy(x => x.LogicalName))
+                        if (args.Error != null)
                         {
-                            if (!item.DisplayName.LocalizedLabels.Any()) continue;
-                            var name = item.DisplayName.LocalizedLabels.First().Label;
+                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        if (args.Result is RetrieveEntityResponse result)
+                        {
 
-                            TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {name}")
+                            foreach (var item in result.EntityMetadata.Attributes.OrderBy(x => x.LogicalName))
                             {
-                                ExpandedOnce = true,
-                                ShowCheckBox = true,
-                                Tag = item
-                            };
+                                if (!item.DisplayName.LocalizedLabels.Any()) continue;
+                                var name = item.DisplayName.LocalizedLabels.First().Label;
 
-                            attributesNode.Nodes.Add(node);
+                                TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {name}")
+                                {
+                                    ExpandedOnce = true,
+                                    ShowCheckBox = true,
+                                    Tag = item
+                                };
+
+                                attributesNode.Nodes.Add(node);
+                            }
                         }
                     }
-                    myPlugin.pluginViewModel.AllowRequests = true;
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    finally
+                    {
+                        myPlugin.pluginViewModel.AllowRequests = true;
+                    }
                 }
             });
         }
