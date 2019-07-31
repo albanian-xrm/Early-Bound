@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("AlbanianXrm.CrmSvcUtilExtensions.Tests")]
@@ -15,5 +14,5 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("4f4f88c3-ebf3-446d-b4ec-3beec7c8cc4c")]
 
-[assembly: AssemblyVersion("1.2019.7.1")]
-[assembly: AssemblyFileVersion("1.2019.7.1")]
+[assembly: AssemblyVersion("1.2019.7.2")]
+[assembly: AssemblyFileVersion("1.2019.7.2")]
