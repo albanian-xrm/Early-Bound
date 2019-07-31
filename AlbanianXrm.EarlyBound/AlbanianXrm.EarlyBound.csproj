@@ -252,6 +252,7 @@
     <None Include="Resources\Logo.png" />
   </ItemGroup>
   <Import Project="..\AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems" Label="Shared" />
+  <Import Project="..\AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets" Condition="Exists('..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

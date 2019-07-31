@@ -22,7 +22,4 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("e047e333-0237-4fd9-b80a-1757d706630f")]
 
-[assembly: AssemblyVersion("1.2019.7.3")]
-[assembly: AssemblyFileVersion("1.2019.7.3")]
-
 [assembly: InternalsVisibleTo("AlbanianXrm.EarlyBound.Tests")]
