@@ -9,7 +9,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
     {
         public void CustomizeCodeDom(CodeCompileUnit codeUnit, IServiceProvider services)
         {
-            var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "") != "";
+            var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED) ?? "") != "";
             if (removePropertyChanged)
             {
                 for (var i = 0; i < codeUnit.Namespaces.Count; i++)
