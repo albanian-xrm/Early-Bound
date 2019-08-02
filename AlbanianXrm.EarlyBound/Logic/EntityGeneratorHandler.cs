@@ -44,6 +44,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     process.StartInfo.Arguments = "/connectionstring:" + connectionString +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
                                                   " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                                  " /codecustomization:AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
                                                   (options.CurrentOrganizationOptions.Language == LanguageEnum.VB ? " /language:VB" : "") +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
@@ -131,6 +132,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                     if (entities.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ENTITIES, string.Join(",", entities));
                     if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
                     if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
+                    if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
+
                     process.EnableRaisingEvents = true;
                     process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
                     process.Start();

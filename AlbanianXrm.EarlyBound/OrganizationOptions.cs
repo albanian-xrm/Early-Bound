@@ -51,6 +51,13 @@ namespace AlbanianXrm.EarlyBound
         [TypeConverter(typeof(DescriptionEnumConverter))]
         public LanguageEnum Language { get; set; }
 
+        [Category("General")]
+        [DisplayName("Remove PropertyChanged")]
+        [Description("Remove INotifyPropertyChanging and INotifyPropertyChanged Interfaces from generated code.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool RemovePropertyChanged { get; set; }
+
         public override string ToString()
         {
             return Key;
