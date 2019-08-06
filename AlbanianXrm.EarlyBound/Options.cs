@@ -43,7 +43,7 @@ namespace AlbanianXrm.EarlyBound
 
         Version _CrmSvcUtils;
 
-        [Category("General")]
+        [Category("Version")]
         [DisplayName("Core Tools")]
         [Description("The version of the CRM Service Utility.")]
         [Editor(typeof(CrmSvcUtilsEditor), typeof(UITypeEditor))]
@@ -58,6 +58,23 @@ namespace AlbanianXrm.EarlyBound
                 RaisePropertyChanged(nameof(CrmSvcUtils));
             }
         }
+
+        [Category("Version")]
+        [DisplayName("This Plugin")]
+        [Description("The version of Albanian Early Bound.")]
+        [XmlIgnore]
+        public Version AlbanianEarlyBound
+        {
+            get { return typeof(Options).Assembly.GetName().Version; }
+        }
+
+#if DEBUG
+        [Category("Debug")]
+        [DisplayName("Launch Debugger")]
+        [Description("Launch the debugger in certain instants of the lifetime of CrmSvcUtils.")]
+        [XmlIgnore]
+        public bool LaunchDebugger { get; set; }
+#endif
 
         private OrganizationOptions _CurrentOrganizationOptions;
         [Category("Organization")]

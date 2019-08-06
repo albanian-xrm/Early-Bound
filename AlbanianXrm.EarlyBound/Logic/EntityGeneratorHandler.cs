@@ -28,6 +28,7 @@ namespace AlbanianXrm.EarlyBound.Logic
         public void GenerateEntities(Options options)
         {
             myPlugin.pluginViewModel.AllowRequests = false;
+            output.ResetText();
             myPlugin.WorkAsync(new WorkAsyncInfo()
             {
                 Message = $"Generating Early-Bound Classes",
@@ -45,6 +46,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
                                                   " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /codecustomization:AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                                  " /metadataproviderservice:AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
                                                   (options.CurrentOrganizationOptions.Language == LanguageEnum.VB ? " /language:VB" : "") +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
@@ -134,11 +136,19 @@ namespace AlbanianXrm.EarlyBound.Logic
                     if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
                     if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
 
+#if DEBUG
+                    if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
+#endif
+
                     process.EnableRaisingEvents = true;
                     process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
                     process.Start();
+
+                    while (!process.StandardOutput.EndOfStream)
+                    {
+                        worker.ReportProgress(0, process.StandardOutput.ReadLine());
+                    }
                     process.WaitForExit();
-                    args.Result = process.StandardOutput.ReadToEnd();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -147,10 +157,6 @@ namespace AlbanianXrm.EarlyBound.Logic
                         if (args.Error != null)
                         {
                             MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        else
-                        {
-                            output.Text = (string)args.Result;
                         }
                     }
                     catch (Exception ex)
@@ -161,6 +167,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         myPlugin.pluginViewModel.AllowRequests = true;
                     }
+                },
+                ProgressChanged = (args) =>
+                {
+                    output.AppendText(args.UserState + Environment.NewLine);
                 }
             });
 

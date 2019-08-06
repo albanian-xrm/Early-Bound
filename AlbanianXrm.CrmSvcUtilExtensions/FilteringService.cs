@@ -11,6 +11,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
     {
         public FilteringService(ICodeWriterFilterService defaultService)
         {
+#if DEBUG
+            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER) ?? "") != "")
+            {
+                System.Diagnostics.Debugger.Launch();
+            }
+#endif
             this.DefaultService = defaultService;
             entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
             allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES) ?? "").Split(","));

@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="CustomizationService.cs" />
     <Compile Include="FilteringService.cs" />
+    <Compile Include="MetadataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
