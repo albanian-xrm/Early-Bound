@@ -132,9 +132,9 @@ namespace AlbanianXrm.EarlyBound
 
         private void Options_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(options.CrmSvcUtils))
+            if (e.PropertyName == nameof(options.CrmSvcUtils) || e.PropertyName == nameof(options.RecycableMemoryStream))
             {
-                pluginViewModel.Generate_Enabled = options.CrmSvcUtils != null;
+                pluginViewModel.Generate_Enabled = options.CrmSvcUtils != null && options.RecycableMemoryStream != null;
             }
         }
 
@@ -212,10 +212,10 @@ namespace AlbanianXrm.EarlyBound
         }
 
         private void MetadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
-        {
-            if (!options.CoupledRelationships) return;
+        {          
             if (e.Node.Tag is RelationshipMetadataBase)
             {
+                if (!options.CoupledRelationships) return;
                 string entity1 = "";
                 string entity2 = "";
                 string schemaName = "";

@@ -21,6 +21,7 @@ namespace AlbanianXrm.EarlyBound
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
             _CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(_CrmSvcUtils);
+            _RecycableMemoryStream = MemoryStreamEditor.GetVersion(_RecycableMemoryStream);
         }
 
         [Category("General")]
@@ -56,6 +57,24 @@ namespace AlbanianXrm.EarlyBound
                 if (_CrmSvcUtils == value) return;
                 _CrmSvcUtils = value;
                 RaisePropertyChanged(nameof(CrmSvcUtils));
+            }
+        }
+
+        Version _RecycableMemoryStream;
+
+        [Category("Version")]
+        [DisplayName("Recycable Memory Stream")]
+        [Description("The version of the Recycable Memory Stream.")]
+        [Editor(typeof(MemoryStreamEditor), typeof(UITypeEditor))]
+        [XmlIgnore]
+        public Version RecycableMemoryStream
+        {
+            get { return _RecycableMemoryStream; }
+            set
+            {
+                if (_RecycableMemoryStream == value) return;
+                _RecycableMemoryStream = value;
+                RaisePropertyChanged(nameof(RecycableMemoryStream));
             }
         }
 

@@ -24,7 +24,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                 Work = (worker, args) =>
                 {
                     //ID of the package to be looked 
-                    string packageID = "Microsoft.CrmSdk.CoreTools";
+                    string coreToolsId = "Microsoft.CrmSdk.CoreTools";
+                    string memoryStreamId = "Microsoft.IO.RecyclableMemoryStream";
 
                     //Connect to the official package repository IPackageRepository
                     var repo = NuGet.PackageRepositoryFactory.Default.CreateRepository(myPlugin.options.NuGetFeed);
@@ -33,13 +34,21 @@ namespace AlbanianXrm.EarlyBound.Logic
                     string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
                     dir = Path.Combine(dir, folder);
                     Directory.CreateDirectory(dir);
-                    NuGet.PackageManager packageManager = new NuGet.PackageManager(repo, dir);
-                    var package = repo.GetPackages().Where(x => x.Id == packageID && x.IsLatestVersion).FirstOrDefault();
-                    if (package == null)
+                    //    NuGet.PackageManager packageManager = new NuGet.PackageManager(repo, dir);
+
+                    var coreToolsPackage = repo.GetPackages().Where(x => x.Id == coreToolsId && x.IsLatestVersion)
+                                          .OrderByDescending(x => x.Version).FirstOrDefault();
+                    if (coreToolsPackage == null)
                     {
-                        throw new Exception($"Microsoft.CrmSdk.CoreTools package not found on {myPlugin.options.NuGetFeed}");
+                        throw new Exception($"{coreToolsId} package not found on {myPlugin.options.NuGetFeed}");
                     }
-                    foreach (var file in package.GetFiles())
+                    var memoryStreamPackage = repo.GetPackages().Where(x => x.Id == memoryStreamId && x.IsLatestVersion)
+                                     .OrderByDescending(x => x.Version).FirstOrDefault();
+                    if (memoryStreamPackage == null)
+                    {
+                        throw new Exception($"{memoryStreamId} package not found on {myPlugin.options.NuGetFeed}");
+                    }
+                    foreach (var file in coreToolsPackage.GetFiles().Concat(memoryStreamPackage.GetFiles()))
                     {
                         using (var stream = File.Create(Path.Combine(dir, Path.GetFileName(file.Path))))
                             file.GetStream().CopyTo(stream);
@@ -54,6 +63,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                             MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                         myPlugin.options.CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(myPlugin.options.CrmSvcUtils);
+                        myPlugin.options.RecycableMemoryStream = MemoryStreamEditor.GetVersion(myPlugin.options.RecycableMemoryStream);
                     }
                     catch (Exception ex)
                     {
