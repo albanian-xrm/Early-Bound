@@ -265,6 +265,11 @@ namespace AlbanianXrm.EarlyBound
                                                 if (args.Result is RetrieveEntityResponse result)
                                                 {
                                                     item.ExpandedOnce = true;
+                                                    var entityMetadata = entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
+                                                    typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToManyRelationships);
+                                                    typeof(EntityMetadata).GetProperty(nameof(entityMetadata.OneToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.OneToManyRelationships);
+                                                    typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToOneRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToOneRelationships);
+
                                                     foreach (var relationship in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
                                                                          result.EntityMetadata.OneToManyRelationships).Union(
                                                                          result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
