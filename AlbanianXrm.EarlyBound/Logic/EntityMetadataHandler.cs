@@ -21,16 +21,23 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GetEntityList()
         {
-            myPlugin.pluginViewModel.AllowRequests = false;
-            myPlugin.WorkAsync(new WorkAsyncInfo
+            myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
                 Message = "Getting entity list",
                 Work = (worker, args) =>
                 {
-                    args.Result = myPlugin.Service.Execute(new RetrieveAllEntitiesRequest()
+                    var result = myPlugin.Service.Execute(new RetrieveAllEntitiesRequest()
                     {
-                        EntityFilters = EntityFilters.Entity
-                    });
+                        EntityFilters = EntityFilters.Privileges
+                    }) as RetrieveAllEntitiesResponse;
+                    foreach (var item in result.EntityMetadata)
+                    {
+                        typeof(EntityMetadata).GetProperty(nameof(item.Attributes)).SetValue(item, new AttributeMetadata[] { });
+                        typeof(EntityMetadata).GetProperty(nameof(item.ManyToOneRelationships)).SetValue(item, new OneToManyRelationshipMetadata[] { });
+                        typeof(EntityMetadata).GetProperty(nameof(item.OneToManyRelationships)).SetValue(item, new OneToManyRelationshipMetadata[] { });
+                        typeof(EntityMetadata).GetProperty(nameof(item.ManyToManyRelationships)).SetValue(item, new ManyToManyRelationshipMetadata[] { });
+                    }
+                    args.Result = result;
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -45,6 +52,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                             metadataTree.BackgroundImage = null;
                             metadataTree.Enabled = true;
                             metadataTree.Nodes.Clear();
+                            myPlugin.entityMetadatas = result.EntityMetadata;
                             foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))
                             {
                                 if (item.DisplayName.LocalizedLabels.Count == 0) continue;
@@ -80,7 +88,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     }
                     finally
                     {
-                        myPlugin.pluginViewModel.AllowRequests = true;
+                        myPlugin.WorkAsyncEnded();
                     }
                 }
             });

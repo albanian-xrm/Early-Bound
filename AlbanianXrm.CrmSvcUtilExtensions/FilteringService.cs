@@ -58,23 +58,37 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {
-            if (attributeMetadata.LogicalName != "statecode" &&
-                !allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
+            if (attributeMetadata.LogicalName == "statecode" ||
+                allAttributes.Contains(attributeMetadata.EntityLogicalName) ||
                 entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out HashSet<string> attributes) &&
-                !attributes.Contains(attributeMetadata.LogicalName))
+                attributes.Contains(attributeMetadata.LogicalName))
+            {
+                return true;
+            }
+            else if (allAttributes.Any() || entityAttributes.Any())
             {
                 return false;
             }
-            return this.DefaultService.GenerateAttribute(attributeMetadata, services);
+            else
+            {
+                return this.DefaultService.GenerateAttribute(attributeMetadata, services);
+            }
         }
 
         bool ICodeWriterFilterService.GenerateEntity(EntityMetadata entityMetadata, IServiceProvider services)
         {
-            if (entities.Any() && !entities.Contains(entityMetadata.LogicalName))
+            if (entities.Contains(entityMetadata.LogicalName))
+            {
+                return true;
+            }
+            else if (entities.Any())
             {
                 return false;
             }
-            return this.DefaultService.GenerateEntity(entityMetadata, services);
+            else
+            {
+                return this.DefaultService.GenerateEntity(entityMetadata, services);
+            }
         }
 
         bool ICodeWriterFilterService.GenerateOption(OptionMetadata optionMetadata, IServiceProvider services)
@@ -93,20 +107,59 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             HashSet<string> relationships;
             if (relationshipMetadata is OneToManyRelationshipMetadata oneToManyMetadata)
             {
-                if ((oneToManyMetadata.ReferencedEntity != otherEntityMetadata.LogicalName ||
-                     oneToManyMetadata.ReferencedEntity == oneToManyMetadata.ReferencingEntity) &&
-                    !allRelationships.Contains(oneToManyMetadata.ReferencedEntity) &&
-                    entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
-                    !relationships.Contains(oneToManyMetadata.SchemaName))
+                if (oneToManyMetadata.ReferencedEntity == oneToManyMetadata.ReferencingEntity)
                 {
-                    return false;
+                    if (allRelationships.Contains(oneToManyMetadata.ReferencedEntity) ||
+                        entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
+                        relationships.Contains(oneToManyMetadata.SchemaName) ||
+                        entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
+                        relationships.Contains(oneToManyMetadata.SchemaName))
+                    {
+                        return true;
+                    }
+                    else if (allRelationships.Any() ||
+                             entity1NRelationships.Any() ||
+                             entityN1Relationships.Any() ||
+                             entityNNRelationships.Any())
+                    {
+                        return false;
+                    }
                 }
-                if (oneToManyMetadata.ReferencingEntity != otherEntityMetadata.LogicalName &&
-                    !allRelationships.Contains(oneToManyMetadata.ReferencingEntity) &&
-                    entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
-                    !relationships.Contains(oneToManyMetadata.SchemaName))
+                else
                 {
-                    return false;
+                    if (oneToManyMetadata.ReferencingEntity == otherEntityMetadata.LogicalName)
+                    {
+                        if (allRelationships.Contains(oneToManyMetadata.ReferencedEntity) ||
+                           entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
+                           relationships.Contains(oneToManyMetadata.SchemaName))
+                        {
+                            return true;
+                        }
+                        else if (allRelationships.Any() ||
+                                 entity1NRelationships.Any() ||
+                                 entityN1Relationships.Any() ||
+                                 entityNNRelationships.Any())
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (oneToManyMetadata.ReferencedEntity == otherEntityMetadata.LogicalName)
+                    {
+                        if (allRelationships.Contains(oneToManyMetadata.ReferencingEntity) ||
+                           entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
+                           relationships.Contains(oneToManyMetadata.SchemaName))
+                        {
+                            return true;
+                        }
+                        else if (allRelationships.Any() ||
+                                 entity1NRelationships.Any() ||
+                                 entityN1Relationships.Any() ||
+                                 entityNNRelationships.Any())
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
             else if (relationshipMetadata is ManyToManyRelationshipMetadata manyToManyMetadata)

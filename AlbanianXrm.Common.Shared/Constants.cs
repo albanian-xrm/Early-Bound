@@ -2,6 +2,9 @@
 {
     internal static class Constants
     {
+        public const string CONSOLE_METADATA = "[AlbanianXrm.EarlyBound:Metadata]";
+        public const string CONSOLE_ENDSTREAM = "[AlbanianXrm.EarlyBound:EndStream]";
+
         public const string ENVIRONMENT_ENTITIES = "AlbanianXrm.EarlyBound:Entities";
         public const string ENVIRONMENT_ALL_ATTRIBUTES = "AlbanianXrm.EarlyBound:AllAttributes";
         public const string ENVIRONMENT_ALL_RELATIONSHIPS = "AlbanianXrm.EarlyBound:AllRelationships";

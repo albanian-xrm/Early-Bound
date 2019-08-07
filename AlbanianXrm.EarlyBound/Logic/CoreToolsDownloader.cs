@@ -18,8 +18,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void DownloadCoreTools()
         {
-            myPlugin.pluginViewModel.AllowRequests = false;
-            myPlugin.WorkAsync(new WorkAsyncInfo
+            myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
                 Message = $"Getting latest version of Core Tools",
                 Work = (worker, args) =>
@@ -62,7 +61,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     }
                     finally
                     {
-                        myPlugin.pluginViewModel.AllowRequests = true;
+                        myPlugin.WorkAsyncEnded();
                     }
                 }
             });

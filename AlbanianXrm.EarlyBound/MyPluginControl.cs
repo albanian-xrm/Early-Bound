@@ -9,6 +9,7 @@ using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using XrmToolBox.Extensibility.Interfaces;
+using System.Collections.Generic;
 
 namespace AlbanianXrm.EarlyBound
 {
@@ -22,7 +23,34 @@ namespace AlbanianXrm.EarlyBound
         private Logic.CoreToolsDownloader CoreToolsDownloader;
         private Logic.EntityGeneratorHandler EntityGeneratorHandler;
         internal Logic.PluginViewModel pluginViewModel;
+        internal EntityMetadata[] entityMetadatas = new EntityMetadata[] { };
+        internal OptionSetMetadataBase[] optionSetMetadatas = new OptionSetMetadataBase[] { };
         internal Options options;
+        internal Queue<WorkAsyncInfo> queue = new Queue<WorkAsyncInfo>();
+
+        public void StartWorkAsync(WorkAsyncInfo work)
+        {
+            if (!queue.Any())
+            {
+                pluginViewModel.AllowRequests = false;
+                WorkAsync(work);
+            }
+            queue.Enqueue(work);
+        }
+
+        public void WorkAsyncEnded()
+        {
+            queue.Dequeue();
+            if (queue.Any())
+            {
+                WorkAsync(queue.Peek());
+            }
+            else
+            {
+                pluginViewModel.AllowRequests = true;
+            }
+
+        }
 
         public string RepositoryName { get { return "Early-Bound"; } }
 
@@ -215,7 +243,7 @@ namespace AlbanianXrm.EarlyBound
                             {
                                 if (!item.ExpandedOnce)
                                 {
-                                    WorkAsync(new WorkAsyncInfo
+                                    StartWorkAsync(new WorkAsyncInfo
                                     {
                                         Message = $"Getting relationships for entity {entityName}",
                                         Work = (worker, args) =>
@@ -228,30 +256,42 @@ namespace AlbanianXrm.EarlyBound
                                         },
                                         PostWorkCallBack = (args) =>
                                         {
-                                            if (args.Error != null)
+                                            try
                                             {
-                                                MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                            }
-                                            if (args.Result is RetrieveEntityResponse result)
-                                            {
-                                                item.ExpandedOnce = true;
-                                                foreach (var relationship in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
-                                                                     result.EntityMetadata.OneToManyRelationships).Union(
-                                                                     result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
+                                                if (args.Error != null)
                                                 {
-                                                    TreeNodeAdv node = new TreeNodeAdv($"{relationship.SchemaName}")
+                                                    MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                }
+                                                if (args.Result is RetrieveEntityResponse result)
+                                                {
+                                                    item.ExpandedOnce = true;
+                                                    foreach (var relationship in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
+                                                                         result.EntityMetadata.OneToManyRelationships).Union(
+                                                                         result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
                                                     {
-                                                        ExpandedOnce = true,
-                                                        ShowCheckBox = true,
-                                                        Tag = relationship
-                                                    };
-                                                    if (schemaName == relationship.SchemaName)
-                                                    {
-                                                        node.CheckState = e.NewCheckState;
+                                                        TreeNodeAdv node = new TreeNodeAdv($"{relationship.SchemaName}")
+                                                        {
+                                                            ExpandedOnce = true,
+                                                            ShowCheckBox = true,
+                                                            Tag = relationship
+                                                        };
+                                                        if (schemaName == relationship.SchemaName)
+                                                        {
+                                                            node.CheckState = e.NewCheckState;
+                                                        }
+                                                        item.Nodes.Add(node);
                                                     }
-                                                    item.Nodes.Add(node);
                                                 }
                                             }
+                                            catch (Exception ex)
+                                            {
+                                                MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                            }
+                                            finally
+                                            {
+                                                WorkAsyncEnded();
+                                            }
+
                                         }
                                     });
                                 }
@@ -273,6 +313,14 @@ namespace AlbanianXrm.EarlyBound
                         }
                     }
                 }
+            }
+            else if (e.Node.Text == "Attributes" && e.NewCheckState == CheckState.Checked && !e.Node.ExpandedOnce)
+            {
+                AttributeMetadataHandler.GetAttributes(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node);
+            }
+            else if (e.Node.Text == "Relationships" && e.NewCheckState == CheckState.Checked && !e.Node.ExpandedOnce)
+            {
+                RelationshipMetadataHandler.GetRelationships(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node);
             }
         }
     }
