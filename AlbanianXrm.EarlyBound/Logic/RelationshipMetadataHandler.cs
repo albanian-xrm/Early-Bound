@@ -19,8 +19,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode)
         {
-            myPlugin.pluginViewModel.AllowRequests = false;
-            myPlugin.WorkAsync(new WorkAsyncInfo
+            myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
                 Message = $"Getting relationships for entity {entityName}",
                 Work = (worker, args) =>
@@ -41,6 +40,12 @@ namespace AlbanianXrm.EarlyBound.Logic
                         }
                         if (args.Result is RetrieveEntityResponse result)
                         {
+                            relationshipsNode.ExpandedOnce = true;
+                            var entityMetadata = myPlugin.entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
+                            typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToManyRelationships);
+                            typeof(EntityMetadata).GetProperty(nameof(entityMetadata.OneToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.OneToManyRelationships);
+                            typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToOneRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToOneRelationships);
+
                             foreach (var item in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
                                                  result.EntityMetadata.OneToManyRelationships).Union(
                                                  result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
@@ -62,7 +67,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     }
                     finally
                     {
-                        myPlugin.pluginViewModel.AllowRequests = true;
+                        myPlugin.WorkAsyncEnded();
                     }
                 }
             });

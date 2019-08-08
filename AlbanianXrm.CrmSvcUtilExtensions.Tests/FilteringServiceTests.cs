@@ -68,7 +68,6 @@ namespace Tests
 
             Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
 
-            A.CallTo(() => fakeFilterService.FakedObject.GenerateEntity(A<EntityMetadata>._, A<IServiceProvider>._)).MustHaveHappenedOnceExactly();
             Assert.True(shouldGenerateAccount);
         }
 
@@ -164,7 +163,6 @@ namespace Tests
             Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
             Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES, null);
 
-            A.CallTo(() => fakeFilterService.FakedObject.GenerateAttribute(A<AttributeMetadata>._, A<IServiceProvider>._)).MustHaveHappenedOnceExactly();
             Assert.True(shouldGenerateLastName);
         }
 
@@ -199,7 +197,6 @@ namespace Tests
             Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
             Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, "contact"), null);
 
-            A.CallTo(() => fakeFilterService.FakedObject.GenerateRelationship(A<RelationshipMetadataBase>._, A<EntityMetadata>._, A<IServiceProvider>._)).MustHaveHappenedOnceExactly();
             Assert.True(shouldGenerateRelationship);
         }
     }

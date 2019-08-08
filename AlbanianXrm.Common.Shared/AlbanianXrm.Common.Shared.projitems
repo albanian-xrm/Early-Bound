@@ -11,5 +11,6 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)OrganizationMetadata.cs" />
   </ItemGroup>
 </Project>

@@ -1,12 +1,22 @@
 ﻿using Microsoft.Crm.Services.Utility;
 using System;
 using System.CodeDom;
-using System.Linq;
 
 namespace AlbanianXrm.CrmSvcUtilExtensions
 {
     public sealed class CustomizationService : ICustomizeCodeDomService
     {
+
+        public CustomizationService()
+        {
+#if DEBUG
+            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER) ?? "") != "")
+            {
+                System.Diagnostics.Debugger.Launch();
+            }
+#endif
+        }
+
         public void CustomizeCodeDom(CodeCompileUnit codeUnit, IServiceProvider services)
         {
             var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED) ?? "") != "";

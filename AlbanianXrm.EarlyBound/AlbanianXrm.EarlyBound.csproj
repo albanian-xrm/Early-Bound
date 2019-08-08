@@ -199,6 +199,7 @@
   <ItemGroup>
     <Compile Include="Extensions\AttributeExtensions.cs" />
     <Compile Include="Extensions\ConnectionDetailExtensions.cs" />
+    <Compile Include="Helpers\MemoryStreamEditor.cs" />
     <Compile Include="Helpers\CrmSvcUtilsEditor.cs" />
     <Compile Include="Helpers\EnumConverter.cs" />
     <Compile Include="Factories\MyPluginFactory.cs" />

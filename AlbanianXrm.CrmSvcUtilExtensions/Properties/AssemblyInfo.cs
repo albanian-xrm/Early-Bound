@@ -22,6 +22,8 @@ using System.Runtime.InteropServices;
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 [assembly: Guid("f3efcbf0-762e-493d-99ea-f7d2c56dd30b")]
 
+[assembly: InternalsVisibleTo("System.Runtime.Serialization,PublicKey=00000000000000000400000000000000")]
+
 #if PIPELINES
 [assembly: InternalsVisibleTo("AlbanianXrm.CrmSvcUtilExtensions.Tests, PublicKey=002400000480000094000000060200000024000052534131000400000100010079e41687e52c5a70e235a90f3ae3c6202338b7c7c28e3717284c541c17b7f7d1c1453e57f0ad55090a7dae47e8ce4d00fe3c65b9d8f3445832f5da3ec066e9ade8cb054f85fbe0cc9c4fc2971eb161450cfdb432a2a305c03b6ae56e811c0acdd439377e6c61a27234cacecb3b6566342db30152bfa2f8d41e356624ebe1aace")]
 #else

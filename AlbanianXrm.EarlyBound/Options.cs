@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing.Design;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -21,6 +19,7 @@ namespace AlbanianXrm.EarlyBound
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
             _CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(_CrmSvcUtils);
+            _RecycableMemoryStream = MemoryStreamEditor.GetVersion(_RecycableMemoryStream);
         }
 
         [Category("General")]
@@ -29,6 +28,13 @@ namespace AlbanianXrm.EarlyBound
         [DefaultValue(false)]
         [TypeConverter(typeof(YesNoConverter))]
         public bool CoupledRelationships { get; set; }
+
+        [Category("General")]
+        [DisplayName("Cache Metadata")]
+        [Description("Use the cached metadata during the code generation.")]
+        [DefaultValue(true)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool CacheMetadata { get; set; }
 
         private string _NuGetFeed;
         [Category("General")]
@@ -43,7 +49,7 @@ namespace AlbanianXrm.EarlyBound
 
         Version _CrmSvcUtils;
 
-        [Category("General")]
+        [Category("Version")]
         [DisplayName("Core Tools")]
         [Description("The version of the CRM Service Utility.")]
         [Editor(typeof(CrmSvcUtilsEditor), typeof(UITypeEditor))]
@@ -58,6 +64,41 @@ namespace AlbanianXrm.EarlyBound
                 RaisePropertyChanged(nameof(CrmSvcUtils));
             }
         }
+
+        Version _RecycableMemoryStream;
+
+        [Category("Version")]
+        [DisplayName("Recycable Memory Stream")]
+        [Description("The version of the Recycable Memory Stream.")]
+        [Editor(typeof(MemoryStreamEditor), typeof(UITypeEditor))]
+        [XmlIgnore]
+        public Version RecycableMemoryStream
+        {
+            get { return _RecycableMemoryStream; }
+            set
+            {
+                if (_RecycableMemoryStream == value) return;
+                _RecycableMemoryStream = value;
+                RaisePropertyChanged(nameof(RecycableMemoryStream));
+            }
+        }
+
+        [Category("Version")]
+        [DisplayName("This Plugin")]
+        [Description("The version of Albanian Early Bound.")]
+        [XmlIgnore]
+        public Version AlbanianEarlyBound
+        {
+            get { return typeof(Options).Assembly.GetName().Version; }
+        }
+
+#if DEBUG
+        [Category("Debug")]
+        [DisplayName("Launch Debugger")]
+        [Description("Launch the debugger in certain instants of the lifetime of CrmSvcUtils.")]
+        [XmlIgnore]
+        public bool LaunchDebugger { get; set; }
+#endif
 
         private OrganizationOptions _CurrentOrganizationOptions;
         [Category("Organization")]

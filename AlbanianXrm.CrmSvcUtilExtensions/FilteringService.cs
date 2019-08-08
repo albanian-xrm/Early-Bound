@@ -11,6 +11,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
     {
         public FilteringService(ICodeWriterFilterService defaultService)
         {
+#if DEBUG
+            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER) ?? "") != "")
+            {
+                System.Diagnostics.Debugger.Launch();
+            }
+#endif
             this.DefaultService = defaultService;
             entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
             allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES) ?? "").Split(","));
@@ -52,23 +58,37 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {
-            if (attributeMetadata.LogicalName != "statecode" &&
-                !allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
+            if (attributeMetadata.LogicalName == "statecode" ||
+                allAttributes.Contains(attributeMetadata.EntityLogicalName) ||
                 entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out HashSet<string> attributes) &&
-                !attributes.Contains(attributeMetadata.LogicalName))
+                attributes.Contains(attributeMetadata.LogicalName))
+            {
+                return true;
+            }
+            else if (allAttributes.Any() || entityAttributes.Any())
             {
                 return false;
             }
-            return this.DefaultService.GenerateAttribute(attributeMetadata, services);
+            else
+            {
+                return this.DefaultService.GenerateAttribute(attributeMetadata, services);
+            }
         }
 
         bool ICodeWriterFilterService.GenerateEntity(EntityMetadata entityMetadata, IServiceProvider services)
         {
-            if (entities.Any() && !entities.Contains(entityMetadata.LogicalName))
+            if (entities.Contains(entityMetadata.LogicalName))
+            {
+                return true;
+            }
+            else if (entities.Any())
             {
                 return false;
             }
-            return this.DefaultService.GenerateEntity(entityMetadata, services);
+            else
+            {
+                return this.DefaultService.GenerateEntity(entityMetadata, services);
+            }
         }
 
         bool ICodeWriterFilterService.GenerateOption(OptionMetadata optionMetadata, IServiceProvider services)
@@ -87,38 +107,134 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             HashSet<string> relationships;
             if (relationshipMetadata is OneToManyRelationshipMetadata oneToManyMetadata)
             {
-                if ((oneToManyMetadata.ReferencedEntity != otherEntityMetadata.LogicalName ||
-                     oneToManyMetadata.ReferencedEntity == oneToManyMetadata.ReferencingEntity) &&
-                    !allRelationships.Contains(oneToManyMetadata.ReferencedEntity) &&
-                    entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
-                    !relationships.Contains(oneToManyMetadata.SchemaName))
+                if (oneToManyMetadata.ReferencedEntity == oneToManyMetadata.ReferencingEntity)
                 {
-                    return false;
+                    if (allRelationships.Contains(oneToManyMetadata.ReferencedEntity))
+                    {
+                        return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);
+                    }
+                    else if (entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
+                        relationships.Contains(oneToManyMetadata.SchemaName) ||
+                        entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
+                        relationships.Contains(oneToManyMetadata.SchemaName))
+                    {
+                        return true;
+                    }
+                    else if (allRelationships.Any() ||
+                             entity1NRelationships.Any() ||
+                             entityN1Relationships.Any() ||
+                             entityNNRelationships.Any())
+                    {
+                        return false;
+                    }
                 }
-                if (oneToManyMetadata.ReferencingEntity != otherEntityMetadata.LogicalName &&
-                    !allRelationships.Contains(oneToManyMetadata.ReferencingEntity) &&
-                    entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
-                    !relationships.Contains(oneToManyMetadata.SchemaName))
+                else
                 {
-                    return false;
+                    if (oneToManyMetadata.ReferencingEntity == otherEntityMetadata.LogicalName)
+                    {
+                        if (allRelationships.Contains(oneToManyMetadata.ReferencedEntity))
+                        {
+                            return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);
+                        }
+                        else if (entity1NRelationships.TryGetValue(oneToManyMetadata.ReferencedEntity, out relationships) &&
+                                 relationships.Contains(oneToManyMetadata.SchemaName))
+                        {
+                            return true;
+                        }
+                        else if (allRelationships.Any() ||
+                                 entity1NRelationships.Any() ||
+                                 entityN1Relationships.Any() ||
+                                 entityNNRelationships.Any())
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (oneToManyMetadata.ReferencedEntity == otherEntityMetadata.LogicalName)
+                    {
+                        if (allRelationships.Contains(oneToManyMetadata.ReferencingEntity))
+                        {
+                            return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);
+                        }
+                        else if (entityN1Relationships.TryGetValue(oneToManyMetadata.ReferencingEntity, out relationships) &&
+                          relationships.Contains(oneToManyMetadata.SchemaName))
+                        {
+                            return true;
+                        }
+                        else if (allRelationships.Any() ||
+                                 entity1NRelationships.Any() ||
+                                 entityN1Relationships.Any() ||
+                                 entityNNRelationships.Any())
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
             else if (relationshipMetadata is ManyToManyRelationshipMetadata manyToManyMetadata)
             {
-                if ((manyToManyMetadata.Entity1LogicalName != otherEntityMetadata.LogicalName ||
-                      manyToManyMetadata.Entity1LogicalName == manyToManyMetadata.Entity2LogicalName) &&
-                    !allRelationships.Contains(manyToManyMetadata.Entity1LogicalName) &&
-                    entityNNRelationships.TryGetValue(manyToManyMetadata.Entity1LogicalName, out relationships) &&
-                    !relationships.Contains(manyToManyMetadata.SchemaName))
+                if (manyToManyMetadata.Entity1LogicalName == manyToManyMetadata.Entity2LogicalName)
                 {
-                    return false;
+                    if (allRelationships.Contains(manyToManyMetadata.Entity1LogicalName))
+                    {
+                        return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);
+                    }
+                    else if (entityNNRelationships.TryGetValue(manyToManyMetadata.Entity1LogicalName, out relationships) &&
+                        relationships.Contains(manyToManyMetadata.SchemaName) ||
+                        entityN1Relationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
+                        relationships.Contains(manyToManyMetadata.SchemaName))
+                    {
+                        return true;
+                    }
+                    else if (allRelationships.Any() ||
+                             entity1NRelationships.Any() ||
+                             entityN1Relationships.Any() ||
+                             entityNNRelationships.Any())
+                    {
+                        return false;
+                    }
                 }
-                if (manyToManyMetadata.Entity2LogicalName != otherEntityMetadata.LogicalName &&
-                    !allRelationships.Contains(manyToManyMetadata.Entity2LogicalName) &&
-                    entityNNRelationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
-                    !relationships.Contains(manyToManyMetadata.SchemaName))
+                else
                 {
-                    return false;
+                    if (manyToManyMetadata.Entity2IntersectAttribute == otherEntityMetadata.LogicalName)
+                    {
+                        if (allRelationships.Contains(manyToManyMetadata.Entity1LogicalName))
+                        {
+                            return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);
+                        }
+                        else if (entityNNRelationships.TryGetValue(manyToManyMetadata.Entity1LogicalName, out relationships) &&
+                                 relationships.Contains(manyToManyMetadata.SchemaName))
+                        {
+                            return true;
+                        }
+                        else if (allRelationships.Any() ||
+                                 entity1NRelationships.Any() ||
+                                 entityN1Relationships.Any() ||
+                                 entityNNRelationships.Any())
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (manyToManyMetadata.Entity1LogicalName == otherEntityMetadata.LogicalName)
+                    {
+                        if (allRelationships.Contains(manyToManyMetadata.Entity2LogicalName))
+                        {
+                            return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);
+                        }
+                        else if (entityN1Relationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
+                          relationships.Contains(manyToManyMetadata.SchemaName))
+                        {
+                            return true;
+                        }
+                        else if (allRelationships.Any() ||
+                                 entity1NRelationships.Any() ||
+                                 entityN1Relationships.Any() ||
+                                 entityNNRelationships.Any())
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
             return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);

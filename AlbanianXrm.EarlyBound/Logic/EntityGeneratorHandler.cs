@@ -9,6 +9,9 @@ using System.Diagnostics;
 using AlbanianXrm.EarlyBound.Extensions;
 using AlbanianXrm.EarlyBound.Helpers;
 using System;
+using AlbanianXrm.Common.Shared;
+using System.Runtime.Serialization;
+using System.Xml;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
@@ -27,8 +30,8 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GenerateEntities(Options options)
         {
-            myPlugin.pluginViewModel.AllowRequests = false;
-            myPlugin.WorkAsync(new WorkAsyncInfo()
+            output.ResetText();
+            myPlugin.StartWorkAsync(new WorkAsyncInfo()
             {
                 Message = $"Generating Early-Bound Classes",
                 Work = (worker, args) =>
@@ -39,22 +42,26 @@ namespace AlbanianXrm.EarlyBound.Logic
 
 
                     if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe"))) throw new Exception("CrmSvcUtil.exe is missing. Please download CoreTools.");
+                    if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll"))) throw new Exception("Microsoft.IO.RecyclableMemoryStream.dll is missing. Please download CoreTools.");
                     Process process = new Process();
                     var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
                     process.StartInfo.Arguments = "/connectionstring:" + connectionString +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
                                                   " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /codecustomization:AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                                  " /metadataproviderservice:AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
                                                   (options.CurrentOrganizationOptions.Language == LanguageEnum.VB ? " /language:VB" : "") +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
                     process.StartInfo.WorkingDirectory = dir;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.RedirectStandardInput = true;
                     process.StartInfo.RedirectStandardOutput = true;
                     process.StartInfo.RedirectStandardError = true;
 
-                    List<string> entities = new List<string>();
+                    HashSet<string> entities = new HashSet<string>();
+                    HashSet<string> relationshipEntities = new HashSet<string>();
                     List<string> allAttributes = new List<string>();
                     List<string> allRelationships = new List<string>();
 
@@ -91,6 +98,19 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     if (item.CheckState == CheckState.Checked)
                                     {
                                         allRelationships.Add(metadata.LogicalName);
+                                        foreach (TreeNodeAdv relationship in item.Nodes)
+                                        {
+                                            if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadataO)
+                                            {
+                                                if (!relationshipEntities.Contains(relationshipMetadataO.ReferencedEntity)) relationshipEntities.Add(relationshipMetadataO.ReferencedEntity);
+                                                if (!relationshipEntities.Contains(relationshipMetadataO.ReferencingEntity)) relationshipEntities.Add(relationshipMetadataO.ReferencingEntity);
+                                            }
+                                            else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
+                                            {
+                                                if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
+                                                if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
+                                            }
+                                        }
                                     }
                                     else if (item.CheckState == CheckState.Indeterminate)
                                     {
@@ -101,9 +121,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                                         {
                                             if (relationship.Checked)
                                             {
-                                                if (relationship.Tag is OneToManyRelationshipMetadata)
+                                                if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadata)
                                                 {
-                                                    var relationshipMetadata = (OneToManyRelationshipMetadata)relationship.Tag;
                                                     if (relationshipMetadata.ReferencingEntity == metadata.LogicalName)
                                                     {
                                                         relationshipsN1.Add(relationshipMetadata.SchemaName);
@@ -112,11 +131,15 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                     {
                                                         relationships1N.Add(relationshipMetadata.SchemaName);
                                                     }
+                                                    if (!relationshipEntities.Contains(relationshipMetadata.ReferencedEntity)) relationshipEntities.Add(relationshipMetadata.ReferencedEntity);
+                                                    if (!relationshipEntities.Contains(relationshipMetadata.ReferencingEntity)) relationshipEntities.Add(relationshipMetadata.ReferencingEntity);
                                                 }
-                                                else
+                                                else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
                                                 {
-                                                    var relationshipMetadata = (RelationshipMetadataBase)relationship.Tag;
-                                                    relationshipsNN.Add(relationshipMetadata.SchemaName);
+                                                    relationshipsNN.Add(relationshipMetadataM.SchemaName);
+                                                    if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
+                                                    if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
+
                                                 }
                                             }
                                         }
@@ -133,12 +156,29 @@ namespace AlbanianXrm.EarlyBound.Logic
                     if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
                     if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
                     if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
+                    if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
+#if DEBUG
+                    if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
+#endif
 
                     process.EnableRaisingEvents = true;
                     process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
                     process.Start();
+
+                    while (!process.StandardOutput.EndOfStream)
+                    {
+                        var line = process.StandardOutput.ReadLine();
+                        if (line.EndsWith(Constants.CONSOLE_METADATA))
+                        {
+                            line = TrimEnd(line, Constants.CONSOLE_METADATA);
+                            SerializeMetadata(process.StandardInput, entities, relationshipEntities);
+                        }
+                        if (line != null)
+                        {
+                            worker.ReportProgress(0, line);
+                        }
+                    }
                     process.WaitForExit();
-                    args.Result = process.StandardOutput.ReadToEnd();
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -148,10 +188,6 @@ namespace AlbanianXrm.EarlyBound.Logic
                         {
                             MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        else
-                        {
-                            output.Text = (string)args.Result;
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -159,11 +195,36 @@ namespace AlbanianXrm.EarlyBound.Logic
                     }
                     finally
                     {
-                        myPlugin.pluginViewModel.AllowRequests = true;
+                        myPlugin.WorkAsyncEnded();
                     }
+                },
+                ProgressChanged = (args) =>
+                {
+                    output.AppendText(args.UserState + Environment.NewLine);
                 }
             });
 
+        }
+
+        private void SerializeMetadata(StreamWriter standardInput, HashSet<string> entities, HashSet<string> relationshipEntities)
+        {
+            EntityMetadata[] entityMetadatas = myPlugin.entityMetadatas;
+            if (entities.Any())
+            {
+                entityMetadatas = entityMetadatas.Where(x => entities.Contains(x.LogicalName) || relationshipEntities.Contains(x.LogicalName)).ToArray();
+            }
+            var metadata = new OrganizationMetadata(entityMetadatas, myPlugin.optionSetMetadatas);
+            var serializer = new DataContractSerializer(typeof(OrganizationMetadata));
+            serializer.WriteObject(new XmlTextWriter(standardInput), metadata);
+            standardInput.WriteLine();
+            standardInput.WriteLine(Constants.CONSOLE_ENDSTREAM);
+        }
+
+        private string TrimEnd(string line, string keyword)
+        {
+            return line.Length == keyword.Length ?
+                        null :
+                        line.Substring(0, line.Length - Constants.CONSOLE_METADATA.Length);
         }
     }
 }
