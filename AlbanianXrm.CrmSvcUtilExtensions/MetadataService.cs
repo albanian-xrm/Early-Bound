@@ -22,25 +22,29 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 System.Diagnostics.Debugger.Launch();
             }
 #endif
-            Console.WriteLine(Constants.CONSOLE_METADATA);
 
-            var manager = new RecyclableMemoryStreamManager();
-            using (var stream = manager.GetStream())
+            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_CACHEMEATADATA) ?? "") != "")
             {
-                using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
+                Console.WriteLine(Constants.CONSOLE_METADATA);
+
+                var manager = new RecyclableMemoryStreamManager();
+                using (var stream = manager.GetStream())
                 {
-                    string line = Console.ReadLine();
-                    while (line != Constants.CONSOLE_ENDSTREAM && line != null)
+                    using (var writer = new StreamWriter(stream, Encoding.UTF8, 1024, true))
                     {
-                        writer.WriteLine(line);
-                        line = Console.ReadLine();
+                        string line = Console.ReadLine();
+                        while (line != Constants.CONSOLE_ENDSTREAM && line != null)
+                        {
+                            writer.WriteLine(line);
+                            line = Console.ReadLine();
+                        }
                     }
-                }
-                stream.Position = 0;
-                var serializer = new DataContractSerializer(typeof(OrganizationMetadata));
-                using (var xmlreader = new XmlTextReader(stream))
-                {
-                    cachedMetadata = (OrganizationMetadata)serializer.ReadObject(xmlreader);
+                    stream.Position = 0;
+                    var serializer = new DataContractSerializer(typeof(OrganizationMetadata));
+                    using (var xmlreader = new XmlTextReader(stream))
+                    {
+                        cachedMetadata = (OrganizationMetadata)serializer.ReadObject(xmlreader);
+                    }
                 }
             }
             this.defaultMetadataService = defaultMetadataService;

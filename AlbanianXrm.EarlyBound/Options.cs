@@ -2,9 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing.Design;
-using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -30,6 +28,13 @@ namespace AlbanianXrm.EarlyBound
         [DefaultValue(false)]
         [TypeConverter(typeof(YesNoConverter))]
         public bool CoupledRelationships { get; set; }
+
+        [Category("General")]
+        [DisplayName("Cache Metadata")]
+        [Description("Use the cached metadata during the code generation.")]
+        [DefaultValue(true)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool CacheMetadata { get; set; }
 
         private string _NuGetFeed;
         [Category("General")]

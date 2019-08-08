@@ -14,5 +14,6 @@
         public const string ENVIRONMENT_RELATIONSHIPSNN = "AlbanianXrm.EarlyBound:RelationshipsNN:{0}";
         public const string ENVIRONMENT_REMOVEPROPERTYCHANGED = "AlbanianXrm.EarlyBound:RemovePropertyChanged";
         public const string ENVIRONMENT_ATTACHDEBUGGER = "AlbanianXrm.EarlyBound:AttachDebugger";
+        public const string ENVIRONMENT_CACHEMEATADATA = "AlbanianXrm.EarlyBound:CacheMetadata";
     }
 }
