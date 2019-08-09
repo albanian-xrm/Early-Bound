@@ -97,6 +97,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
     <Compile Include="FilteringServiceTests.cs" />
     <Compile Include="OrganizationMetadataTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

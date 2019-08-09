@@ -17,7 +17,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             this.myPlugin = myPlugin;
         }
 
-        public void GetAttributes(string entityName, TreeNodeAdv attributesNode)
+        public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false)
         {
             myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
@@ -52,7 +52,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                                 {
                                     ExpandedOnce = true,
                                     ShowCheckBox = true,
-                                    Tag = item
+                                    Tag = item,
+                                    Checked = checkedState
                                 };
 
                                 attributesNode.Nodes.Add(node);

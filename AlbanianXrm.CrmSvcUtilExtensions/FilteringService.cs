@@ -59,13 +59,13 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {
             if (attributeMetadata.LogicalName == "statecode" ||
-                allAttributes.Contains(attributeMetadata.EntityLogicalName) ||
                 entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out HashSet<string> attributes) &&
                 attributes.Contains(attributeMetadata.LogicalName))
             {
                 return true;
             }
-            else if (allAttributes.Any() || entityAttributes.Any())
+            else if (!allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
+                     (allAttributes.Any() || entityAttributes.Any()))
             {
                 return false;
             }
@@ -181,7 +181,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     }
                     else if (entityNNRelationships.TryGetValue(manyToManyMetadata.Entity1LogicalName, out relationships) &&
                         relationships.Contains(manyToManyMetadata.SchemaName) ||
-                        entityN1Relationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
+                        entityNNRelationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
                         relationships.Contains(manyToManyMetadata.SchemaName))
                     {
                         return true;
@@ -196,7 +196,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 }
                 else
                 {
-                    if (manyToManyMetadata.Entity2IntersectAttribute == otherEntityMetadata.LogicalName)
+                    if (manyToManyMetadata.Entity2LogicalName == otherEntityMetadata.LogicalName)
                     {
                         if (allRelationships.Contains(manyToManyMetadata.Entity1LogicalName))
                         {
@@ -222,7 +222,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                         {
                             return this.DefaultService.GenerateRelationship(relationshipMetadata, otherEntityMetadata, services);
                         }
-                        else if (entityN1Relationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
+                        else if (entityNNRelationships.TryGetValue(manyToManyMetadata.Entity2LogicalName, out relationships) &&
                           relationships.Contains(manyToManyMetadata.SchemaName))
                         {
                             return true;
