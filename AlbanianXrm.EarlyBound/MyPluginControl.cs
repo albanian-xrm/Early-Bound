@@ -321,11 +321,11 @@ namespace AlbanianXrm.EarlyBound
             }
             else if (e.Node.Text == "Attributes" && e.NewCheckState == CheckState.Checked && !e.Node.ExpandedOnce)
             {
-                AttributeMetadataHandler.GetAttributes(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node);
+                AttributeMetadataHandler.GetAttributes(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node, checkedState: true);
             }
             else if (e.Node.Text == "Relationships" && e.NewCheckState == CheckState.Checked && !e.Node.ExpandedOnce)
             {
-                RelationshipMetadataHandler.GetRelationships(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node);
+                RelationshipMetadataHandler.GetRelationships(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node, checkedState: true);
             }
         }
     }

@@ -17,7 +17,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             this.myPlugin = myPlugin;
         }
 
-        public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode)
+        public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode, bool checkedState = false)
         {
             myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
@@ -54,7 +54,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                                 {
                                     ExpandedOnce = true,
                                     ShowCheckBox = true,
-                                    Tag = item
+                                    Tag = item,
+                                    Checked = checkedState
                                 };
 
                                 relationshipsNode.Nodes.Add(node);
