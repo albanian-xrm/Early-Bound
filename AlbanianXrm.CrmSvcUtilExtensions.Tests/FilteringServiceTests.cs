@@ -1,10 +1,10 @@
 ﻿using AlbanianXrm;
 using AlbanianXrm.CrmSvcUtilExtensions;
+using AlbanianXrm.CrmSvcUtilExtensions.Tests;
 using FakeItEasy;
 using Microsoft.Crm.Services.Utility;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
-using System.Reflection;
 using Xunit;
 
 namespace Tests
@@ -82,7 +82,7 @@ namespace Tests
             {
                 LogicalName = "lastname"
             };
-            typeof(AttributeMetadata).GetField("_entityLogicalName", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(metadata, "contact");
+            metadata.SetEntityLogicalName("contact");
 
             var filteringService = new FilteringService(fakeFilterService.FakedObject);
             var shouldGenerateLastName = (filteringService as ICodeWriterFilterService).GenerateAttribute(metadata, fakeServiceProvider.FakedObject);
@@ -105,7 +105,7 @@ namespace Tests
             {
                 LogicalName = "lastname"
             };
-            typeof(AttributeMetadata).GetField("_entityLogicalName", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(metadata, "contact");
+            metadata.SetEntityLogicalName("contact");
 
             var filteringService = new FilteringService(fakeFilterService.FakedObject);
             var shouldGenerateLastName = (filteringService as ICodeWriterFilterService).GenerateAttribute(metadata, fakeServiceProvider.FakedObject);
@@ -130,14 +130,15 @@ namespace Tests
             {
                 LogicalName = "lastname"
             };
-            typeof(AttributeMetadata).GetField("_entityLogicalName", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(metadata, "contact");
+            metadata.SetEntityLogicalName("contact");
 
             var filteringService = new FilteringService(fakeFilterService.FakedObject);
             var shouldGenerateLastName = (filteringService as ICodeWriterFilterService).GenerateAttribute(metadata, fakeServiceProvider.FakedObject);
 
             Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
 
-            A.CallTo(() => fakeFilterService.FakedObject.GenerateAttribute(A<AttributeMetadata>._, A<IServiceProvider>._)).MustNotHaveHappened();
+            A.CallTo(() => fakeFilterService.FakedObject
+                .GenerateAttribute(A<AttributeMetadata>._, A<IServiceProvider>._)).MustNotHaveHappened();
             Assert.False(shouldGenerateLastName);
         }
 
@@ -155,7 +156,7 @@ namespace Tests
             {
                 LogicalName = "lastname"
             };
-            typeof(AttributeMetadata).GetField("_entityLogicalName", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(metadata, "contact");
+            metadata.SetEntityLogicalName("contact");
 
             var filteringService = new FilteringService(fakeFilterService.FakedObject);
             var shouldGenerateLastName = (filteringService as ICodeWriterFilterService).GenerateAttribute(metadata, fakeServiceProvider.FakedObject);
@@ -198,6 +199,182 @@ namespace Tests
             Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, "contact"), null);
 
             Assert.True(shouldGenerateRelationship);
+        }
+
+        [Fact]
+        public void Generate1NRelationshipIfAllRelationshipsParameterIsSpecified()
+        {
+            var fakeFilterService = new Fake<ICodeWriterFilterService>();
+            fakeFilterService.AnyCall().WithReturnType<bool>().Returns(true);
+
+            var fakeServiceProvider = new Fake<IServiceProvider>();
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, "contact");
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, "contact");
+
+            var metadata = new OneToManyRelationshipMetadata()
+            {
+                MetadataId = Guid.NewGuid(),
+                SchemaName = "account_primary_contact",
+                ReferencingEntity = "account",
+                ReferencingAttribute = "primarycontactid",
+                ReferencedEntity = "contact",
+                ReferencedAttribute = "contactid"
+            };
+
+            var otherEntity = new EntityMetadata()
+            {
+                LogicalName = "account"
+            };
+
+            var filteringService = new FilteringService(fakeFilterService.FakedObject);
+            var shouldGenerateRelationship = (filteringService as ICodeWriterFilterService).GenerateRelationship(metadata, otherEntity, fakeServiceProvider.FakedObject);
+
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, null);
+
+            A.CallTo(() => fakeFilterService.FakedObject.GenerateRelationship(A<RelationshipMetadataBase>.Ignored, A<EntityMetadata>.Ignored, A<IServiceProvider>.Ignored)).MustHaveHappenedOnceExactly();
+            Assert.True(shouldGenerateRelationship);
+        }
+
+        [Fact]
+        public void Skip1NRelationshipIfParameterDoesNotContainRelationship()
+        {
+            var fakeFilterService = new Fake<ICodeWriterFilterService>();
+            fakeFilterService.AnyCall().WithReturnType<bool>().Returns(true);
+
+            var fakeServiceProvider = new Fake<IServiceProvider>();
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, "contact");
+            Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, "contact"), "Contact_Annotation");
+
+
+            var metadata = new OneToManyRelationshipMetadata()
+            {
+                MetadataId = Guid.NewGuid(),
+                SchemaName = "account_primary_contact",
+                ReferencingEntity = "account",
+                ReferencingAttribute = "primarycontactid",
+                ReferencedEntity = "contact",
+                ReferencedAttribute = "contactid"
+            };
+
+            var otherEntity = new EntityMetadata()
+            {
+                LogicalName = "account"
+            };
+
+            var filteringService = new FilteringService(fakeFilterService.FakedObject);
+            var shouldGenerateRelationship = (filteringService as ICodeWriterFilterService).GenerateRelationship(metadata, otherEntity, fakeServiceProvider.FakedObject);
+
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
+            Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, "contact"), null);
+
+            A.CallTo(() => fakeFilterService.FakedObject.GenerateRelationship(A<RelationshipMetadataBase>.Ignored, A<EntityMetadata>.Ignored, A<IServiceProvider>.Ignored)).MustNotHaveHappened();
+            Assert.False(shouldGenerateRelationship);
+        }
+
+        [Fact]
+        public void GenerateN1RelationshipIfParameterIsSpecified()
+        {
+            var fakeFilterService = new Fake<ICodeWriterFilterService>();
+            fakeFilterService.AnyCall().WithReturnType<bool>().Returns(true);
+
+            var fakeServiceProvider = new Fake<IServiceProvider>();
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, "account");
+            Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSN1, "account"), "account_primary_contact");
+
+            var metadata = new OneToManyRelationshipMetadata()
+            {
+                MetadataId = Guid.NewGuid(),
+                SchemaName = "account_primary_contact",
+                ReferencingEntity = "account",
+                ReferencingAttribute = "primarycontactid",
+                ReferencedEntity = "contact",
+                ReferencedAttribute = "contactid"
+            };
+
+            var otherEntity = new EntityMetadata()
+            {
+                LogicalName = "contact"
+            };
+
+            var filteringService = new FilteringService(fakeFilterService.FakedObject);
+            var shouldGenerateRelationship = (filteringService as ICodeWriterFilterService).GenerateRelationship(metadata, otherEntity, fakeServiceProvider.FakedObject);
+
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
+            Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSN1, "account"), null);
+
+            Assert.True(shouldGenerateRelationship);
+        }
+
+        [Fact]
+        public void GenerateN1RelationshipIfAllRelationshipsParameterIsSpecified()
+        {
+            var fakeFilterService = new Fake<ICodeWriterFilterService>();
+            fakeFilterService.AnyCall().WithReturnType<bool>().Returns(true);
+
+            var fakeServiceProvider = new Fake<IServiceProvider>();
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, "account");
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, "account");
+
+            var metadata = new OneToManyRelationshipMetadata()
+            {
+                MetadataId = Guid.NewGuid(),
+                SchemaName = "account_primary_contact",
+                ReferencingEntity = "account",
+                ReferencingAttribute = "primarycontactid",
+                ReferencedEntity = "contact",
+                ReferencedAttribute = "contactid"
+            };
+
+            var otherEntity = new EntityMetadata()
+            {
+                LogicalName = "contact"
+            };
+
+            var filteringService = new FilteringService(fakeFilterService.FakedObject);
+            var shouldGenerateRelationship = (filteringService as ICodeWriterFilterService).GenerateRelationship(metadata, otherEntity, fakeServiceProvider.FakedObject);
+
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, null);
+
+            A.CallTo(() => fakeFilterService.FakedObject.GenerateRelationship(A<RelationshipMetadataBase>.Ignored, A<EntityMetadata>.Ignored, A<IServiceProvider>.Ignored)).MustHaveHappenedOnceExactly();
+            Assert.True(shouldGenerateRelationship);
+        }
+
+        [Fact]
+        public void SkipN1RelationshipIfParameterDoesNotContainRelationship()
+        {
+            var fakeFilterService = new Fake<ICodeWriterFilterService>();
+            fakeFilterService.AnyCall().WithReturnType<bool>().Returns(true);
+
+            var fakeServiceProvider = new Fake<IServiceProvider>();
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, "account");
+            Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, "account"), "Account_Annotation");
+
+
+            var metadata = new OneToManyRelationshipMetadata()
+            {
+                MetadataId = Guid.NewGuid(),
+                SchemaName = "account_primary_contact",
+                ReferencingEntity = "account",
+                ReferencingAttribute = "primarycontactid",
+                ReferencedEntity = "contact",
+                ReferencedAttribute = "contactid"
+            };
+
+            var otherEntity = new EntityMetadata()
+            {
+                LogicalName = "contact"
+            };
+
+            var filteringService = new FilteringService(fakeFilterService.FakedObject);
+            var shouldGenerateRelationship = (filteringService as ICodeWriterFilterService).GenerateRelationship(metadata, otherEntity, fakeServiceProvider.FakedObject);
+
+            Environment.SetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES, null);
+            Environment.SetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, "account"), null);
+
+            A.CallTo(() => fakeFilterService.FakedObject.GenerateRelationship(A<RelationshipMetadataBase>.Ignored, A<EntityMetadata>.Ignored, A<IServiceProvider>.Ignored)).MustNotHaveHappened();
+            Assert.False(shouldGenerateRelationship);
         }
     }
 }
