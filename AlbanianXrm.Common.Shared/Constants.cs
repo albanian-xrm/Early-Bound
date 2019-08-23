@@ -15,5 +15,11 @@
         public const string ENVIRONMENT_REMOVEPROPERTYCHANGED = "AlbanianXrm.EarlyBound:RemovePropertyChanged";
         public const string ENVIRONMENT_ATTACHDEBUGGER = "AlbanianXrm.EarlyBound:AttachDebugger";
         public const string ENVIRONMENT_CACHEMEATADATA = "AlbanianXrm.EarlyBound:CacheMetadata";
+        public const string ENVIRONMENT_OPTIONSETENUMS = "AlbanianXrm.EarlyBound:OptionSetEnums";
+        public const string ENVIRONMENT_TWOOPTIONS = "AlbanianXrm.EarlyBound:TwoOptions";
+        public const string ENVIRONMENT_OPTIONSETENUMPROPERTIES = "AlbanianXrm.EarlyBound:OptionSetEnumProperties";      
+
+        public const string EntityLogicalNameAttributeType = "Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute";
+        public const string AttributeLogicalNameAttributeType = "Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute";
     }
 }

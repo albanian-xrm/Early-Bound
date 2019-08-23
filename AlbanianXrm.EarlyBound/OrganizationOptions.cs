@@ -58,6 +58,27 @@ namespace AlbanianXrm.EarlyBound
         [TypeConverter(typeof(YesNoConverter))]
         public bool RemovePropertyChanged { get; set; }
 
+        [Category("OptionSet Enums")]
+        [DisplayName("Generate Enums")]
+        [Description("Generate OptionSet Enums.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool OptionSetEnums { get; set; }
+
+        [Category("OptionSet Enums")]
+        [DisplayName("Generate TwoOptions")]
+        [Description("Generate Enumerations or Constants for TwoOptions attribute.")]          
+        [DefaultValue(TwoOptionsEnum.NO)]
+        [TypeConverter(typeof(DescriptionEnumConverter))]
+        public TwoOptionsEnum TwoOptions { get; set; }
+
+        [Category("OptionSet Enums")]
+        [DisplayName("Enum Properties")]
+        [Description("Generate Enum Properties")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool OptionSetEnumProperties { get; set; }
+
         public override string ToString()
         {
             return Key;

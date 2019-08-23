@@ -1,9 +1,12 @@
 ﻿using AlbanianXrm.Extensions;
 using Microsoft.Crm.Services.Utility;
+using Microsoft.Xrm.Sdk.Metadata;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace AlbanianXrm.CrmSvcUtilExtensions
 {
@@ -17,23 +20,17 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             {
                 System.Diagnostics.Debugger.Launch();
             }
-#endif
-            entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
-            allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES) ?? "").Split(","));
-            entityAttributes = new Dictionary<string, HashSet<string>>();
-            foreach (var entity in entities.Except(allAttributes))
-            {
-                entityAttributes.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, entity)) ?? "").Split(",")));
-            }
-        }
-
-        private HashSet<string> entities;
-        private HashSet<string> allAttributes;
-        private Dictionary<string, HashSet<string>> entityAttributes;
+#endif         
+        }     
 
         public void CustomizeCodeDom(CodeCompileUnit codeUnit, IServiceProvider services)
         {
-            FixStateCode(codeUnit);
+            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services);
+            optionSetEnumHandler.FixStateCode();
+            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS) ?? "") != "")
+            {
+                optionSetEnumHandler.GenerateOptionSets();
+            }
             var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED) ?? "") != "";
             if (removePropertyChanged)
             {
@@ -92,80 +89,6 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     }
                 }
             }
-        }
-
-        private void FixStateCode(CodeCompileUnit codeUnit)
-        {
-            foreach (CodeNamespace @namespace in codeUnit.Namespaces)
-            {
-                for (int i = 0; i < @namespace.Types.Count; i++)
-                {
-                    var thisType = @namespace.Types[i];
-                    if (!thisType.IsClass) continue;
-                    var entity = GetEntityLogicalName(thisType);
-                    if (entity == null || allAttributes.Contains(entity)) continue;
-                    if (entityAttributes.TryGetValue(entity, out HashSet<string> attributes) &&
-                        !attributes.Contains("statecode"))
-                    {
-                        for (int j = 0; j < thisType.Members.Count; j++)
-                        {
-                            if (thisType.Members[j] is CodeMemberProperty property)
-                            {
-                                var attribute = GetAttributeLogicalName(property);
-                                if (attribute != "statecode") continue;                               
-                                RemoveClass(codeUnit, property.Type.TypeArguments[0].BaseType); 
-                                thisType.Members.Remove(property);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void RemoveClass(CodeCompileUnit codeUnit, string baseType)
-        {
-            foreach (CodeNamespace @namespace in codeUnit.Namespaces)
-            {
-                foreach (CodeTypeDeclaration type in @namespace.Types)
-                {
-                    if ($"{@namespace.Name}.{type.Name}"==baseType)
-                    {
-                        @namespace.Types.Remove(type);
-                        return;
-                    }
-                }
-            }
-        }
-
-        private string GetEntityLogicalName(CodeTypeDeclaration type)
-        {
-            foreach (CodeAttributeDeclaration attribute in type.CustomAttributes)
-            {
-                if (attribute.Name == "Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute")
-                {
-                    if (attribute.Arguments[0].Value is CodePrimitiveExpression value)
-                    {
-                        return (string)value.Value;
-                    }
-                }
-            }
-            return null;
-        }
-
-        private string GetAttributeLogicalName(CodeTypeMember member)
-        {
-            foreach (CodeAttributeDeclaration attribute in member.CustomAttributes)
-            {
-                if (attribute.Name == "Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute")
-                {
-                    if (attribute.Arguments[0].Value is CodePrimitiveExpression value)
-                    {
-                        return (string)value.Value;
-                    }
-                }
-            }
-            return null;
         }
     }
 }
