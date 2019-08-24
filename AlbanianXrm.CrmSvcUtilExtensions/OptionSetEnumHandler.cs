@@ -241,6 +241,8 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 codeMemberField.Comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(value.Description), docComment: true));
                 codeMemberField.Comments.Add(new CodeCommentStatement("</summary>", docComment: true));
 
+                codeMemberField.CustomAttributes.Add(new CodeAttributeDeclaration("System.Runtime.Serialization.EnumMemberAttribute"));
+
                 optionSetEnum.Members.Add(codeMemberField);
             }
             return optionSetEnum;
