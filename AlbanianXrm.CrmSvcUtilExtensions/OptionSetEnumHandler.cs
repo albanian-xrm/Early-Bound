@@ -24,11 +24,14 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         private readonly bool OptionSetEnumProperties;
         private string CrmSvcUtilsVersion;
         private string CrmSvcUtilsName;
+        private bool removePropertyChanged;
 
-        public OptionSetEnumHandler(CodeCompileUnit codeUnit, IServiceProvider services)
+        public OptionSetEnumHandler(CodeCompileUnit codeUnit, IServiceProvider services, bool removePropertyChanged)
         {
             this.codeUnit = codeUnit;
             this.services = services;
+            var metadataProvider = (IMetadataProviderService)services.GetService(typeof(IMetadataProviderService));
+            this.organizationMetadata = metadataProvider.LoadMetadata();
             entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
             allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES) ?? "").Split(","));
             entityAttributes = new Dictionary<string, HashSet<string>>();
@@ -41,6 +44,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             OptionSetEnumProperties = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES) ?? "") != "";
             CrmSvcUtilsVersion = FileVersionInfo.GetVersionInfo(typeof(SdkMessage).Assembly.Location).FileVersion;
             CrmSvcUtilsName = typeof(SdkMessage).Assembly.GetName().Name;
+            this.removePropertyChanged = removePropertyChanged;
         }
 
         public void FixStateCode()
@@ -52,30 +56,44 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     var thisType = @namespace.Types[i];
                     if (!thisType.IsClass) continue;
                     var entity = GetEntityLogicalName(thisType);
-                    if (entity == null || allAttributes.Contains(entity)) continue;
-                    if (entityAttributes.TryGetValue(entity, out HashSet<string> attributes) &&
-                        !attributes.Contains("statecode"))
+                    if (entity == null) continue;
+                    for (int j = 0; j < thisType.Members.Count; j++)
                     {
-                        for (int j = 0; j < thisType.Members.Count; j++)
+                        if (thisType.Members[j] is CodeMemberProperty property)
                         {
-                            if (thisType.Members[j] is CodeMemberProperty property)
+                            var attribute = GetAttributeLogicalName(property);
+                            if (attribute != "statecode") continue;
+                            RemoveClass(property.Type.TypeArguments[0].BaseType);
+
+                            if (allAttributes.Contains(entity) ||
+                                entityAttributes.TryGetValue(entity, out HashSet<string> attributes) &&
+                                attributes.Contains("statecode"))
                             {
-                                var attribute = GetAttributeLogicalName(property);
-                                if (attribute != "statecode") continue;
-                                RemoveClass(property.Type.TypeArguments[0].BaseType);
-                                thisType.Members.Remove(property);
-                                break;
+                                if (!OptionSetEnumProperties)
+                                {
+                                    thisType.Members[j] = GenerateOptionSetProperty($"OptionSets.{property.Name}", property.Name, attribute);
+                                }
+                                if (GetOrCreateOptionSets(thisType.Members.ToEnumerable<CodeTypeDeclaration>(), out CodeTypeDeclaration optionSets))
+                                {
+                                    thisType.Members.Add(optionSets);
+                                }
+                                GenerateOptionSetProperty(organizationMetadata.Entities.First(x => x.LogicalName == entity), attribute, thisType, j, @namespace.Name, property.Name,
+                                                          new HashSet<string>(), new CodeTypeDeclaration(), optionSets);
                             }
+                            else
+                            {
+                                thisType.Members.Remove(property);
+                            }
+                            break;
                         }
+
                     }
                 }
             }
         }
 
         public void GenerateOptionSets()
-        {
-            var metadataProvider = (IMetadataProviderService)services.GetService(typeof(IMetadataProviderService));
-            this.organizationMetadata = metadataProvider.LoadMetadata();
+        {          
             GenerateOptionSetEnums();
         }
 
@@ -93,58 +111,18 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     if (!type.IsClass) continue;
                     var entity = GetEntityLogicalName(type);
                     if (entity == null) continue;
-                    var entityMetadata = organizationMetadata.Entities.First(x => x.LogicalName == entity);
                     if (GetOrCreateOptionSets(type.Members.ToEnumerable<CodeTypeDeclaration>(), out CodeTypeDeclaration optionSets))
                     {
                         type.Members.Add(optionSets);
                     }
-                    foreach (CodeTypeMember member in type.Members)
+                    for (int i = 0; i < type.Members.Count; i++)
                     {
-                        if (member is CodeMemberProperty property)
+                        if (type.Members[i] is CodeMemberProperty property)
                         {
-                            var attribute = GetAttributeLogicalName(member);
-                            if (attribute == null) continue;
-                            var attributeMetadata = entityMetadata.Attributes.FirstOrDefault(x => x.LogicalName == attribute);
-                            CodeTypeMember generatedMember = null;
-                            bool isGlobal = false;
-                            if (attributeMetadata is BooleanAttributeMetadata booleanAttribute)
-                            {
-                                if (TwoOptionsEnum)
-                                {
-                                    generatedMember = GenerateEnumTwoOptions(booleanAttribute);
-                                }
-                                if (TwoOptionsConstants)
-                                {
-                                    generatedMember = GenerateConstantTwoOptions(booleanAttribute);
-                                }
-                                isGlobal = booleanAttribute.OptionSet.IsGlobal == true;
-                            }
-                            else if (attributeMetadata is StateAttributeMetadata stateAttribute)
-                            {
-                                generatedMember = GenerateEnumOptions(attributeMetadata.SchemaName, stateAttribute.OptionSet.Options);
-                                isGlobal = stateAttribute.OptionSet.IsGlobal == true;
-                            }
-                            else if (attributeMetadata is StatusAttributeMetadata statusAttribute)
-                            {
-                                generatedMember = GenerateEnumOptions(attributeMetadata.SchemaName, statusAttribute.OptionSet.Options);
-                                isGlobal = statusAttribute.OptionSet.IsGlobal == true;
-                            }
-                            else if (attributeMetadata is PicklistAttributeMetadata picklistAttribute)
-                            {
-                                generatedMember = GenerateEnumOptions(attributeMetadata.SchemaName, picklistAttribute.OptionSet.Options);
-                                isGlobal = picklistAttribute.OptionSet.IsGlobal == true;
-                            }
-                            if (generatedMember == null) continue;
-                            if (isGlobal)
-                            {
-                                if (globalOptionsetNames.Contains(generatedMember.Name)) continue;
-                                globalOptionsetNames.Add(generatedMember.Name);
-                                globalOptionSets.Members.Add(generatedMember);
-                            }
-                            else
-                            {
-                                optionSets.Members.Add(generatedMember);
-                            }
+                            var attribute = GetAttributeLogicalName(property);
+                            if (attribute == null || attribute == "statecode") continue;                          
+                            GenerateOptionSetProperty(organizationMetadata.Entities.First(x => x.LogicalName == entity), attribute, type, i, @namespace.Name, property.Name,
+                                                      globalOptionsetNames, globalOptionSets, optionSets);                           
                         }
                     }
                     if (optionSets.Members.Count == 0)
@@ -156,6 +134,72 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 {
                     @namespace.Types.Remove(globalOptionSets);
                 }
+            }
+        }
+
+
+        private void GenerateOptionSetProperty(EntityMetadata entityMetadata, string attribute, CodeTypeDeclaration type, int i, string @namespace, string property,
+                                               HashSet<string> globalOptionsetNames, CodeTypeDeclaration globalOptionSets, CodeTypeDeclaration optionSets)
+        {
+            var attributeMetadata = entityMetadata.Attributes.FirstOrDefault(x => x.LogicalName == attribute);
+            CodeTypeDeclaration generatedMember = null;
+            bool isGlobal = false;
+            bool isTwoOptions = false;
+            if (attributeMetadata is BooleanAttributeMetadata booleanAttribute)
+            {
+                isGlobal = booleanAttribute.OptionSet.IsGlobal == true;
+                isTwoOptions = true;
+                if (TwoOptionsEnum)
+                {
+                    generatedMember = GenerateEnumTwoOptions(booleanAttribute);
+                    if (OptionSetEnumProperties)
+                    {
+                        type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, isTwoOptions: true);
+                    }
+                }
+                if (TwoOptionsConstants)
+                {
+
+                    generatedMember = GenerateConstantTwoOptions(booleanAttribute);
+                }
+            }
+            else if (attributeMetadata is StateAttributeMetadata stateAttribute)
+            {
+                generatedMember = GenerateEnumOptions(attributeMetadata.SchemaName, stateAttribute.OptionSet.Options);
+                isGlobal = stateAttribute.OptionSet.IsGlobal == true;
+                if (OptionSetEnumProperties)
+                {
+                    type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, isTwoOptions: true);
+                }
+            }
+            else if (attributeMetadata is StatusAttributeMetadata statusAttribute)
+            {
+                generatedMember = GenerateEnumOptions(attributeMetadata.SchemaName, statusAttribute.OptionSet.Options);
+                isGlobal = statusAttribute.OptionSet.IsGlobal == true;
+            }
+            else if (attributeMetadata is PicklistAttributeMetadata picklistAttribute)
+            {
+                generatedMember = GenerateEnumOptions(attributeMetadata.SchemaName, picklistAttribute.OptionSet.Options);
+                isGlobal = picklistAttribute.OptionSet.IsGlobal == true;
+            }
+            if (generatedMember == null) return;
+            if (isGlobal)
+            {
+                if (OptionSetEnumProperties)
+                {
+                    type.Members[i] = GenerateOptionSetProperty($"{@namespace}.OptionSets.{generatedMember.Name}", property, attribute);
+                }
+                if (globalOptionsetNames.Contains(generatedMember.Name)) return;
+                globalOptionsetNames.Add(generatedMember.Name);
+                globalOptionSets.Members.Add(generatedMember);
+            }
+            else
+            {
+                if (generatedMember.IsEnum && OptionSetEnumProperties)
+                {
+                    type.Members[i] = GenerateOptionSetProperty($"OptionSets.{generatedMember.Name}", property, attribute, isTwoOptions);
+                }
+                optionSets.Members.Add(generatedMember);
             }
         }
 
@@ -175,12 +219,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             return true;
         }
 
-        private CodeTypeMember GenerateEnumOptions(string schemaName, OptionMetadataCollection optionSet)
+        private CodeTypeDeclaration GenerateEnumOptions(string schemaName, OptionMetadataCollection optionSet)
         {
             return GenerateEnumOptions(schemaName, EnumItem.ToUniqueValues(optionSet));
         }
 
-        private CodeTypeMember GenerateEnumOptions(string schemaName, IEnumerable<EnumItem> values)
+        private CodeTypeDeclaration GenerateEnumOptions(string schemaName, IEnumerable<EnumItem> values)
         {
             CodeTypeDeclaration optionSetEnum = new CodeTypeDeclaration(schemaName);
             optionSetEnum.IsEnum = true;
@@ -202,12 +246,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             return optionSetEnum;
         }
 
-        private CodeTypeMember GenerateEnumTwoOptions(BooleanAttributeMetadata booleanAttribute)
+        private CodeTypeDeclaration GenerateEnumTwoOptions(BooleanAttributeMetadata booleanAttribute)
         {
             return GenerateEnumOptions(booleanAttribute.SchemaName, EnumItem.ToUniqueValues(booleanAttribute.OptionSet));
         }
 
-        private CodeTypeMember GenerateConstantTwoOptions(BooleanAttributeMetadata booleanAttribute)
+        private CodeTypeDeclaration GenerateConstantTwoOptions(BooleanAttributeMetadata booleanAttribute)
         {
             CodeTypeDeclaration booleanOptionSet = new CodeTypeDeclaration(booleanAttribute.SchemaName);
 
@@ -225,6 +269,124 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 booleanOptionSet.Members.Add(codeMemberField);
             }
             return booleanOptionSet;
+        }
+
+        internal CodeTypeMember GenerateOptionSetProperty(string type, string name, string logicalName, bool isTwoOptions = false)
+        {
+            CodeMemberProperty property = new CodeMemberProperty();
+            property.Type = new CodeTypeReference("System.Nullable", new CodeTypeReference(type));
+            property.Name = name;
+            property.Attributes = MemberAttributes.Public;
+            property.CustomAttributes.Add(new CodeAttributeDeclaration("Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute",
+                                                                      new CodeAttributeArgument(new CodePrimitiveExpression(logicalName))));
+
+            property.GetStatements.Add(
+                new CodeVariableDeclarationStatement(isTwoOptions ? typeof(bool) : typeof(Microsoft.Xrm.Sdk.OptionSetValue),
+                                                     "attributeValue",
+                                                      new CodeMethodInvokeExpression(
+                                                          new CodeMethodReferenceExpression(new CodeThisReferenceExpression(),
+                                                                                            "GetAttributeValue",
+                                                                                            new CodeTypeReference(isTwoOptions ? typeof(bool) : typeof(Microsoft.Xrm.Sdk.OptionSetValue))),
+                                                          new CodeExpression[] { new CodePrimitiveExpression(name) })));
+
+            var getReturnStatements = new CodeStatement[isTwoOptions ? 3 : 2];
+            if (isTwoOptions)
+            {
+                getReturnStatements[0] = new CodeVariableDeclarationStatement(
+                                              new CodeTypeReference(typeof(int)),
+                                              "value");
+                getReturnStatements[1] = new CodeConditionStatement(
+                                            new CodePropertyReferenceExpression(
+                                                  new CodeVariableReferenceExpression("attributeValue"),
+                                                  "Value"),
+                                            new CodeStatement[]
+                                            {
+                                               new CodeAssignStatement(
+                                                   new CodeVariableReferenceExpression("value"),
+                                                   new CodePrimitiveExpression(1))
+                                            },
+                                            new CodeStatement[]
+                                            {
+                                               new CodeAssignStatement(
+                                                   new CodeVariableReferenceExpression("value"),
+                                                   new CodePrimitiveExpression(0))
+                                            });
+
+            }
+            else
+            {
+                getReturnStatements[0] = new CodeVariableDeclarationStatement(
+                                              new CodeTypeReference(typeof(int)),
+                                              "value",
+                                              new CodePropertyReferenceExpression(
+                                                  new CodeVariableReferenceExpression("attributeValue"),
+                                                  "Value"));
+            }
+            getReturnStatements[getReturnStatements.Length - 1] = new CodeMethodReturnStatement(
+                              new CodeCastExpression(
+                                  new CodeTypeReference(type),
+                                  new CodeMethodInvokeExpression(
+                                      new CodeMethodReferenceExpression(
+                                          new CodeTypeReferenceExpression(typeof(Enum)),
+                                          "ToObject"),
+                                      new CodeTypeOfExpression(
+                                          new CodeTypeReference(type)),
+                                          isTwoOptions ?
+                                            (CodeExpression)new CodeVariableReferenceExpression("value") :
+                                             new CodePropertyReferenceExpression(
+                                                  new CodeVariableReferenceExpression("value"),
+                                                  "Value")
+                                  )));
+
+            property.GetStatements.Add(
+                new CodeConditionStatement(
+                      new CodeBinaryOperatorExpression(new CodeVariableReferenceExpression("attributeValue"), CodeBinaryOperatorType.IdentityInequality, new CodePrimitiveExpression(null)),
+                      getReturnStatements,
+                      new CodeStatement[]
+                      {
+                          new CodeMethodReturnStatement(new CodePrimitiveExpression(null))
+                      }));
+
+
+            if (!removePropertyChanged)
+            {
+                property.SetStatements.Add(
+                    new CodeMethodInvokeExpression(
+                        new CodeThisReferenceExpression(),
+                        "OnPropertyChanging",
+                        new CodeExpression[] { new CodePrimitiveExpression(name) }));
+            }
+            property.SetStatements.Add(
+                new CodeConditionStatement(
+                    new CodeBinaryOperatorExpression(new CodePropertySetValueReferenceExpression(), CodeBinaryOperatorType.ValueEquality, new CodePrimitiveExpression(null)),
+                    new CodeStatement[] //true statements
+                    {
+                          new CodeExpressionStatement(  new CodeMethodInvokeExpression(
+                                new CodeThisReferenceExpression(),
+                                "SetAttributeValue",
+                                new CodeExpression[] { new CodePrimitiveExpression(logicalName), new CodePropertySetValueReferenceExpression() }))
+                    },
+                    new CodeStatement[] //false statements
+                    {
+                           new CodeExpressionStatement(  new CodeMethodInvokeExpression(
+                                new CodeThisReferenceExpression(),
+                                "SetAttributeValue",
+                                new CodeExpression[] {
+                                    new CodePrimitiveExpression(logicalName),
+                                       isTwoOptions ?
+                                           new CodeBinaryOperatorExpression(new CodePrimitiveExpression(1), CodeBinaryOperatorType.ValueEquality, new CodeCastExpression(typeof(int), new CodePropertySetValueReferenceExpression())) :
+                                           (CodeExpression) new CodeObjectCreateExpression(typeof(Microsoft.Xrm.Sdk.OptionSetValue), new CodeCastExpression(typeof(int), new CodePropertySetValueReferenceExpression())) }))
+                    }
+                ));
+            if (!removePropertyChanged)
+            {
+                property.SetStatements.Add(
+                    new CodeMethodInvokeExpression(
+                        new CodeThisReferenceExpression(),
+                        "OnPropertyChanged",
+                        new CodeExpression[] { new CodePrimitiveExpression(name) }));
+            }
+            return property;
         }
 
         private void RemoveClass(string baseType)

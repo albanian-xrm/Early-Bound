@@ -1,12 +1,6 @@
-﻿using AlbanianXrm.Extensions;
-using Microsoft.Crm.Services.Utility;
-using Microsoft.Xrm.Sdk.Metadata;
+﻿using Microsoft.Crm.Services.Utility;
 using System;
 using System.CodeDom;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace AlbanianXrm.CrmSvcUtilExtensions
 {
@@ -25,13 +19,14 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         public void CustomizeCodeDom(CodeCompileUnit codeUnit, IServiceProvider services)
         {
-            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services);
+            var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED) ?? "") != "";
+            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services,removePropertyChanged);
             optionSetEnumHandler.FixStateCode();
             if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS) ?? "") != "")
             {
                 optionSetEnumHandler.GenerateOptionSets();
             }
-            var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED) ?? "") != "";
+          
             if (removePropertyChanged)
             {
                 for (var i = 0; i < codeUnit.Namespaces.Count; i++)
