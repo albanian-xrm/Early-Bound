@@ -276,20 +276,21 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             CodeMemberProperty property = new CodeMemberProperty();
             property.Type = new CodeTypeReference("System.Nullable", new CodeTypeReference(type));
             property.Name = name;
-            property.Attributes = MemberAttributes.Public;
+            property.Attributes = MemberAttributes.Public | MemberAttributes.Final;
             property.CustomAttributes.Add(new CodeAttributeDeclaration("Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute",
                                                                       new CodeAttributeArgument(new CodePrimitiveExpression(logicalName))));
 
+            var typeReference = isTwoOptions ? new CodeTypeReference(typeof(Nullable)) { TypeArguments = { new CodeTypeReference(typeof(bool)) } } : new CodeTypeReference(typeof(Microsoft.Xrm.Sdk.OptionSetValue));
             property.GetStatements.Add(
-                new CodeVariableDeclarationStatement(isTwoOptions ? typeof(bool) : typeof(Microsoft.Xrm.Sdk.OptionSetValue),
+                new CodeVariableDeclarationStatement(typeReference,
                                                      "attributeValue",
                                                       new CodeMethodInvokeExpression(
                                                           new CodeMethodReferenceExpression(new CodeThisReferenceExpression(),
                                                                                             "GetAttributeValue",
-                                                                                            new CodeTypeReference(isTwoOptions ? typeof(bool) : typeof(Microsoft.Xrm.Sdk.OptionSetValue))),
-                                                          new CodeExpression[] { new CodePrimitiveExpression(name) })));
+                                                                                            typeReference),
+                                                          new CodeExpression[] { new CodePrimitiveExpression(logicalName) })));
 
-            var getReturnStatements = new CodeStatement[isTwoOptions ? 3 : 2];
+            var getReturnStatements = new CodeStatement[isTwoOptions ? 3 : 1];
             if (isTwoOptions)
             {
                 getReturnStatements[0] = new CodeVariableDeclarationStatement(
@@ -312,16 +313,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                                                    new CodePrimitiveExpression(0))
                                             });
 
-            }
-            else
-            {
-                getReturnStatements[0] = new CodeVariableDeclarationStatement(
-                                              new CodeTypeReference(typeof(int)),
-                                              "value",
-                                              new CodePropertyReferenceExpression(
-                                                  new CodeVariableReferenceExpression("attributeValue"),
-                                                  "Value"));
-            }
+            }         
             getReturnStatements[getReturnStatements.Length - 1] = new CodeMethodReturnStatement(
                               new CodeCastExpression(
                                   new CodeTypeReference(type),
@@ -334,7 +326,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                                           isTwoOptions ?
                                             (CodeExpression)new CodeVariableReferenceExpression("value") :
                                              new CodePropertyReferenceExpression(
-                                                  new CodeVariableReferenceExpression("value"),
+                                                  new CodeVariableReferenceExpression("attributeValue"),
                                                   "Value")
                                   )));
 
