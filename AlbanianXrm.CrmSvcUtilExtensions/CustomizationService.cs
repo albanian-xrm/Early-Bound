@@ -14,12 +14,19 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             {
                 System.Diagnostics.Debugger.Launch();
             }
-#endif
-        }
+#endif         
+        }     
 
         public void CustomizeCodeDom(CodeCompileUnit codeUnit, IServiceProvider services)
         {
             var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED) ?? "") != "";
+            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services,removePropertyChanged);
+            optionSetEnumHandler.FixStateCode();
+            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS) ?? "") != "")
+            {
+                optionSetEnumHandler.GenerateOptionSets();
+            }
+          
             if (removePropertyChanged)
             {
                 for (var i = 0; i < codeUnit.Namespaces.Count; i++)
