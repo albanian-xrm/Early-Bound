@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="CustomizationService.cs" />
     <Compile Include="EnumItem.cs" />
+    <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="FilteringService.cs" />
     <Compile Include="MetadataService.cs" />
     <Compile Include="OptionSetEnumHandler.cs" />

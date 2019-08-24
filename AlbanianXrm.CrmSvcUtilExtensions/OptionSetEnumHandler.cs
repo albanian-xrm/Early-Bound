@@ -1,4 +1,5 @@
-﻿using AlbanianXrm.Extensions;
+﻿using AlbanianXrm.CrmSvcUtilExtensions.Extensions;
+using AlbanianXrm.Extensions;
 using Microsoft.Crm.Services.Utility;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
@@ -82,20 +83,9 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         {
             foreach (CodeNamespace @namespace in codeUnit.Namespaces)
             {
-                CodeTypeDeclaration globalOptionSets = null;
-                foreach (CodeTypeDeclaration type in @namespace.Types)
+                var globalOptionsetNames = new HashSet<string>();
+                if (GetOrCreateOptionSets(@namespace.Types.ToEnumerable(), out CodeTypeDeclaration globalOptionSets))
                 {
-                    if (type.Name == "OptionSets")
-                    {
-                        globalOptionSets = type;
-                        break;
-                    }
-                }
-                if (globalOptionSets == null)
-                {
-                    globalOptionSets = new CodeTypeDeclaration("OptionSets");
-                    globalOptionSets.Attributes = MemberAttributes.Static | MemberAttributes.Public;
-                    globalOptionSets.IsClass = true;
                     @namespace.Types.Add(globalOptionSets);
                 }
                 foreach (CodeTypeDeclaration type in @namespace.Types)
@@ -104,23 +94,8 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     var entity = GetEntityLogicalName(type);
                     if (entity == null) continue;
                     var entityMetadata = organizationMetadata.Entities.First(x => x.LogicalName == entity);
-                    CodeTypeDeclaration optionSets = null;
-                    foreach (CodeTypeMember member in type.Members)
+                    if (GetOrCreateOptionSets(type.Members.ToEnumerable<CodeTypeDeclaration>(), out CodeTypeDeclaration optionSets))
                     {
-                        if (member is CodeTypeDeclaration typeDeclaration)
-                        {
-                            if (typeDeclaration.Name == "OptionSets")
-                            {
-                                optionSets = typeDeclaration;
-                                break;
-                            }
-                        }
-                    }
-                    if (optionSets == null)
-                    {
-                        optionSets = new CodeTypeDeclaration("OptionSets");
-                        optionSets.Attributes = MemberAttributes.Static | MemberAttributes.Public;
-                        optionSets.IsClass = true;
                         type.Members.Add(optionSets);
                     }
                     foreach (CodeTypeMember member in type.Members)
@@ -162,16 +137,8 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                             if (generatedMember == null) continue;
                             if (isGlobal)
                             {
-                                bool exists = false;
-                                foreach (CodeTypeMember globalOptionSet in globalOptionSets.Members)
-                                {
-                                    if(globalOptionSet.Name==generatedMember.Name)
-                                    {
-                                        exists = true;
-                                        break;
-                                    }
-                                }
-                                if (exists) continue;
+                                if (globalOptionsetNames.Contains(generatedMember.Name)) continue;
+                                globalOptionsetNames.Add(generatedMember.Name);
                                 globalOptionSets.Members.Add(generatedMember);
                             }
                             else
@@ -190,6 +157,22 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     @namespace.Types.Remove(globalOptionSets);
                 }
             }
+        }
+
+        private bool GetOrCreateOptionSets(IEnumerable<CodeTypeDeclaration> codeTypeDeclarations, out CodeTypeDeclaration optionSets)
+        {
+            foreach (CodeTypeDeclaration type in codeTypeDeclarations)
+            {
+                if (type.Name == "OptionSets")
+                {
+                    optionSets = type;
+                    return false;
+                }
+            }
+            optionSets = new CodeTypeDeclaration("OptionSets");
+            optionSets.TypeAttributes = TypeAttributes.Public | TypeAttributes.Sealed;
+            optionSets.IsClass = true;
+            return true;
         }
 
         private CodeTypeMember GenerateEnumOptions(string schemaName, OptionMetadataCollection optionSet)
