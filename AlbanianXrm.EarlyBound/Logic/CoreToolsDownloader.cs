@@ -40,13 +40,15 @@ namespace AlbanianXrm.EarlyBound.Logic
                                           .OrderByDescending(x => x.Version).FirstOrDefault();
                     if (coreToolsPackage == null)
                     {
-                        throw new Exception($"{coreToolsId} package not found on {myPlugin.options.NuGetFeed}");
+                        args.Result = $"{coreToolsId} package not found on {myPlugin.options.NuGetFeed}";
+                        return;
                     }
                     var memoryStreamPackage = repo.GetPackages().Where(x => x.Id == memoryStreamId && x.IsLatestVersion)
                                      .OrderByDescending(x => x.Version).FirstOrDefault();
                     if (memoryStreamPackage == null)
                     {
-                        throw new Exception($"{memoryStreamId} package not found on {myPlugin.options.NuGetFeed}");
+                        args.Result = $"{memoryStreamId} package not found on {myPlugin.options.NuGetFeed}";
+                        return;
                     }
                     foreach (var file in coreToolsPackage.GetFiles().Concat(memoryStreamPackage.GetFiles()))
                     {
@@ -61,6 +63,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                         if (args.Error != null)
                         {
                             MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        if (args.Result != null)
+                        {
+                            MessageBox.Show(args.Result.ToString(), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         myPlugin.options.CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(myPlugin.options.CrmSvcUtils);
                         myPlugin.options.RecycableMemoryStream = MemoryStreamEditor.GetVersion(myPlugin.options.RecycableMemoryStream);

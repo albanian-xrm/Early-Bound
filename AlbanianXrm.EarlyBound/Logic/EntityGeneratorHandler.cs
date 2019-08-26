@@ -41,8 +41,16 @@ namespace AlbanianXrm.EarlyBound.Logic
                     dir = Path.Combine(dir, folder);
 
 
-                    if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe"))) throw new Exception("CrmSvcUtil.exe is missing. Please download CoreTools.");
-                    if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll"))) throw new Exception("Microsoft.IO.RecyclableMemoryStream.dll is missing. Please download CoreTools.");
+                    if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe")))
+                    {
+                        args.Result = "CrmSvcUtil.exe is missing. Please download CoreTools.";
+                        return;
+                    }
+                    if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll")))
+                    {
+                        args.Result = "Microsoft.IO.RecyclableMemoryStream.dll is missing. Please download CoreTools.";
+                        return;
+                    }
                     Process process = new Process();
                     var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
                     process.StartInfo.Arguments = "/connectionstring:" + connectionString +
@@ -190,6 +198,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                         if (args.Error != null)
                         {
                             MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        if (args.Result != null)
+                        {
+                            MessageBox.Show(args.Result.ToString(), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }
                     catch (Exception ex)
