@@ -58,6 +58,13 @@ namespace AlbanianXrm.EarlyBound
         [TypeConverter(typeof(YesNoConverter))]
         public bool RemovePropertyChanged { get; set; }
 
+        [Category("General")]
+        [DisplayName("Remove Prefix")]
+        [Description("Remove Publisher Prefix from Entities, Attributes and Optionsets.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool RemovePublisherPrefix { get; set; }
+
         [Category("OptionSet Enums")]
         [DisplayName("Generate Enums")]
         [Description("Generate OptionSet Enums.")]
