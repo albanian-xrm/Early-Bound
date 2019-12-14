@@ -12,6 +12,7 @@ using System;
 using AlbanianXrm.Common.Shared;
 using System.Runtime.Serialization;
 using System.Xml;
+using System.Drawing;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
@@ -19,9 +20,9 @@ namespace AlbanianXrm.EarlyBound.Logic
     {
         MyPluginControl myPlugin;
         TreeViewAdv metadataTree;
-        TextBoxExt output;
+        RichTextBox output;
 
-        public EntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, TextBoxExt output)
+        public EntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox output)
         {
             this.myPlugin = myPlugin;
             this.metadataTree = metadataTree;
@@ -191,7 +192,12 @@ namespace AlbanianXrm.EarlyBound.Logic
                             worker.ReportProgress(0, line);
                         }
                     }
+                    while (!process.StandardError.EndOfStream)
+                    {
+                        worker.ReportProgress(50, process.StandardError.ReadLine());
+                    }
                     process.WaitForExit();
+                    worker.ReportProgress(100, "Ended");
                 },
                 PostWorkCallBack = (args) =>
                 {
@@ -217,7 +223,20 @@ namespace AlbanianXrm.EarlyBound.Logic
                 },
                 ProgressChanged = (args) =>
                 {
-                    output.AppendText(args.UserState + Environment.NewLine);
+
+
+                    if (args.ProgressPercentage == 0)
+                    {
+                        output.AppendText(args.UserState + Environment.NewLine);
+                    }
+                    else if (args.ProgressPercentage == 50)
+                    {
+                        output.AppendText(args.UserState + Environment.NewLine, Color.Red);
+                    }
+                    else if (args.ProgressPercentage == 100)
+                    {
+                        Debug.WriteLine(args.UserState);
+                    }
                 }
             });
 

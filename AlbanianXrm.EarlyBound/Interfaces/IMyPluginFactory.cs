@@ -1,6 +1,7 @@
 ﻿
 using AlbanianXrm.EarlyBound.Logic;
 using Syncfusion.Windows.Forms.Tools;
+using System.Windows.Forms;
 
 namespace AlbanianXrm.EarlyBound.Interfaces
 {
@@ -10,7 +11,7 @@ namespace AlbanianXrm.EarlyBound.Interfaces
         CoreToolsDownloader NewCoreToolsDownloader(MyPluginControl myPlugin);
         EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree);
         RelationshipMetadataHandler NewRelationshipMetadataHandler(MyPluginControl myPlugin);
-        EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, TextBoxExt txtOutput);
+        EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox txtOutput);
         PluginViewModel NewPluginViewModel();
     }
 }

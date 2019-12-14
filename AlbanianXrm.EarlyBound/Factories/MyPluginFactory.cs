@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace AlbanianXrm.EarlyBound.Factories
 {
@@ -31,7 +32,7 @@ namespace AlbanianXrm.EarlyBound.Factories
             return new RelationshipMetadataHandler(myPlugin);
         }
 
-        public EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, TextBoxExt txtOutput)
+        public EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox txtOutput)
         {
             return new EntityGeneratorHandler(myPlugin, metadataTree, txtOutput);
         }
