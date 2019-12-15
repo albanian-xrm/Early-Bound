@@ -20,7 +20,7 @@ For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
     <copyright>Copyright 2019</copyright>
     <tags>XrmToolBox Plugins Xrm AlbanianXrm EarlyBound</tags>
     <dependencies>
-      <dependency id="XrmToolBox" version="1.2017.2.13" />
+      <dependency id="XrmToolBox" version="1.2019.2.30" />
     </dependencies>
   </metadata>
   <files>
