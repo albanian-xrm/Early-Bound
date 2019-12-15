@@ -25,7 +25,6 @@ namespace AlbanianXrm.EarlyBound.Logic
                 {
                     //ID of the package to be looked 
                     string coreToolsId = "Microsoft.CrmSdk.CoreTools";
-                    string memoryStreamId = "Microsoft.IO.RecyclableMemoryStream";
 
                     //Connect to the official package repository IPackageRepository
                     var repo = NuGet.PackageRepositoryFactory.Default.CreateRepository(myPlugin.options.NuGetFeed);
@@ -34,7 +33,6 @@ namespace AlbanianXrm.EarlyBound.Logic
                     string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
                     dir = Path.Combine(dir, folder);
                     Directory.CreateDirectory(dir);
-                    //    NuGet.PackageManager packageManager = new NuGet.PackageManager(repo, dir);
 
                     var coreToolsPackage = repo.GetPackages().Where(x => x.Id == coreToolsId && x.IsLatestVersion)
                                           .OrderByDescending(x => x.Version).FirstOrDefault();
@@ -42,15 +40,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                     {
                         args.Result = $"{coreToolsId} package not found on {myPlugin.options.NuGetFeed}";
                         return;
-                    }
-                    var memoryStreamPackage = repo.GetPackages().Where(x => x.Id == memoryStreamId && x.IsLatestVersion)
-                                     .OrderByDescending(x => x.Version).FirstOrDefault();
-                    if (memoryStreamPackage == null)
-                    {
-                        args.Result = $"{memoryStreamId} package not found on {myPlugin.options.NuGetFeed}";
-                        return;
-                    }
-                    foreach (var file in coreToolsPackage.GetFiles().Concat(memoryStreamPackage.GetFiles()))
+                    }              
+                    foreach (var file in coreToolsPackage.GetFiles())
                     {
                         using (var stream = File.Create(Path.Combine(dir, Path.GetFileName(file.Path))))
                             file.GetStream().CopyTo(stream);

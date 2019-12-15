@@ -20,11 +20,12 @@ For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
     <copyright>Copyright 2019</copyright>
     <tags>XrmToolBox Plugins Xrm AlbanianXrm EarlyBound</tags>
     <dependencies>
-      <dependency id="XrmToolBox" version="1.2017.2.13" />
+      <dependency id="XrmToolBox" version="1.2019.2.30" />
     </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\ILMerge\AlbanianXrm.EarlyBound.dll" target="lib\net462\plugins" />
     <file src="..\AlbanianXrm.CrmSvcUtilExtensions\bin\Release\AlbanianXrm.CrmSvcUtilExtensions.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
+    <file src="..\AlbanianXrm.CrmSvcUtilExtensions\bin\Release\Microsoft.IO.RecyclableMemoryStream.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
   </files>
 </package>
