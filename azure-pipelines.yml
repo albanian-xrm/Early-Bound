@@ -13,7 +13,15 @@ steps:
   env: 
     BRANCH: $(Build.SourceBranch)
   displayName: 'Set Configuration Variable'
-  
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'AlbanianXrm SonarCloud'
+    organization: 'albanian-xrm'
+    scannerMode: 'MSBuild'
+    projectKey: 'albanian-xrm_Early-Bound'
+    projectName: 'Early-Bound'
+
 - task: NuGetToolInstaller@0
   inputs:
     versionSpec: '4.9.x' 
@@ -100,6 +108,12 @@ steps:
     platform: 'AnyCPU'
     configuration: $(MyVars.configuration)
   displayName: 'Running unit tests'
+
+- task: SonarCloudAnalyze@1
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
 
 - task: NuGetCommand@2
   displayName: 'Creating NuGet package'
