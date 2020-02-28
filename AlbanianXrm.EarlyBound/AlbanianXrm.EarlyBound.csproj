@@ -155,9 +155,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.VisualStudio.CoreUtility">
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Activities" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -253,6 +250,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj">
+      <Project>{cd3b9b8d-406a-4c3d-b343-d88658c3c6a0}</Project>
+      <Name>AlbanianXrm.ForrestSerializer</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems" Label="Shared" />
   <Import Project="..\AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.projitems" Label="Shared" />

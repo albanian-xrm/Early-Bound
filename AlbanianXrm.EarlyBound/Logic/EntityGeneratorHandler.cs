@@ -13,14 +13,15 @@ using AlbanianXrm.Common.Shared;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Drawing;
+using AlbanianXrm.ForrestSerializer;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class EntityGeneratorHandler
     {
-        MyPluginControl myPlugin;
-        TreeViewAdv metadataTree;
-        RichTextBox output;
+        readonly MyPluginControl myPlugin;
+        readonly TreeViewAdv metadataTree;
+        readonly RichTextBox output;
 
         public EntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox output)
         {
@@ -74,6 +75,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     HashSet<string> relationshipEntities = new HashSet<string>();
                     List<string> allAttributes = new List<string>();
                     List<string> allRelationships = new List<string>();
+                    Dictionary<string, EntitySelection> entitySelections = new Dictionary<string, EntitySelection>();
 
                     foreach (TreeNodeAdv entity in metadataTree.Nodes)
                     {
@@ -81,6 +83,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                         {
                             EntityMetadata metadata = (EntityMetadata)entity.Tag;
                             entities.Add(metadata.LogicalName);
+                            EntitySelection entitySelection = new EntitySelection(metadata.LogicalName);
+                            entitySelections.Add(entitySelection.LogicalName, entitySelection);
                             foreach (TreeNodeAdv item in entity.Nodes)
                             {
                                 if (item.Text == "Attributes")
@@ -88,6 +92,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     if (item.CheckState == CheckState.Checked)
                                     {
                                         allAttributes.Add(metadata.LogicalName);
+                                        entitySelection.AllAttributes = true;
                                     }
                                     else if (item.CheckState == CheckState.Indeterminate)
                                     {
@@ -98,6 +103,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                             {
                                                 var attributeMetadata = (AttributeMetadata)attribute.Tag;
                                                 attributes.Add(attributeMetadata.LogicalName);
+                                                entitySelection.SelectedAttributes.Add(attributeMetadata.LogicalName);
                                             }
                                         }
                                         process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, metadata.LogicalName), string.Join(",", attributes));
@@ -108,6 +114,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     if (item.CheckState == CheckState.Checked)
                                     {
                                         allRelationships.Add(metadata.LogicalName);
+                                        entitySelection.AllRelationships = true;
                                         foreach (TreeNodeAdv relationship in item.Nodes)
                                         {
                                             if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadataO)
@@ -133,6 +140,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                             {
                                                 if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadata)
                                                 {
+                                                    entitySelection.SelectedRelationships.Add(relationshipMetadata.SchemaName);
                                                     if (relationshipMetadata.ReferencingEntity == metadata.LogicalName)
                                                     {
                                                         relationshipsN1.Add(relationshipMetadata.SchemaName);
@@ -146,6 +154,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                 }
                                                 else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
                                                 {
+                                                    entitySelection.SelectedRelationships.Add(relationshipMetadataM.SchemaName);
                                                     relationshipsNN.Add(relationshipMetadataM.SchemaName);
                                                     if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
                                                     if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
@@ -177,6 +186,8 @@ namespace AlbanianXrm.EarlyBound.Logic
 
                     process.EnableRaisingEvents = true;
                     process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
+                    ForrestSerializer.ForrestSerializer serializer = new ForrestSerializer.ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" :  Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb");
+                    serializer.Serialize(entitySelections);
                     process.Start();
 
                     while (!process.StandardOutput.EndOfStream)
