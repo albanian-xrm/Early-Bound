@@ -10,23 +10,26 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         public CustomizationService()
         {
 #if DEBUG
-            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER) ?? "") != "")
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER)))
             {
                 System.Diagnostics.Debugger.Launch();
             }
 #endif         
-        }     
+        }
 
         public void CustomizeCodeDom(CodeCompileUnit codeUnit, IServiceProvider services)
         {
-            var removePropertyChanged = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED) ?? "") != "";
-            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services,removePropertyChanged);
+            if (codeUnit == null) throw new ArgumentNullException(nameof(codeUnit));
+            if (services == null) throw new ArgumentNullException(nameof(services));
+
+            var removePropertyChanged = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED));
+            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services, removePropertyChanged);
             optionSetEnumHandler.FixStateCode();
-            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS) ?? "") != "")
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS)))
             {
                 optionSetEnumHandler.GenerateOptionSets();
             }
-          
+
             if (removePropertyChanged)
             {
                 for (var i = 0; i < codeUnit.Namespaces.Count; i++)

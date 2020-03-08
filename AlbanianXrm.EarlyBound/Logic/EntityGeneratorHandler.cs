@@ -13,14 +13,16 @@ using AlbanianXrm.Common.Shared;
 using System.Runtime.Serialization;
 using System.Xml;
 using System.Drawing;
+using AlbanianXrm.EarlyBound.Properties;
+using System.Globalization;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class EntityGeneratorHandler
     {
-        MyPluginControl myPlugin;
-        TreeViewAdv metadataTree;
-        RichTextBox output;
+        readonly MyPluginControl myPlugin;
+        readonly TreeViewAdv metadataTree;
+        readonly RichTextBox output;
 
         public EntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox output)
         {
@@ -34,22 +36,22 @@ namespace AlbanianXrm.EarlyBound.Logic
             output.ResetText();
             myPlugin.StartWorkAsync(new WorkAsyncInfo()
             {
-                Message = $"Generating Early-Bound Classes",
+                Message = Resources.GENERATING_ENTITIES,
                 Work = (worker, args) =>
                 {
-                    string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToLower();
+                    string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
                     string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
                     dir = Path.Combine(dir, folder);
 
 
                     if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe")))
                     {
-                        args.Result = "CrmSvcUtil.exe is missing. Please download CoreTools.";
+                        args.Result = Resources.CRMSVCUTIL_MISSING;
                         return;
                     }
-                    if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll")))
+                    if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll"))) // specific version included with the plugin
                     {
-                        args.Result = "Microsoft.IO.RecyclableMemoryStream.dll is missing. Please download CoreTools.";
+                        args.Result = Resources.MEMORYSTREAM_MISSING;
                         return;
                     }
                     Process process = new Process();
@@ -74,6 +76,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     HashSet<string> relationshipEntities = new HashSet<string>();
                     List<string> allAttributes = new List<string>();
                     List<string> allRelationships = new List<string>();
+                    Dictionary<string, EntitySelection> entitySelections = new Dictionary<string, EntitySelection>();
 
                     foreach (TreeNodeAdv entity in metadataTree.Nodes)
                     {
@@ -81,6 +84,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                         {
                             EntityMetadata metadata = (EntityMetadata)entity.Tag;
                             entities.Add(metadata.LogicalName);
+                            EntitySelection entitySelection = new EntitySelection(metadata.LogicalName);
+                            entitySelections.Add(entitySelection.LogicalName, entitySelection);
                             foreach (TreeNodeAdv item in entity.Nodes)
                             {
                                 if (item.Text == "Attributes")
@@ -88,6 +93,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     if (item.CheckState == CheckState.Checked)
                                     {
                                         allAttributes.Add(metadata.LogicalName);
+                                        entitySelection.AllAttributes = true;
                                     }
                                     else if (item.CheckState == CheckState.Indeterminate)
                                     {
@@ -98,9 +104,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                                             {
                                                 var attributeMetadata = (AttributeMetadata)attribute.Tag;
                                                 attributes.Add(attributeMetadata.LogicalName);
+                                                entitySelection.SelectedAttributes.Add(attributeMetadata.LogicalName);
                                             }
                                         }
-                                        process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, metadata.LogicalName), string.Join(",", attributes));
+                                        process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, metadata.LogicalName), string.Join(",", attributes));
                                     }
                                 }
                                 else if (item.Text == "Relationships")
@@ -108,6 +115,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     if (item.CheckState == CheckState.Checked)
                                     {
                                         allRelationships.Add(metadata.LogicalName);
+                                        entitySelection.AllRelationships = true;
                                         foreach (TreeNodeAdv relationship in item.Nodes)
                                         {
                                             if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadataO)
@@ -133,6 +141,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                             {
                                                 if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadata)
                                                 {
+                                                    entitySelection.SelectedRelationships.Add(relationshipMetadata.SchemaName);
                                                     if (relationshipMetadata.ReferencingEntity == metadata.LogicalName)
                                                     {
                                                         relationshipsN1.Add(relationshipMetadata.SchemaName);
@@ -146,6 +155,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                 }
                                                 else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
                                                 {
+                                                    entitySelection.SelectedRelationships.Add(relationshipMetadataM.SchemaName);
                                                     relationshipsNN.Add(relationshipMetadataM.SchemaName);
                                                     if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
                                                     if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
@@ -153,9 +163,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                 }
                                             }
                                         }
-                                        if (relationships1N.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, metadata.LogicalName), string.Join(",", relationships1N.Distinct()));
-                                        if (relationshipsN1.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSN1, metadata.LogicalName), string.Join(",", relationshipsN1.Distinct()));
-                                        if (relationshipsNN.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSNN, metadata.LogicalName), string.Join(",", relationshipsNN.Distinct()));
+                                        if (relationships1N.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPS1N, metadata.LogicalName), string.Join(",", relationships1N.Distinct()));
+                                        if (relationshipsN1.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSN1, metadata.LogicalName), string.Join(",", relationshipsN1.Distinct()));
+                                        if (relationshipsNN.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSNN, metadata.LogicalName), string.Join(",", relationshipsNN.Distinct()));
                                     }
                                 }
                             }
@@ -170,19 +180,21 @@ namespace AlbanianXrm.EarlyBound.Logic
                     if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
                     if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
                     if (options.CurrentOrganizationOptions.OptionSetEnumProperties) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES, "YES");
-                    process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_TWOOPTIONS, ((int)options.CurrentOrganizationOptions.TwoOptions).ToString());
+                    process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_TWOOPTIONS, ((int)options.CurrentOrganizationOptions.TwoOptions).ToString(CultureInfo.InvariantCulture));
 #if DEBUG
                     if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
 #endif
 
                     process.EnableRaisingEvents = true;
                     process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
+                    ForrestSerializer serializer = new ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb");
+                    serializer.Serialize(entitySelections);
                     process.Start();
 
                     while (!process.StandardOutput.EndOfStream)
                     {
                         var line = process.StandardOutput.ReadLine();
-                        if (line.EndsWith(Constants.CONSOLE_METADATA))
+                        if (line.EndsWith(Constants.CONSOLE_METADATA, StringComparison.InvariantCulture))
                         {
                             line = TrimEnd(line, Constants.CONSOLE_METADATA);
                             SerializeMetadata(process.StandardInput, entities, relationshipEntities);
@@ -212,7 +224,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                             MessageBox.Show(args.Result.ToString(), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     }
+#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                     catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -251,12 +265,13 @@ namespace AlbanianXrm.EarlyBound.Logic
             }
             var metadata = new OrganizationMetadata(entityMetadatas, myPlugin.optionSetMetadatas);
             var serializer = new DataContractSerializer(typeof(OrganizationMetadata));
-            serializer.WriteObject(new XmlTextWriter(standardInput), metadata);
+            using (XmlTextWriter writer = new XmlTextWriter(new StreamWriter(standardInput.BaseStream, standardInput.Encoding, 128, true)))
+                serializer.WriteObject(writer, metadata);
             standardInput.WriteLine();
             standardInput.WriteLine(Constants.CONSOLE_ENDSTREAM);
         }
 
-        private string TrimEnd(string line, string keyword)
+        private static string TrimEnd(string line, string keyword)
         {
             return line.Length == keyword.Length ?
                         null :

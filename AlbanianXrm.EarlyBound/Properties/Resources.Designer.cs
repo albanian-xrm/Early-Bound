@@ -19,7 +19,7 @@ namespace AlbanianXrm.EarlyBound.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -61,12 +61,147 @@ namespace AlbanianXrm.EarlyBound.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection has changed to: {0}.
+        /// </summary>
+        internal static string CONNECTION_CHANGED {
+            get {
+                return ResourceManager.GetString("CONNECTION_CHANGED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To contribute to this plugin visit its code repository.
+        /// </summary>
+        internal static string CONTRIBUTE_NOTIFICATION {
+            get {
+                return ResourceManager.GetString("CONTRIBUTE_NOTIFICATION", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} package not found on {1}.
+        /// </summary>
+        internal static string CORE_TOOLS_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("CORE_TOOLS_NOT_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to CrmSvcUtil.exe is missing. Please download CoreTools..
+        /// </summary>
+        internal static string CRMSVCUTIL_MISSING {
+            get {
+                return ResourceManager.GetString("CRMSVCUTIL_MISSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting latest version of Core Tools.
+        /// </summary>
+        internal static string DOWNLOADING_CORE_TOOLS {
+            get {
+                return ResourceManager.GetString("DOWNLOADING_CORE_TOOLS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to C# (*.cs)|*.cs.
+        /// </summary>
+        internal static string FILTER_C_SHARP {
+            get {
+                return ResourceManager.GetString("FILTER_C_SHARP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visual Basic (*.vb)|*.vb.
+        /// </summary>
+        internal static string FILTER_VISUAL_BASIC {
+            get {
+                return ResourceManager.GetString("FILTER_VISUAL_BASIC", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generating Early-Bound Classes.
+        /// </summary>
+        internal static string GENERATING_ENTITIES {
+            get {
+                return ResourceManager.GetString("GENERATING_ENTITIES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting attributes for entity {0}.
+        /// </summary>
+        internal static string GETTING_ATTRIBUTES {
+            get {
+                return ResourceManager.GetString("GETTING_ATTRIBUTES", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting entity list.
+        /// </summary>
+        internal static string GETTING_ENTITY_LIST {
+            get {
+                return ResourceManager.GetString("GETTING_ENTITY_LIST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Getting relationships for entity {0}.
+        /// </summary>
+        internal static string GETTING_RELATIONSHIPS {
+            get {
+                return ResourceManager.GetString("GETTING_RELATIONSHIPS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Logo {
             get {
                 object obj = ResourceManager.GetObject("Logo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft.IO.RecyclableMemoryStream.dll is missing. Please reinstall Albanian Early Bound..
+        /// </summary>
+        internal static string MEMORYSTREAM_MISSING {
+            get {
+                return ResourceManager.GetString("MEMORYSTREAM_MISSING", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Saving current settings.
+        /// </summary>
+        internal static string SAVING_SETTINGS {
+            get {
+                return ResourceManager.GetString("SAVING_SETTINGS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings found and loaded.
+        /// </summary>
+        internal static string SETTINGS_FOUND {
+            get {
+                return ResourceManager.GetString("SETTINGS_FOUND", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Settings not found =&gt; a new settings file has been created!.
+        /// </summary>
+        internal static string SETTINGS_NOT_FOUND {
+            get {
+                return ResourceManager.GetString("SETTINGS_NOT_FOUND", resourceCulture);
             }
         }
     }

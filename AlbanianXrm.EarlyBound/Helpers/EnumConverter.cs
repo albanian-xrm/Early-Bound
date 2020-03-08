@@ -8,7 +8,7 @@ namespace AlbanianXrm.EarlyBound.Helpers
 {
     internal class DescriptionEnumConverter : EnumConverter
     {
-        Type target;
+        private readonly Type target;
 
         public DescriptionEnumConverter(Type target) : base(target)
         {

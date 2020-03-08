@@ -13,7 +13,7 @@ namespace AlbanianXrm.EarlyBound.Helpers
         {
             if (value is bool bValue && destinationType == typeof(string))
             {
-                return (bool)value ? YES : NO;
+                return bValue ? YES : NO;
             }
             return base.ConvertTo(context, culture, value, destinationType);
         }

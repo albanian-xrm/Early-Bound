@@ -10,21 +10,24 @@ using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using XrmToolBox.Extensibility.Interfaces;
 using System.Collections.Generic;
+using AlbanianXrm.EarlyBound.Properties;
+using System.Globalization;
+using AlbanianXrm.EarlyBound.Extensions;
 
 namespace AlbanianXrm.EarlyBound
 {
     public partial class MyPluginControl : PluginControlBase, IGitHubPlugin
     {
         private TreeViewAdvBeforeCheckEventHandler treeEventHandler;
-        private Factories.MyPluginFactory MyPluginFactory;
-        private Logic.EntityMetadataHandler EntityMetadataHandler;
-        private Logic.AttributeMetadataHandler AttributeMetadataHandler;
-        private Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
-        private Logic.CoreToolsDownloader CoreToolsDownloader;
-        private Logic.EntityGeneratorHandler EntityGeneratorHandler;
+        private readonly Factories.MyPluginFactory MyPluginFactory;
+        private readonly Logic.EntityMetadataHandler EntityMetadataHandler;
+        private readonly Logic.AttributeMetadataHandler AttributeMetadataHandler;
+        private readonly Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
+        private readonly Logic.CoreToolsDownloader CoreToolsDownloader;
+        private readonly Logic.EntityGeneratorHandler EntityGeneratorHandler;
         internal Logic.PluginViewModel pluginViewModel;
-        internal EntityMetadata[] entityMetadatas = new EntityMetadata[] { };
-        internal OptionSetMetadataBase[] optionSetMetadatas = new OptionSetMetadataBase[] { };
+        internal EntityMetadata[] entityMetadatas = Array.Empty<EntityMetadata>();
+        internal OptionSetMetadataBase[] optionSetMetadatas = Array.Empty<OptionSetMetadataBase>();
         internal Options options;
         internal Queue<WorkAsyncInfo> queue = new Queue<WorkAsyncInfo>();
 
@@ -63,8 +66,8 @@ namespace AlbanianXrm.EarlyBound
             AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler(this);
             CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader(this);
             EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(this, metadataTree, txtOutput);
-            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler(this);
+            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
             pluginViewModel = MyPluginFactory.NewPluginViewModel();
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
@@ -112,7 +115,7 @@ namespace AlbanianXrm.EarlyBound
                 };
                 options.OrganizationOptions.Add(options.CurrentOrganizationOptions.Key, options.CurrentOrganizationOptions);
                 options.PropertyChanged += Options_PropertyChanged;
-                LogWarning("Settings not found => a new settings file has been created!");
+                LogWarning(Resources.SETTINGS_NOT_FOUND);
             }
             else
             {
@@ -125,7 +128,7 @@ namespace AlbanianXrm.EarlyBound
                     options.OrganizationOptions.Add(current.Key, current);
                 }
                 options.CurrentOrganizationOptions = current;
-                LogInfo("Settings found and loaded");
+                LogInfo(Resources.SETTINGS_FOUND);
             }
             optionsGrid.SelectedObject = options;
         }
@@ -146,8 +149,8 @@ namespace AlbanianXrm.EarlyBound
         private void MyPluginControl_OnCloseTool(object sender, EventArgs e)
         {
             // Before leaving, save the settings
-            ShowInfoNotification("To contribute to this plugin visit its code repository", new Uri("https://github.com/Albanian-Xrm/Early-Bound"));
-            LogInfo("Saving current settings");
+            ShowInfoNotification(Resources.CONTRIBUTE_NOTIFICATION, new Uri("https://github.com/Albanian-Xrm/Early-Bound"));
+            LogInfo(Resources.SAVING_SETTINGS);
             SettingsManager.Instance.Save(GetType(), options);
         }
 
@@ -160,7 +163,7 @@ namespace AlbanianXrm.EarlyBound
             if (options != null && detail != null)
             {
                 var organization = detail.Organization;
-                LogInfo("Connection has changed to: {0}", detail.WebApplicationUrl);
+                LogInfo(Resources.CONNECTION_CHANGED, detail.WebApplicationUrl);
                 if (!options.OrganizationOptions.TryGetValue(organization, out OrganizationOptions current))
                 {
                     current = new OrganizationOptions()
@@ -207,12 +210,12 @@ namespace AlbanianXrm.EarlyBound
 
         private void ToolStripButton4_Click(object sender, EventArgs e)
         {
-            LogInfo("Saving current settings");
+            LogInfo(Resources.SAVING_SETTINGS);
             SettingsManager.Instance.Save(GetType(), options);
         }
 
         private void MetadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
-        {          
+        {
             if (e.Node.Tag is RelationshipMetadataBase)
             {
                 if (!options.CoupledRelationships) return;
@@ -245,7 +248,7 @@ namespace AlbanianXrm.EarlyBound
                                 {
                                     StartWorkAsync(new WorkAsyncInfo
                                     {
-                                        Message = $"Getting relationships for entity {entityName}",
+                                        Message = string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName),
                                         Work = (worker, args) =>
                                         {
                                             args.Result = Service.Execute(new RetrieveEntityRequest()
@@ -266,9 +269,9 @@ namespace AlbanianXrm.EarlyBound
                                                 {
                                                     item.ExpandedOnce = true;
                                                     var entityMetadata = entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
-                                                    typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToManyRelationships);
-                                                    typeof(EntityMetadata).GetProperty(nameof(entityMetadata.OneToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.OneToManyRelationships);
-                                                    typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToOneRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToOneRelationships);
+                                                    entityMetadata.SetPrivateValue(x => x.ManyToManyRelationships, result.EntityMetadata.ManyToManyRelationships);
+                                                    entityMetadata.SetPrivateValue(x => x.OneToManyRelationships, result.EntityMetadata.OneToManyRelationships);
+                                                    entityMetadata.SetPrivateValue(x => x.ManyToOneRelationships, result.EntityMetadata.ManyToOneRelationships);
 
                                                     foreach (var relationship in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
                                                                          result.EntityMetadata.OneToManyRelationships).Union(
@@ -288,7 +291,9 @@ namespace AlbanianXrm.EarlyBound
                                                     }
                                                 }
                                             }
+#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                                             catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                                             {
                                                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }

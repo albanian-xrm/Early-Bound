@@ -1,4 +1,5 @@
 ﻿using AlbanianXrm.EarlyBound.Helpers;
+using AlbanianXrm.EarlyBound.Properties;
 using System;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class CoreToolsDownloader
     {
-        MyPluginControl myPlugin;
+        private readonly MyPluginControl myPlugin;
 
         public CoreToolsDownloader(MyPluginControl myPlugin)
         {
@@ -20,7 +21,7 @@ namespace AlbanianXrm.EarlyBound.Logic
         {
             myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
-                Message = $"Getting latest version of Core Tools",
+                Message = Resources.DOWNLOADING_CORE_TOOLS,
                 Work = (worker, args) =>
                 {
                     //ID of the package to be looked 
@@ -29,7 +30,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     //Connect to the official package repository IPackageRepository
                     var repo = NuGet.PackageRepositoryFactory.Default.CreateRepository(myPlugin.options.NuGetFeed);
 
-                    string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToLower();
+                    string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
                     string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
                     dir = Path.Combine(dir, folder);
                     Directory.CreateDirectory(dir);
@@ -38,9 +39,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                                           .OrderByDescending(x => x.Version).FirstOrDefault();
                     if (coreToolsPackage == null)
                     {
-                        args.Result = $"{coreToolsId} package not found on {myPlugin.options.NuGetFeed}";
+                        args.Result = string.Format(Resources.Culture, Resources.CORE_TOOLS_NOT_FOUND, coreToolsId, myPlugin.options.NuGetFeed);
                         return;
-                    }              
+                    }
                     foreach (var file in coreToolsPackage.GetFiles())
                     {
                         using (var stream = File.Create(Path.Combine(dir, Path.GetFileName(file.Path))))
@@ -62,7 +63,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                         myPlugin.options.CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(myPlugin.options.CrmSvcUtils);
                         myPlugin.options.RecycableMemoryStream = MemoryStreamEditor.GetVersion(myPlugin.options.RecycableMemoryStream);
                     }
+#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                     catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

@@ -16,17 +16,17 @@ namespace AlbanianXrm.EarlyBound.Logic
                 _AllowRequests = value;
                 if (_MetadataTree_Enabled && _ActiveConnection) //true means MetadataTree_Enabled changed because AllowRequests changed
                 {
-                    RaisePropertyChanged(nameof(MetadataTree_Enabled));
+                    OnPropertyChanged(nameof(MetadataTree_Enabled));
                 }
                 if (_OptionsGrid_Enabled) //true means OptionsGrid_Enabled changed because AllowRequests changed
                 {
-                    RaisePropertyChanged(nameof(OptionsGrid_Enabled));
+                    OnPropertyChanged(nameof(OptionsGrid_Enabled));
                 }
                 if (_Generate_Enabled)
                 {
-                    RaisePropertyChanged(nameof(Generate_Enabled));
+                    OnPropertyChanged(nameof(Generate_Enabled));
                 }
-                RaisePropertyChanged(nameof(AllowRequests));
+                OnPropertyChanged(nameof(AllowRequests));
             }
         }
 
@@ -40,9 +40,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                 _ActiveConnection = value;
                 if (_MetadataTree_Enabled && _AllowRequests) //true means MetadataTree_Enabled changed because ActiveConnection changed
                 {
-                    RaisePropertyChanged(nameof(MetadataTree_Enabled));
+                    OnPropertyChanged(nameof(MetadataTree_Enabled));
                 }
-                RaisePropertyChanged(nameof(ActiveConnection));
+                OnPropertyChanged(nameof(ActiveConnection));
             }
         }
 
@@ -54,7 +54,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 if (_MetadataTree_Enabled == value) return;
                 _MetadataTree_Enabled = value;
-                RaisePropertyChanged(nameof(MetadataTree_Enabled));
+                OnPropertyChanged(nameof(MetadataTree_Enabled));
             }
         }
 
@@ -66,7 +66,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 if (_OptionsGrid_Enabled == value) return;
                 _OptionsGrid_Enabled = value;
-                RaisePropertyChanged(nameof(OptionsGrid_Enabled));
+                OnPropertyChanged(nameof(OptionsGrid_Enabled));
             }
         }
 
@@ -78,11 +78,11 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 if (_Generate_Enabled == value) return;
                 _Generate_Enabled = value;
-                RaisePropertyChanged(nameof(Generate_Enabled));
+                OnPropertyChanged(nameof(Generate_Enabled));
             }
         }
 
-        protected void RaisePropertyChanged(string propertyName)
+        protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

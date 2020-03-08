@@ -117,8 +117,53 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CONNECTION_CHANGED" xml:space="preserve">
+    <value>Connection has changed to: {0}</value>
+  </data>
+  <data name="CONTRIBUTE_NOTIFICATION" xml:space="preserve">
+    <value>To contribute to this plugin visit its code repository</value>
+  </data>
+  <data name="CORE_TOOLS_NOT_FOUND" xml:space="preserve">
+    <value>{0} package not found on {1}</value>
+  </data>
+  <data name="CRMSVCUTIL_MISSING" xml:space="preserve">
+    <value>CrmSvcUtil.exe is missing. Please download CoreTools.</value>
+  </data>
+  <data name="DOWNLOADING_CORE_TOOLS" xml:space="preserve">
+    <value>Getting latest version of Core Tools</value>
+  </data>
+  <data name="FILTER_C_SHARP" xml:space="preserve">
+    <value>C# (*.cs)|*.cs</value>
+  </data>
+  <data name="FILTER_VISUAL_BASIC" xml:space="preserve">
+    <value>Visual Basic (*.vb)|*.vb</value>
+  </data>
+  <data name="GENERATING_ENTITIES" xml:space="preserve">
+    <value>Generating Early-Bound Classes</value>
+  </data>
+  <data name="GETTING_ATTRIBUTES" xml:space="preserve">
+    <value>Getting attributes for entity {0}</value>
+  </data>
+  <data name="GETTING_ENTITY_LIST" xml:space="preserve">
+    <value>Getting entity list</value>
+  </data>
+  <data name="GETTING_RELATIONSHIPS" xml:space="preserve">
+    <value>Getting relationships for entity {0}</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MEMORYSTREAM_MISSING" xml:space="preserve">
+    <value>Microsoft.IO.RecyclableMemoryStream.dll is missing. Please reinstall Albanian Early Bound.</value>
+  </data>
+  <data name="SAVING_SETTINGS" xml:space="preserve">
+    <value>Saving current settings</value>
+  </data>
+  <data name="SETTINGS_FOUND" xml:space="preserve">
+    <value>Settings found and loaded</value>
+  </data>
+  <data name="SETTINGS_NOT_FOUND" xml:space="preserve">
+    <value>Settings not found =&gt; a new settings file has been created!</value>
   </data>
 </root>

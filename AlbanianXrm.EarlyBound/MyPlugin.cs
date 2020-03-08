@@ -35,10 +35,10 @@ namespace AlbanianXrm.EarlyBound
         public MyPlugin()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(SecretKeeper.Syncfusion);
-            
+
             // If you have external assemblies that you need to load, uncomment the following to 
             // hook into the event that will fire when an Assembly fails to resolve
-            // AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolveEventHandler);
+            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(AssemblyResolveEventHandler);
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace AlbanianXrm.EarlyBound
             Assembly currAssembly = Assembly.GetExecutingAssembly();
 
             // base name of the assembly that failed to resolve
-            var argName = args.Name.Substring(0, args.Name.IndexOf(","));
+            var argName = args.Name.Substring(0, args.Name.IndexOf(",", StringComparison.InvariantCulture));
 
             // check to see if the failing assembly is one that we reference.
             List<AssemblyName> refAssemblies = currAssembly.GetReferencedAssemblies().ToList();
@@ -65,7 +65,7 @@ namespace AlbanianXrm.EarlyBound
             if (refAssembly != null)
             {
                 // load from the path to this plugin assembly, not host executable
-                string dir = Path.GetDirectoryName(currAssembly.Location).ToLower();
+                string dir = Path.GetDirectoryName(currAssembly.Location).ToUpperInvariant();
                 string folder = Path.GetFileNameWithoutExtension(currAssembly.Location);
                 dir = Path.Combine(dir, folder);
 

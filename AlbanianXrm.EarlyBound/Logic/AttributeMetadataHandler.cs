@@ -1,7 +1,10 @@
-﻿using Microsoft.Xrm.Sdk.Messages;
+﻿using AlbanianXrm.EarlyBound.Properties;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -10,18 +13,18 @@ namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class AttributeMetadataHandler
     {
-        MyPluginControl myPlugin;
+        private readonly MyPluginControl myPlugin;
 
         public AttributeMetadataHandler(MyPluginControl myPlugin)
         {
             this.myPlugin = myPlugin;
         }
 
-        public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false)
+        public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false, HashSet<string> checkedAttributes = default(HashSet<string>))
         {
             myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
-                Message = $"Getting attributes for entity {entityName}",
+                Message = string.Format(CultureInfo.CurrentCulture, Resources.GETTING_ATTRIBUTES, entityName),
                 Work = (worker, args) =>
                 {
                     args.Result = myPlugin.Service.Execute(new RetrieveEntityRequest()
@@ -40,6 +43,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                         }
                         if (args.Result is RetrieveEntityResponse result)
                         {
+                            if (checkedAttributes == null) checkedAttributes = new HashSet<string>();
                             attributesNode.ExpandedOnce = true;
                             var entityMetadata = myPlugin.entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
                             typeof(EntityMetadata).GetProperty(nameof(entityMetadata.Attributes)).SetValue(entityMetadata, result.EntityMetadata.Attributes);
@@ -53,14 +57,16 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     ExpandedOnce = true,
                                     ShowCheckBox = true,
                                     Tag = item,
-                                    Checked = checkedState
+                                    Checked = checkedState || checkedAttributes.Contains(item.LogicalName)
                                 };
 
                                 attributesNode.Nodes.Add(node);
                             }
                         }
                     }
+#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                     catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

@@ -29,12 +29,12 @@ namespace AlbanianXrm.Common.Shared
         }
 
         [DataMember]
-        public EntityMetadata[] Entities { get { return _Entities ?? new EntityMetadata[] { }; } internal set { _Entities = value; } }
+        public EntityMetadata[] Entities { get { return _Entities ?? Array.Empty<EntityMetadata>(); } internal set { _Entities = value; } }
         private EntityMetadata[] _Entities;
 
 
         [DataMember]
-        public OptionSetMetadataBase[] OptionSets { get { return _OptionSets ?? new OptionSetMetadataBase[] { }; } internal set { _OptionSets = value; } }
+        public OptionSetMetadataBase[] OptionSets { get { return _OptionSets ?? Array.Empty<OptionSetMetadataBase>(); } internal set { _OptionSets = value; } }
         private OptionSetMetadataBase[] _OptionSets;
 
 #if CRMSVCUTILEXTENSIONS
