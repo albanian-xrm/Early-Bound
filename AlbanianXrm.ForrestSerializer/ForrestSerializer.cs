@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace AlbanianXrm.ForrestSerializer
+namespace AlbanianXrm
 {
     public class ForrestSerializer
     {
@@ -14,13 +15,14 @@ namespace AlbanianXrm.ForrestSerializer
 
         public void Serialize(Dictionary<string, EntitySelection> entitySelections)
         {
+            if (entitySelections == null) throw new ArgumentNullException(nameof(entitySelections));
             using (StreamWriter writer = new StreamWriter(path, false))
             {
                 Serialize(entitySelections, writer);
             }
         }
 
-        internal void Serialize(Dictionary<string, EntitySelection> entitySelections, StreamWriter writer)
+        internal static void Serialize(Dictionary<string, EntitySelection> entitySelections, StreamWriter writer)
         {
             foreach (var entitySelection in entitySelections.Values.OrderBy(o => o.LogicalName))
             {
@@ -55,7 +57,7 @@ namespace AlbanianXrm.ForrestSerializer
             }
         }
 
-        internal Dictionary<string, EntitySelection> Deserialize(StreamReader reader)
+        internal static Dictionary<string, EntitySelection> Deserialize(StreamReader reader)
         {
             Dictionary<string, EntitySelection> result = new Dictionary<string, EntitySelection>();
             string line;
@@ -66,7 +68,7 @@ namespace AlbanianXrm.ForrestSerializer
             EntitySelection entitySelection = null;
             while ((line = reader.ReadLine()) != null)
             {
-                if (line.StartsWith("╠╦═"))
+                if (line.StartsWith("╠╦═", StringComparison.InvariantCulture))
                 {
                     if (expectingEntity)
                     {
@@ -82,7 +84,7 @@ namespace AlbanianXrm.ForrestSerializer
                         return new Dictionary<string, EntitySelection>();
                     }
                 }
-                else if (line.StartsWith("║╠╦═"))
+                else if (line.StartsWith("║╠╦═", StringComparison.InvariantCulture))
                 {
                     if (expectingAttributeOrRelationship)
                     {
@@ -109,7 +111,7 @@ namespace AlbanianXrm.ForrestSerializer
                         return new Dictionary<string, EntitySelection>();
                     }
                 }
-                else if (line.StartsWith("║║╠═"))
+                else if (line.StartsWith("║║╠═", StringComparison.InvariantCulture))
                 {
                     if (readingAttribute)
                     {

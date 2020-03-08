@@ -2,7 +2,7 @@
 
 namespace AlbanianXrm.EarlyBound.Helpers
 {
-    public enum TwoOptionsEnum : byte
+    public enum TwoOptionsEnum : int
     {
         [Description("NO")]
         NO = 0,

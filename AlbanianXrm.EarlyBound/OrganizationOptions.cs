@@ -9,7 +9,7 @@ namespace AlbanianXrm.EarlyBound
 
     public class OrganizationOptions
     {
-        public static class Defaults
+        private static class Defaults
         {
             public const string Output = "Test.cs";
         }

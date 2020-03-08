@@ -2,6 +2,7 @@
 using Microsoft.Crm.Services.Utility;
 using Microsoft.IO;
 using System;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -11,21 +12,21 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 {
     public class MetadataService : IMetadataProviderService
     {
-        IOrganizationMetadata cachedMetadata;
-        IMetadataProviderService defaultMetadataService;
+        private IOrganizationMetadata cachedMetadata;
+        private readonly IMetadataProviderService defaultMetadataService;
 
         public MetadataService(IMetadataProviderService defaultMetadataService)
         {
 #if DEBUG
-            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER) ?? "") != "")
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER)))
             {
                 System.Diagnostics.Debugger.Launch();
             }
 #endif
 
-            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_CACHEMEATADATA) ?? "") != "")
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_CACHEMEATADATA)))
             {
-                Console.WriteLine(Constants.CONSOLE_METADATA);
+                Console.WriteLine(string.Format(CultureInfo.InvariantCulture, Constants.CONSOLE_METADATA));
 
                 var manager = new RecyclableMemoryStreamManager();
                 using (var stream = manager.GetStream())
@@ -41,7 +42,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     }
                     stream.Position = 0;
                     var serializer = new DataContractSerializer(typeof(OrganizationMetadata));
-                    using (var xmlreader = new XmlTextReader(stream))
+                    using (var xmlreader = XmlReader.Create(stream, new XmlReaderSettings()))
                     {
                         cachedMetadata = (OrganizationMetadata)serializer.ReadObject(xmlreader);
                     }

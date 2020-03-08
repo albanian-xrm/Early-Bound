@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace AlbanianXrm.ForrestSerializer
+namespace AlbanianXrm
 {
     public class EntitySelection
     {
@@ -17,7 +13,7 @@ namespace AlbanianXrm.ForrestSerializer
         public string LogicalName { get; set; }
         public bool AllAttributes { get; set; }
         public bool AllRelationships { get; set; }
-        public List<string> SelectedAttributes { get; set; }
-        public List<string> SelectedRelationships { get; set; }
+        public List<string> SelectedAttributes { get; private set; }
+        public List<string> SelectedRelationships { get; private set; }
     }
 }

@@ -1,7 +1,10 @@
-﻿using Microsoft.Xrm.Sdk.Messages;
+﻿using AlbanianXrm.EarlyBound.Extensions;
+using AlbanianXrm.EarlyBound.Properties;
+using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using XrmToolBox.Extensibility;
@@ -10,7 +13,7 @@ namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class RelationshipMetadataHandler
     {
-        MyPluginControl myPlugin;
+        private readonly MyPluginControl myPlugin;
 
         public RelationshipMetadataHandler(MyPluginControl myPlugin)
         {
@@ -21,7 +24,7 @@ namespace AlbanianXrm.EarlyBound.Logic
         {
             myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
-                Message = $"Getting relationships for entity {entityName}",
+                Message = string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName),
                 Work = (worker, args) =>
                 {
                     args.Result = myPlugin.Service.Execute(new RetrieveEntityRequest()
@@ -42,9 +45,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                         {
                             relationshipsNode.ExpandedOnce = true;
                             var entityMetadata = myPlugin.entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
-                            typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToManyRelationships);
-                            typeof(EntityMetadata).GetProperty(nameof(entityMetadata.OneToManyRelationships)).SetValue(entityMetadata, result.EntityMetadata.OneToManyRelationships);
-                            typeof(EntityMetadata).GetProperty(nameof(entityMetadata.ManyToOneRelationships)).SetValue(entityMetadata, result.EntityMetadata.ManyToOneRelationships);
+                            entityMetadata.SetPrivateValue(x => x.ManyToManyRelationships, result.EntityMetadata.ManyToManyRelationships);
+                            entityMetadata.SetPrivateValue(x => x.OneToManyRelationships, result.EntityMetadata.OneToManyRelationships);
+                            entityMetadata.SetPrivateValue(x => x.ManyToOneRelationships, result.EntityMetadata.ManyToOneRelationships);
 
                             foreach (var item in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
                                                  result.EntityMetadata.OneToManyRelationships).Union(
@@ -62,7 +65,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                             }
                         }
                     }
+#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                     catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

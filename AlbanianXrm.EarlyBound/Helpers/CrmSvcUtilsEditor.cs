@@ -2,16 +2,18 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
+using System.Globalization;
 using System.IO;
 
 namespace AlbanianXrm.EarlyBound.Helpers
 {
-    class CrmSvcUtilsEditor : UITypeEditor
+    internal class CrmSvcUtilsEditor : UITypeEditor
     {
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
             return UITypeEditorEditStyle.Modal;
         }
+
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
             return GetVersion(value as Version);
@@ -19,7 +21,7 @@ namespace AlbanianXrm.EarlyBound.Helpers
 
         public static Version GetVersion(Version value)
         {
-            string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToLower();
+            string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
             string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
             dir = Path.Combine(dir, folder);
             FileInfo crmSvcUtil = new FileInfo(Path.Combine(dir, "CrmSvcUtil.exe"));

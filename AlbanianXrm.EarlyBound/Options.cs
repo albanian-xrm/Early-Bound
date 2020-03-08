@@ -10,7 +10,7 @@ namespace AlbanianXrm.EarlyBound
 {
     public class Options : INotifyPropertyChanged
     {
-        public static class Defaults
+        private static class Defaults
         {
             public const string NuGetFeed = "https://packages.nuget.org/api/v2";
         }
@@ -62,7 +62,7 @@ namespace AlbanianXrm.EarlyBound
             {
                 if (_CrmSvcUtils == value) return;
                 _CrmSvcUtils = value;
-                RaisePropertyChanged(nameof(CrmSvcUtils));
+                OnPropertyChanged(nameof(CrmSvcUtils));
             }
         }
 
@@ -80,7 +80,7 @@ namespace AlbanianXrm.EarlyBound
             {
                 if (_RecycableMemoryStream == value) return;
                 _RecycableMemoryStream = value;
-                RaisePropertyChanged(nameof(RecycableMemoryStream));
+                OnPropertyChanged(nameof(RecycableMemoryStream));
             }
         }
 
@@ -90,7 +90,8 @@ namespace AlbanianXrm.EarlyBound
         [XmlIgnore]
         public Version AlbanianEarlyBound
         {
-            get { return typeof(Options).Assembly.GetName().Version; }
+
+            get { return GetType().Assembly.GetName().Version; }
         }
 
 #if DEBUG
@@ -117,14 +118,16 @@ namespace AlbanianXrm.EarlyBound
             {
                 if (_CurrentOrganizationOptions == value) return;
                 _CurrentOrganizationOptions = value;
-                RaisePropertyChanged(nameof(CurrentOrganizationOptions));
+                OnPropertyChanged(nameof(CurrentOrganizationOptions));
             }
         }
 
         [Browsable(false)]
-        public OrganizationOptions[] OrganizationOptionsList
+#pragma warning disable CA2227 // Collection properties should be read only
+        public List<OrganizationOptions> OrganizationOptionsList
+#pragma warning restore CA2227 // Collection properties should be read only
         {
-            get => OrganizationOptions.Values.ToArray();
+            get => OrganizationOptions.Values.ToList();
             set
             {
                 OrganizationOptions = new Dictionary<string, OrganizationOptions>();
@@ -146,13 +149,13 @@ namespace AlbanianXrm.EarlyBound
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void RaisePropertyChanged(string propertyName)
-        {
+        protected void OnPropertyChanged(string propertyName)
+        {           
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         [XmlIgnore]
         [Browsable(false)]
-        public Dictionary<string, OrganizationOptions> OrganizationOptions { get; set; }
+        public Dictionary<string, OrganizationOptions> OrganizationOptions { get; private set; }
     }
 }

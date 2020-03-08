@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using AlbanianXrm.Extensions;
 using Microsoft.Crm.Services.Utility;
@@ -12,7 +13,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         public FilteringService(ICodeWriterFilterService defaultService)
         {
 #if DEBUG
-            if ((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER) ?? "") != "")
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER)))
             {
                 System.Diagnostics.Debugger.Launch();
             }
@@ -23,38 +24,38 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             entityAttributes = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(allAttributes))
             {
-                entityAttributes.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, entity)) ?? "").Split(",")));
+                entityAttributes.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, entity)) ?? "").Split(",")));
             }
 
             allRelationships = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_RELATIONSHIPS) ?? "").Split(","));
             entity1NRelationships = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(allRelationships))
             {
-                entity1NRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPS1N, entity)) ?? "").Split(",")));
+                entity1NRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPS1N, entity)) ?? "").Split(",")));
             }
 
             entityN1Relationships = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(allRelationships))
             {
-                entityN1Relationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSN1, entity)) ?? "").Split(",")));
+                entityN1Relationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSN1, entity)) ?? "").Split(",")));
             }
 
             entityNNRelationships = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(allRelationships))
             {
-                entityNNRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(Constants.ENVIRONMENT_RELATIONSHIPSNN, entity)) ?? "").Split(",")));
+                entityNNRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSNN, entity)) ?? "").Split(",")));
             }
         }
 
         private ICodeWriterFilterService DefaultService { get; set; }
 
-        private HashSet<string> entities;
-        private HashSet<string> allAttributes;
-        private HashSet<string> allRelationships;
-        private Dictionary<string, HashSet<string>> entityAttributes;
-        private Dictionary<string, HashSet<string>> entity1NRelationships;
-        private Dictionary<string, HashSet<string>> entityN1Relationships;
-        private Dictionary<string, HashSet<string>> entityNNRelationships;
+        private readonly HashSet<string> entities;
+        private readonly HashSet<string> allAttributes;
+        private readonly HashSet<string> allRelationships;
+        private readonly Dictionary<string, HashSet<string>> entityAttributes;
+        private readonly Dictionary<string, HashSet<string>> entity1NRelationships;
+        private readonly Dictionary<string, HashSet<string>> entityN1Relationships;
+        private readonly Dictionary<string, HashSet<string>> entityNNRelationships;
 
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {

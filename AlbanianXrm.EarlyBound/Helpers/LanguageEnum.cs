@@ -2,7 +2,7 @@
 
 namespace AlbanianXrm.EarlyBound.Helpers
 {
-    public enum LanguageEnum : byte
+    public enum LanguageEnum : int
     {
         [Description("C#")]
         CS = 0,

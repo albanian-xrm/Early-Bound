@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xrm.Sdk.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -52,11 +53,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             return ToUniqueValues(values);
         }
 
-
         private static IEnumerable<EnumItem> ToUniqueValues(IEnumerable<EnumItem> source)
         {
             Dictionary<string, int> uniqueValues = source.GroupBy(sv => sv.Value).ToDictionary(g => g.Key, g => g.Count());
-            source.ToList().ForEach(sv => sv.Value = uniqueValues[sv.Value] == 1 ? sv.Value : string.Format("{0}_{1}", sv.Value, sv.Key.ToString(CultureInfo.InvariantCulture)));
+            source.ToList().ForEach(sv => sv.Value = uniqueValues[sv.Value] == 1 ? sv.Value : string.Format(CultureInfo.InvariantCulture, "{0}_{1}", sv.Value, sv.Key.ToString(CultureInfo.InvariantCulture)));
             return source;
         }
 
