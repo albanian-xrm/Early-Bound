@@ -3,6 +3,7 @@ using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -19,7 +20,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             this.myPlugin = myPlugin;
         }
 
-        public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false)
+        public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false, HashSet<string> checkedAttributes = default(HashSet<string>))
         {
             myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
@@ -42,6 +43,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                         }
                         if (args.Result is RetrieveEntityResponse result)
                         {
+                            if (checkedAttributes == null) checkedAttributes = new HashSet<string>();
                             attributesNode.ExpandedOnce = true;
                             var entityMetadata = myPlugin.entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
                             typeof(EntityMetadata).GetProperty(nameof(entityMetadata.Attributes)).SetValue(entityMetadata, result.EntityMetadata.Attributes);
@@ -55,7 +57,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     ExpandedOnce = true,
                                     ShowCheckBox = true,
                                     Tag = item,
-                                    Checked = checkedState
+                                    Checked = checkedState || checkedAttributes.Contains(item.LogicalName)
                                 };
 
                                 attributesNode.Nodes.Add(node);

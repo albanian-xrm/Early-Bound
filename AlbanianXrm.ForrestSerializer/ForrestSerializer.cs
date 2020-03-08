@@ -26,7 +26,10 @@ namespace AlbanianXrm
         {
             foreach (var entitySelection in entitySelections.Values.OrderBy(o => o.LogicalName))
             {
-                if (!(entitySelection.SelectedAttributes.Any() || entitySelection.SelectedRelationships.Any())) continue;
+                if (!(entitySelection.SelectedAttributes.Any() ||
+                      entitySelection.SelectedRelationships.Any() ||
+                      entitySelection.AllAttributes ||
+                      entitySelection.AllRelationships)) continue;
                 writer.WriteLine("╠╦═" + entitySelection.LogicalName);
                 if (entitySelection.SelectedAttributes.Any() || entitySelection.AllAttributes)
                 {
@@ -91,13 +94,14 @@ namespace AlbanianXrm
                         if (line == "║╠╦═Attributes" && !readingAttribute)
                         {
                             readingAttribute = true;
-                            expectingAttributeOrRelationship = false;
+                            expectingEntity = true;
                             entitySelection.AllAttributes = true;
                         }
                         else if (line == "║╠╦═Relationships" && !readingRelationship)
                         {
                             readingAttribute = false;
                             readingRelationship = true;
+                            expectingEntity = true;
                             expectingAttributeOrRelationship = false;
                             entitySelection.AllRelationships = true;
                         }

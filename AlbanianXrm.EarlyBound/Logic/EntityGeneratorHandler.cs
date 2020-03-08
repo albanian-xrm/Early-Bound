@@ -265,7 +265,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             }
             var metadata = new OrganizationMetadata(entityMetadatas, myPlugin.optionSetMetadatas);
             var serializer = new DataContractSerializer(typeof(OrganizationMetadata));
-            using (XmlTextWriter writer = new XmlTextWriter(standardInput))
+            using (XmlTextWriter writer = new XmlTextWriter(new StreamWriter(standardInput.BaseStream, standardInput.Encoding, 128, true)))
                 serializer.WriteObject(writer, metadata);
             standardInput.WriteLine();
             standardInput.WriteLine(Constants.CONSOLE_ENDSTREAM);

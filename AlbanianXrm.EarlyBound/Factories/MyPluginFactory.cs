@@ -22,9 +22,9 @@ namespace AlbanianXrm.EarlyBound.Factories
             return new CoreToolsDownloader(myPlugin);
         }
 
-        public EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree)
+        public EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
         {
-            return new EntityMetadataHandler(myPlugin, metadataTree);
+            return new EntityMetadataHandler(myPlugin, metadataTree, attributeMetadataHandler, relationshipMetadataHandler);
         }
 
         public RelationshipMetadataHandler NewRelationshipMetadataHandler(MyPluginControl myPlugin)

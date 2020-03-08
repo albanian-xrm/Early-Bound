@@ -4,6 +4,7 @@ using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -20,7 +21,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             this.myPlugin = myPlugin;
         }
 
-        public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode, bool checkedState = false)
+        public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode, bool checkedState = false, HashSet<string> checkedRelationships = default(HashSet<string>))
         {
             myPlugin.StartWorkAsync(new WorkAsyncInfo
             {
@@ -43,6 +44,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                         }
                         if (args.Result is RetrieveEntityResponse result)
                         {
+                            if (checkedRelationships == null) checkedRelationships = new HashSet<string>();
                             relationshipsNode.ExpandedOnce = true;
                             var entityMetadata = myPlugin.entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
                             entityMetadata.SetPrivateValue(x => x.ManyToManyRelationships, result.EntityMetadata.ManyToManyRelationships);
@@ -58,7 +60,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     ExpandedOnce = true,
                                     ShowCheckBox = true,
                                     Tag = item,
-                                    Checked = checkedState
+                                    Checked = checkedState || checkedRelationships.Contains(item.SchemaName)
                                 };
 
                                 relationshipsNode.Nodes.Add(node);

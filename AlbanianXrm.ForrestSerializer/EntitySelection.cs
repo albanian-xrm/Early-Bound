@@ -7,13 +7,13 @@ namespace AlbanianXrm
         public EntitySelection(string logicalName)
         {
             LogicalName = logicalName;
-            SelectedAttributes = new List<string>();
-            SelectedRelationships = new List<string>();
+            SelectedAttributes = new HashSet<string>();
+            SelectedRelationships = new HashSet<string>();
         }
         public string LogicalName { get; set; }
         public bool AllAttributes { get; set; }
         public bool AllRelationships { get; set; }
-        public List<string> SelectedAttributes { get; private set; }
-        public List<string> SelectedRelationships { get; private set; }
+        public HashSet<string> SelectedAttributes { get; private set; }
+        public HashSet<string> SelectedRelationships { get; private set; }
     }
 }
