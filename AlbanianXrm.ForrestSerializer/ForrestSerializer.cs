@@ -52,7 +52,7 @@ namespace AlbanianXrm
 
         public Dictionary<string, EntitySelection> Deserialize()
         {
-            if (!File.Exists(path)) return new Dictionary<string, EntitySelection>(); ;
+            if (!File.Exists(path)) return new Dictionary<string, EntitySelection>();
 
             using (StreamReader reader = new StreamReader(path))
             {
@@ -91,13 +91,13 @@ namespace AlbanianXrm
                 {
                     if (expectingAttributeOrRelationship)
                     {
-                        if (line == "║╠╦═Attributes" && !readingAttribute)
+                        if (line == "║╠╦═Attributes" && readingAttribute == false)
                         {
                             readingAttribute = true;
                             expectingEntity = true;
                             entitySelection.AllAttributes = true;
                         }
-                        else if (line == "║╠╦═Relationships" && !readingRelationship)
+                        else if (line == "║╠╦═Relationships" && readingRelationship == false)
                         {
                             readingAttribute = false;
                             readingRelationship = true;
@@ -117,14 +117,14 @@ namespace AlbanianXrm
                 }
                 else if (line.StartsWith("║║╠═", StringComparison.InvariantCulture))
                 {
-                    if (readingAttribute)
+                    if (readingAttribute == true)
                     {
                         expectingEntity = true;
                         expectingAttributeOrRelationship = true;
                         entitySelection.AllAttributes = false;
                         entitySelection.SelectedAttributes.Add(line.Substring(4));
                     }
-                    else if (readingRelationship)
+                    else if (readingRelationship == true)
                     {
                         expectingEntity = true;
                         expectingAttributeOrRelationship = false;
