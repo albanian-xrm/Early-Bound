@@ -67,8 +67,8 @@ namespace AlbanianXrm.EarlyBound
             AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler(this);
             CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader(this);
             EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(this, metadataTree, txtOutput);
-            EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(this, metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler(this);
+            EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(this, metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
             EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree, EntitySelectionHandler);
             pluginViewModel = MyPluginFactory.NewPluginViewModel();
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);

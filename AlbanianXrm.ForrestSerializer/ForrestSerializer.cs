@@ -91,13 +91,13 @@ namespace AlbanianXrm
                 {
                     if (expectingAttributeOrRelationship)
                     {
-                        if (line == "║╠╦═Attributes" && readingAttribute == false)
+                        if (line == "║╠╦═Attributes" && !readingAttribute)
                         {
                             readingAttribute = true;
                             expectingEntity = true;
                             entitySelection.AllAttributes = true;
                         }
-                        else if (line == "║╠╦═Relationships" && readingRelationship == false)
+                        else if (line == "║╠╦═Relationships" && !readingRelationship)
                         {
                             readingAttribute = false;
                             readingRelationship = true;
@@ -117,19 +117,19 @@ namespace AlbanianXrm
                 }
                 else if (line.StartsWith("║║╠═", StringComparison.InvariantCulture))
                 {
-                    if (readingAttribute == true)
+                    if (readingAttribute)
                     {
                         expectingEntity = true;
                         expectingAttributeOrRelationship = true;
                         entitySelection.AllAttributes = false;
                         entitySelection.SelectedAttributes.Add(line.Substring(4));
                     }
-                    else if (readingRelationship == true)
+                    else if (readingRelationship)
                     {
                         expectingEntity = true;
                         expectingAttributeOrRelationship = false;
                         entitySelection.AllRelationships = false;
-                        entitySelection.SelectedAttributes.Add(line.Substring(4));
+                        entitySelection.SelectedRelationships.Add(line.Substring(4));
                     }
                     else
                     {

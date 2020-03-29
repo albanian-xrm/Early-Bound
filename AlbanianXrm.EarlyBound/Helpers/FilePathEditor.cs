@@ -20,7 +20,7 @@ namespace AlbanianXrm.EarlyBound.Helpers
                 dialog.ValidateNames = false;
                 dialog.CheckFileExists = false;
                 dialog.CheckPathExists = true;
-                dialog.Filter = organizationOptions.Language == LanguageEnum.CS ? Resources.FILTER_C_SHARP : Resources.FILTER_VISUAL_BASIC;
+                dialog.Filter = organizationOptions.Language == Language.CS ? Resources.FILTER_C_SHARP : Resources.FILTER_VISUAL_BASIC;
 
                 dialog.FileName = value as string;
 

@@ -63,7 +63,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                   " /metadataproviderservice:AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /namingservice:AlbanianXrm.CrmSvcUtilExtensions.NamingService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
-                                                  (options.CurrentOrganizationOptions.Language == LanguageEnum.VB ? " /language:VB" : "") +
+                                                  (options.CurrentOrganizationOptions.Language == Language.VB ? " /language:VB" : "") +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
                     process.StartInfo.WorkingDirectory = dir;
                     process.StartInfo.UseShellExecute = false;

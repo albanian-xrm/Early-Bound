@@ -209,7 +209,7 @@
     <Compile Include="Helpers\EnumConverter.cs" />
     <Compile Include="Factories\MyPluginFactory.cs" />
     <Compile Include="Helpers\FilePathEditor.cs" />
-    <Compile Include="Helpers\LanguageEnum.cs" />
+    <Compile Include="Helpers\Language.cs" />
     <Compile Include="Helpers\TwoOptionsEnum.cs" />
     <Compile Include="Helpers\YesNoConverter.cs" />
     <Compile Include="Interfaces\IMyPluginFactory.cs" />

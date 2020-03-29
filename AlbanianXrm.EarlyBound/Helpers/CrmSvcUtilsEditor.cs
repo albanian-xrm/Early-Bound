@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
-using System.Globalization;
 using System.IO;
 
 namespace AlbanianXrm.EarlyBound.Helpers

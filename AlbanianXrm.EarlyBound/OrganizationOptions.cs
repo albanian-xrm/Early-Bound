@@ -47,9 +47,9 @@ namespace AlbanianXrm.EarlyBound
         [Category("General")]
         [DisplayName("Language")]
         [Description("Output file language")]
-        [DefaultValue(LanguageEnum.CS)]
+        [DefaultValue(Language.CS)]
         [TypeConverter(typeof(DescriptionEnumConverter))]
-        public LanguageEnum Language { get; set; }
+        public Language Language { get; set; }
 
         [Category("General")]
         [DisplayName("Remove PropertyChanged")]

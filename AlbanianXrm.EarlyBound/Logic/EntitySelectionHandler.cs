@@ -62,9 +62,19 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                 {
                                                     node.Checked = true;
                                                 }
-                                                else if (thisSelection.SelectedAttributes.Any())
+                                                else if (thisSelection.SelectedAttributes.Any() && !node.ExpandedOnce)
                                                 {
                                                     attributeMetadataHandler.GetAttributes(entity.LogicalName, node, false, thisSelection.SelectedAttributes);
+                                                }
+                                                else if (thisSelection.SelectedAttributes.Any() && node.ExpandedOnce)
+                                                {
+                                                    foreach (TreeNodeAdv attributeNode in node.Nodes)
+                                                    {
+                                                        if (attributeNode.Tag is AttributeMetadata attribute)
+                                                        {
+                                                            attributeNode.Checked = thisSelection.SelectedAttributes.Contains(attribute.LogicalName);
+                                                        }
+                                                    }
                                                 }
                                             }
                                             else if (node.Text == "Relationships")
@@ -73,9 +83,19 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                 {
                                                     node.Checked = true;
                                                 }
-                                                else if (thisSelection.SelectedRelationships.Any())
+                                                else if (thisSelection.SelectedRelationships.Any() && !node.ExpandedOnce)
                                                 {
                                                     relationshipMetadataHandler.GetRelationships(entity.LogicalName, node, false, thisSelection.SelectedRelationships);
+                                                }
+                                                else if (thisSelection.SelectedRelationships.Any() && node.ExpandedOnce)
+                                                {
+                                                    foreach (TreeNodeAdv relationshipNode in node.Nodes)
+                                                    {
+                                                        if (relationshipNode.Tag is RelationshipMetadataBase relationshipMetadata)
+                                                        {
+                                                            relationshipNode.Checked = thisSelection.SelectedRelationships.Contains(relationshipMetadata.SchemaName);
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
