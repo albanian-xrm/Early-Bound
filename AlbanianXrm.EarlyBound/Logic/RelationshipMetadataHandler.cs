@@ -45,26 +45,13 @@ namespace AlbanianXrm.EarlyBound.Logic
                         if (args.Result is RetrieveEntityResponse result)
                         {
                             if (checkedRelationships == null) checkedRelationships = new HashSet<string>();
-                            relationshipsNode.ExpandedOnce = true;
+
                             var entityMetadata = myPlugin.entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
                             entityMetadata.SetPrivateValue(x => x.ManyToManyRelationships, result.EntityMetadata.ManyToManyRelationships);
                             entityMetadata.SetPrivateValue(x => x.OneToManyRelationships, result.EntityMetadata.OneToManyRelationships);
                             entityMetadata.SetPrivateValue(x => x.ManyToOneRelationships, result.EntityMetadata.ManyToOneRelationships);
 
-                            foreach (var item in result.EntityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
-                                                 result.EntityMetadata.OneToManyRelationships).Union(
-                                                 result.EntityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
-                            {
-                                TreeNodeAdv node = new TreeNodeAdv($"{item.SchemaName}")
-                                {
-                                    ExpandedOnce = true,
-                                    ShowCheckBox = true,
-                                    Tag = item,
-                                    Checked = checkedState || checkedRelationships.Contains(item.SchemaName)
-                                };
-
-                                relationshipsNode.Nodes.Add(node);
-                            }
+                            CreateRelationshipNodes(relationshipsNode, result.EntityMetadata, checkedState, checkedRelationships);
                         }
                     }
 #pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
@@ -79,6 +66,31 @@ namespace AlbanianXrm.EarlyBound.Logic
                     }
                 }
             });
+        }
+
+        public static void CreateRelationshipNodes(TreeNodeAdv relationshipsNode, EntityMetadata entityMetadata, bool checkedState = false, HashSet<string> checkedRelationships = default(HashSet<string>))
+        {
+            relationshipsNode.ExpandedOnce = true;
+            foreach (var item in entityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
+                                 entityMetadata.OneToManyRelationships).Union(
+                                 entityMetadata.ManyToOneRelationships).OrderBy(x => x.SchemaName))
+            {
+                TreeNodeAdv node = new TreeNodeAdv($"{item.SchemaName}")
+                {
+                    ExpandedOnce = true,
+                    ShowCheckBox = true,
+                    Tag = item,
+                    Checked = checkedState || checkedRelationships.Contains(item.SchemaName)
+                };
+
+                relationshipsNode.Nodes.Add(node);
+            }
+            if (entityMetadata.ManyToManyRelationships.Length == 0 &&
+                entityMetadata.OneToManyRelationships.Length == 0 &&
+                entityMetadata.ManyToOneRelationships.Length == 0)
+            {
+                relationshipsNode.Checked = checkedState;
+            }
         }
     }
 }

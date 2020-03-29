@@ -160,6 +160,15 @@
   <data name="SAVING_SETTINGS" xml:space="preserve">
     <value>Saving current settings</value>
   </data>
+  <data name="SELECTING_GENERATED" xml:space="preserve">
+    <value>Selecting the last generated entity attributes and relationships.</value>
+  </data>
+  <data name="SELECT_ALL_NO_REQUEST" xml:space="preserve">
+    <value>This command selects all entities.</value>
+  </data>
+  <data name="SELECT_ALL_REQUEST" xml:space="preserve">
+    <value>This command will retrieve all entity metadata and select all of them.</value>
+  </data>
   <data name="SETTINGS_FOUND" xml:space="preserve">
     <value>Settings found and loaded</value>
   </data>

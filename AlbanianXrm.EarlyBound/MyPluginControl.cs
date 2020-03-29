@@ -25,6 +25,7 @@ namespace AlbanianXrm.EarlyBound
         private readonly Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
         private readonly Logic.CoreToolsDownloader CoreToolsDownloader;
         private readonly Logic.EntityGeneratorHandler EntityGeneratorHandler;
+        private readonly Logic.EntitySelectionHandler EntitySelectionHandler;
         internal Logic.PluginViewModel pluginViewModel;
         internal EntityMetadata[] entityMetadatas = Array.Empty<EntityMetadata>();
         internal OptionSetMetadataBase[] optionSetMetadatas = Array.Empty<OptionSetMetadataBase>();
@@ -66,13 +67,18 @@ namespace AlbanianXrm.EarlyBound
             AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler(this);
             CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader(this);
             EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(this, metadataTree, txtOutput);
+            EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(this, metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler(this);
-            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
+            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree, EntitySelectionHandler);
             pluginViewModel = MyPluginFactory.NewPluginViewModel();
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
             btnGenerateEntities.Enabled = pluginViewModel.Generate_Enabled;
+            mnuSelectGenerated.Visible = pluginViewModel.Generate_Enabled;
+            mnuSelectNone.Visible = pluginViewModel.Generate_Enabled;
             btnGetMetadata.Enabled = pluginViewModel.ActiveConnection;
+            mnuGetMetadata.Enabled = pluginViewModel.ActiveConnection;
+            mnuSelectAll.Enabled = pluginViewModel.ActiveConnection;
             DataBind();
         }
 
@@ -81,6 +87,7 @@ namespace AlbanianXrm.EarlyBound
             metadataTree.DataBindings.Add(nameof(metadataTree.Enabled), pluginViewModel, nameof(pluginViewModel.MetadataTree_Enabled));
             optionsGrid.DataBindings.Add(nameof(optionsGrid.Enabled), pluginViewModel, nameof(pluginViewModel.OptionsGrid_Enabled));
             toolStrip.DataBindings.Add(nameof(toolStrip.Enabled), pluginViewModel, nameof(pluginViewModel.AllowRequests));
+            mnuMetadataTree.DataBindings.Add(nameof(mnuMetadataTree.Enabled), pluginViewModel, nameof(pluginViewModel.AllowRequests));
             pluginViewModel.PropertyChanged += PluginViewModel_PropertyChanged;
         }
 
@@ -90,9 +97,16 @@ namespace AlbanianXrm.EarlyBound
             {
                 case nameof(pluginViewModel.Generate_Enabled):
                     btnGenerateEntities.Enabled = pluginViewModel.Generate_Enabled;
+                    mnuSelectGenerated.Visible = pluginViewModel.Generate_Enabled;
+                    mnuSelectNone.Visible = pluginViewModel.Generate_Enabled;
                     break;
                 case nameof(pluginViewModel.ActiveConnection):
                     btnGetMetadata.Enabled = pluginViewModel.ActiveConnection;
+                    mnuGetMetadata.Enabled = pluginViewModel.ActiveConnection;
+                    mnuSelectAll.Enabled = pluginViewModel.ActiveConnection;
+                    break;
+                case nameof(pluginViewModel.All_Metadata_Requested):
+                    mnuSelectAll.ToolTipText = pluginViewModel.All_Metadata_Requested ? Resources.SELECT_ALL_NO_REQUEST : Resources.SELECT_ALL_REQUEST;
                     break;
                 default:
                     break;
@@ -180,6 +194,34 @@ namespace AlbanianXrm.EarlyBound
         private void BtnGetMetadata_Click(object sender, EventArgs e)
         {
             EntityMetadataHandler.GetEntityList();
+        }
+
+        private void MnuSelectAll_Click(object sender, EventArgs e)
+        {
+            if (pluginViewModel.All_Metadata_Requested)
+            {
+                metadataTree.BeginUpdate();
+                foreach (TreeNodeAdv item in metadataTree.Nodes)
+                {
+                    item.CheckState = CheckState.Checked;
+                }
+                metadataTree.EndUpdate(update: true);
+            }
+            else
+            {
+                EntityMetadataHandler.GetEntityList(selectAll: true);
+            }
+
+        }
+
+        private void MnuSelectNone_Click(object sender, EventArgs e)
+        {
+            metadataTree.BeginUpdate();
+            foreach (TreeNodeAdv item in metadataTree.Nodes)
+            {
+                item.CheckState = CheckState.Unchecked;
+            }
+            metadataTree.EndUpdate(update: true);
         }
 
         private void TreeViewAdv1_BeforeExpand(object sender, TreeViewAdvCancelableNodeEventArgs e)
@@ -332,6 +374,12 @@ namespace AlbanianXrm.EarlyBound
             {
                 RelationshipMetadataHandler.GetRelationships(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node, checkedState: true);
             }
+        }
+
+        private void MnuSelectGenerated_Click(object sender, EventArgs e)
+        {
+            MnuSelectNone_Click(sender, e);
+            EntitySelectionHandler.SelectGenerated();
         }
     }
 }

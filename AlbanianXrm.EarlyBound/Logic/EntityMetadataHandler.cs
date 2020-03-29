@@ -4,7 +4,6 @@ using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -16,18 +15,16 @@ namespace AlbanianXrm.EarlyBound.Logic
     {
         private readonly MyPluginControl myPlugin;
         private readonly TreeViewAdv metadataTree;
-        private readonly AttributeMetadataHandler attributeMetadataHandler;
-        private readonly RelationshipMetadataHandler relationshipMetadataHandler;
+        private readonly EntitySelectionHandler entitySelectionHandler;
 
-        public EntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
+        public EntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
         {
             this.myPlugin = myPlugin;
             this.metadataTree = metadataTree;
-            this.attributeMetadataHandler = attributeMetadataHandler;
-            this.relationshipMetadataHandler = relationshipMetadataHandler;
+            this.entitySelectionHandler = entitySelectionHandler;
         }
 
-        public void GetEntityList()
+        public void GetEntityList(bool selectAll = false)
         {
             var options = this.myPlugin.options;
             myPlugin.StartWorkAsync(new WorkAsyncInfo
@@ -38,14 +35,17 @@ namespace AlbanianXrm.EarlyBound.Logic
                 {
                     var result = myPlugin.Service.Execute(new RetrieveAllEntitiesRequest()
                     {
-                        EntityFilters = EntityFilters.Privileges
+                        EntityFilters = selectAll ? EntityFilters.All : EntityFilters.Privileges
                     }) as RetrieveAllEntitiesResponse;
-                    foreach (var item in result.EntityMetadata)
+                    if (!selectAll)
                     {
-                        item.SetPrivateValue(x => x.Attributes, Array.Empty<AttributeMetadata>());
-                        item.SetPrivateValue(x => x.ManyToOneRelationships, Array.Empty<OneToManyRelationshipMetadata>());
-                        item.SetPrivateValue(x => x.OneToManyRelationships, Array.Empty<OneToManyRelationshipMetadata>());
-                        item.SetPrivateValue(x => x.ManyToManyRelationships, Array.Empty<ManyToManyRelationshipMetadata>());
+                        foreach (var item in result.EntityMetadata)
+                        {
+                            item.SetPrivateValue(x => x.Attributes, Array.Empty<AttributeMetadata>());
+                            item.SetPrivateValue(x => x.ManyToOneRelationships, Array.Empty<OneToManyRelationshipMetadata>());
+                            item.SetPrivateValue(x => x.OneToManyRelationships, Array.Empty<OneToManyRelationshipMetadata>());
+                            item.SetPrivateValue(x => x.ManyToManyRelationships, Array.Empty<ManyToManyRelationshipMetadata>());
+                        }
                     }
                     ForrestSerializer forrestSerializer = new ForrestSerializer(args.Argument as string);
 
@@ -91,44 +91,18 @@ namespace AlbanianXrm.EarlyBound.Logic
                                     Tag = item
                                 };
                                 metadataTree.Nodes.Add(node);
-                            }
-                            Dictionary<string, EntitySelection> entitySelection = arrResult[1] as Dictionary<string, EntitySelection>;
-                            if (entitySelection.Any())
-                            {
-                                foreach (TreeNodeAdv entityNode in metadataTree.Nodes)
+                                if (selectAll)
                                 {
-                                    EntityMetadata entity = entityNode.Tag as EntityMetadata;
-                                    if (entitySelection.TryGetValue(entity.LogicalName, out EntitySelection thisSelection))
-                                    {
-                                        foreach (TreeNodeAdv node in entityNode.Nodes)
-                                        {
-                                            if (node.Text == "Attributes")
-                                            {
-                                                if (thisSelection.AllAttributes)
-                                                {
-                                                    node.Checked = true;
-                                                }
-                                                else if (thisSelection.SelectedAttributes.Any())
-                                                {
-                                                    attributeMetadataHandler.GetAttributes(entity.LogicalName, node, false, thisSelection.SelectedAttributes);
-                                                }
-                                            }
-                                            else if (node.Text == "Relationships")
-                                            {
-                                                if (thisSelection.AllRelationships)
-                                                {
-                                                    node.Checked = true;
-                                                }
-                                                else if (thisSelection.SelectedRelationships.Any())
-                                                {
-                                                    relationshipMetadataHandler.GetRelationships(entity.LogicalName, node, false, thisSelection.SelectedRelationships);
-                                                }
-                                            }
-                                        }
-                                    }
+                                    AttributeMetadataHandler.CreateAttributeNodes(attributes, item, checkedState: true);
+                                    RelationshipMetadataHandler.CreateRelationshipNodes(relationships, item, checkedState: true);
                                 }
                             }
+                            if (!selectAll)
+                            {
+                                entitySelectionHandler.SelectGenerated();
+                            }
 
+                            myPlugin.pluginViewModel.All_Metadata_Requested = selectAll;
                             myPlugin.pluginViewModel.Generate_Enabled = true;
                         }
                     }
