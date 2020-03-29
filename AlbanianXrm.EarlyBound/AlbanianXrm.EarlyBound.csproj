@@ -217,6 +217,7 @@
     <Compile Include="Logic\EntityGeneratorHandler.cs" />
     <Compile Include="Logic\CoreToolsDownloader.cs" />
     <Compile Include="Logic\EntityMetadataHandler.cs" />
+    <Compile Include="Logic\EntitySelectionHandler.cs" />
     <Compile Include="Logic\PluginViewModel.cs" />
     <Compile Include="Logic\RelationshipMetadataHandler.cs" />
     <Compile Include="MyPlugin.cs" />
@@ -252,6 +253,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,8 @@ namespace AlbanianXrm.EarlyBound.Interfaces
     {
         AttributeMetadataHandler NewAttributeMetadataHandler(MyPluginControl myPlugin);
         CoreToolsDownloader NewCoreToolsDownloader(MyPluginControl myPlugin);
-        EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler);
+        EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler);
+        EntitySelectionHandler NewEntitySelectionHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler);
         RelationshipMetadataHandler NewRelationshipMetadataHandler(MyPluginControl myPlugin);
         EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox txtOutput);
         PluginViewModel NewPluginViewModel();

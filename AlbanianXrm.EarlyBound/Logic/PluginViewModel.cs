@@ -82,6 +82,18 @@ namespace AlbanianXrm.EarlyBound.Logic
             }
         }
 
+        private bool _All_Metadata_Requested = false;
+        public bool All_Metadata_Requested
+        {
+            get { return _All_Metadata_Requested; }
+            set
+            {
+                if (_All_Metadata_Requested == value) return;
+                _All_Metadata_Requested = value;
+                OnPropertyChanged(nameof(All_Metadata_Requested));
+            }
+        }
+
         protected void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

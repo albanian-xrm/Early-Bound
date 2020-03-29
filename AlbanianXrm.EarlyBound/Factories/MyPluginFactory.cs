@@ -1,11 +1,6 @@
 ﻿using AlbanianXrm.EarlyBound.Interfaces;
 using AlbanianXrm.EarlyBound.Logic;
 using Syncfusion.Windows.Forms.Tools;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AlbanianXrm.EarlyBound.Factories
@@ -22,9 +17,14 @@ namespace AlbanianXrm.EarlyBound.Factories
             return new CoreToolsDownloader(myPlugin);
         }
 
-        public EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
+        public EntitySelectionHandler NewEntitySelectionHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
         {
-            return new EntityMetadataHandler(myPlugin, metadataTree, attributeMetadataHandler, relationshipMetadataHandler);
+            return new EntitySelectionHandler(myPlugin, metadataTree, attributeMetadataHandler,relationshipMetadataHandler);
+        }
+
+        public EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
+        {
+            return new EntityMetadataHandler(myPlugin, metadataTree, entitySelectionHandler);
         }
 
         public RelationshipMetadataHandler NewRelationshipMetadataHandler(MyPluginControl myPlugin)

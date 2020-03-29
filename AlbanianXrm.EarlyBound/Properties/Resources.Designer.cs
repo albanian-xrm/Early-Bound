@@ -188,6 +188,33 @@ namespace AlbanianXrm.EarlyBound.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This command selects all entities..
+        /// </summary>
+        internal static string SELECT_ALL_NO_REQUEST {
+            get {
+                return ResourceManager.GetString("SELECT_ALL_NO_REQUEST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This command will retrieve all entity metadata and select all of them..
+        /// </summary>
+        internal static string SELECT_ALL_REQUEST {
+            get {
+                return ResourceManager.GetString("SELECT_ALL_REQUEST", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selecting the last generated entity attributes and relationships..
+        /// </summary>
+        internal static string SELECTING_GENERATED {
+            get {
+                return ResourceManager.GetString("SELECTING_GENERATED", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Settings found and loaded.
         /// </summary>
         internal static string SETTINGS_FOUND {
