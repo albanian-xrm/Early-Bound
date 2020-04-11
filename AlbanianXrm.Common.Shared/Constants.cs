@@ -19,7 +19,7 @@
         public const string ENVIRONMENT_TWOOPTIONS = "AlbanianXrm.EarlyBound:TwoOptions";
         public const string ENVIRONMENT_OPTIONSETENUMPROPERTIES = "AlbanianXrm.EarlyBound:OptionSetEnumProperties";
         public const string ENVIRONMENT_REMOVEPUBLISHER = "AlbanianXrm.EarlyBound:RemovePublisher";
-
+        public const string ENVIRONMENT_GENERATEXML = "AlbanianXrm.EarlyBound:GenerateXML";
 
         public const string EntityLogicalNameAttributeType = "Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute";
         public const string AttributeLogicalNameAttributeType = "Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute";

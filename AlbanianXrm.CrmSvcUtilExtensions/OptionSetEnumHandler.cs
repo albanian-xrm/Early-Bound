@@ -25,8 +25,9 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         private readonly string CrmSvcUtilsVersion;
         private readonly string CrmSvcUtilsName;
         private readonly bool removePropertyChanged;
+        private readonly bool generateXmlDocumentation;
 
-        public OptionSetEnumHandler(CodeCompileUnit codeUnit, IServiceProvider services, bool removePropertyChanged)
+        public OptionSetEnumHandler(CodeCompileUnit codeUnit, IServiceProvider services, bool removePropertyChanged, bool generateXmlDocumentation)
         {
             this.codeUnit = codeUnit;
             var metadataProvider = (IMetadataProviderService)services.GetService(typeof(IMetadataProviderService));
@@ -41,9 +42,11 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             TwoOptionsEnum = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_TWOOPTIONS) ?? "") == "1";
             TwoOptionsConstants = (Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_TWOOPTIONS) ?? "") == "2";
             OptionSetEnumProperties = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES));
+            OptionSetEnumProperties = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES));
             CrmSvcUtilsVersion = FileVersionInfo.GetVersionInfo(typeof(SdkMessage).Assembly.Location).FileVersion;
             CrmSvcUtilsName = typeof(SdkMessage).Assembly.GetName().Name;
             this.removePropertyChanged = removePropertyChanged;
+            this.generateXmlDocumentation = generateXmlDocumentation;
         }
 
         public void FixStateCode()
@@ -53,7 +56,15 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 for (int i = 0; i < @namespace.Types.Count; i++)
                 {
                     var thisType = @namespace.Types[i];
-                    if (!thisType.IsClass) continue;
+                    if (!thisType.IsClass)
+                    {
+                        if (thisType.Name.EndsWith("State", StringComparison.InvariantCulture))
+                        {
+                            @namespace.Types.RemoveAt(i);
+                            i -= 1;
+                        }
+                        continue;
+                    }
                     var entity = GetEntityLogicalName(thisType);
                     if (entity == null) continue;
                     for (int j = 0; j < thisType.Members.Count; j++)
@@ -158,7 +169,6 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 }
                 if (TwoOptionsConstants)
                 {
-
                     generatedMember = GenerateConstantTwoOptions(booleanAttribute);
                 }
             }
@@ -242,9 +252,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     InitExpression = new CodePrimitiveExpression(value.Key)
                 };
 
-                codeMemberField.Comments.Add(new CodeCommentStatement("<summary>", docComment: true));
-                codeMemberField.Comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(value.Description), docComment: true));
-                codeMemberField.Comments.Add(new CodeCommentStatement("</summary>", docComment: true));
+                if (generateXmlDocumentation)
+                {
+                    codeMemberField.Comments.Add(new CodeCommentStatement("<summary>", docComment: true));
+                    codeMemberField.Comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(value.Description), docComment: true));
+                    codeMemberField.Comments.Add(new CodeCommentStatement("</summary>", docComment: true));
+                }
 
                 codeMemberField.CustomAttributes.Add(new CodeAttributeDeclaration("System.Runtime.Serialization.EnumMemberAttribute"));
 
@@ -258,7 +271,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             return GenerateEnumOptions(booleanAttribute.SchemaName, EnumItem.ToUniqueValues(booleanAttribute.OptionSet));
         }
 
-        private static CodeTypeDeclaration GenerateConstantTwoOptions(BooleanAttributeMetadata booleanAttribute)
+        private CodeTypeDeclaration GenerateConstantTwoOptions(BooleanAttributeMetadata booleanAttribute)
         {
             CodeTypeDeclaration booleanOptionSet = new CodeTypeDeclaration(booleanAttribute.SchemaName)
             {
@@ -273,9 +286,14 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     InitExpression = new CodePrimitiveExpression(value.Key == 1),
                     Attributes = MemberAttributes.Const | MemberAttributes.Public
                 };
-                codeMemberField.Comments.Add(new CodeCommentStatement("<summary>", docComment: true));
-                codeMemberField.Comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(value.Description), docComment: true));
-                codeMemberField.Comments.Add(new CodeCommentStatement("</summary>", docComment: true));
+
+                if (generateXmlDocumentation)
+                {
+                    codeMemberField.Comments.Add(new CodeCommentStatement("<summary>", docComment: true));
+                    codeMemberField.Comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(value.Description), docComment: true));
+                    codeMemberField.Comments.Add(new CodeCommentStatement("</summary>", docComment: true));
+                }
+
                 booleanOptionSet.Members.Add(codeMemberField);
             }
             return booleanOptionSet;

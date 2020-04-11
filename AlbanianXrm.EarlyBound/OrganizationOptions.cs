@@ -65,6 +65,13 @@ namespace AlbanianXrm.EarlyBound
         [TypeConverter(typeof(YesNoConverter))]
         public bool RemovePublisherPrefix { get; set; }
 
+        [Category("General")]
+        [DisplayName("Xml Documentation")]
+        [Description("Generate Xml documentation from metadata description.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool GenerateXmlDocumentation { get; set; }
+
         [Category("OptionSet Enums")]
         [DisplayName("Generate Enums")]
         [Description("Generate OptionSet Enums.")]
