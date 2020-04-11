@@ -72,6 +72,13 @@ namespace AlbanianXrm.EarlyBound
         [TypeConverter(typeof(YesNoConverter))]
         public bool GenerateXmlDocumentation { get; set; }
 
+        [Category("General")]
+        [DisplayName("Attribute Constants")]
+        [Description("Generate Attributes as Constants in the class Fields.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool GenerateAttributeConstants { get; set; }
+
         [Category("OptionSet Enums")]
         [DisplayName("Generate Enums")]
         [Description("Generate OptionSet Enums.")]

@@ -38,5 +38,35 @@ namespace AlbanianXrm.CrmSvcUtilExtensions.Extensions
                 }
             }
         }
+
+        public static IEnumerable<CodeNamespace> ToEnumerable(this CodeNamespaceCollection collection)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+
+            foreach (CodeNamespace @namespace in collection)
+            {
+                yield return @namespace;
+            }
+        }
+
+        public static IEnumerable<CodeAttributeDeclaration> ToEnumerable(this CodeAttributeDeclarationCollection collection)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+
+            foreach (CodeAttributeDeclaration codeTypeDeclaration in collection)
+            {
+                yield return codeTypeDeclaration;
+            }
+        } 
+        
+        public static IEnumerable<CodeCommentStatement> ToEnumerable(this CodeCommentStatementCollection collection)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection));
+
+            foreach (CodeCommentStatement codeCommentStatement in collection)
+            {
+                yield return codeCommentStatement;
+            }
+        }
     }
 }

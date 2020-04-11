@@ -83,8 +83,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AttributeConstantsHandler.cs" />
     <Compile Include="CustomizationService.cs" />
     <Compile Include="EnumItem.cs" />
+    <Compile Include="Extensions\CodeMemberPropertyExtensions.cs" />
+    <Compile Include="Extensions\CodeTypeDeclarationExtensions.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="FilteringService.cs" />
     <Compile Include="MetadataService.cs" />
