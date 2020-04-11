@@ -25,6 +25,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             var removePropertyChanged = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED));
             var generateXmlDocumentation = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_GENERATEXML));
 
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS)))
+            {
+                var attributeConstantsHandler = new AttributeConstantsHandler(codeUnit, generateXmlDocumentation);
+                attributeConstantsHandler.GenerateAttributeConstants();
+            }
+
             var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services, removePropertyChanged, generateXmlDocumentation);
             optionSetEnumHandler.FixStateCode();
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS)))
