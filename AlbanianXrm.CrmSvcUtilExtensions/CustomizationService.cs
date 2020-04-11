@@ -23,7 +23,9 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             var removePropertyChanged = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED));
-            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services, removePropertyChanged);
+            var generateXmlDocumentation = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_GENERATEXML));
+
+            var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services, removePropertyChanged, generateXmlDocumentation);
             optionSetEnumHandler.FixStateCode();
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS)))
             {
@@ -85,6 +87,39 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                             }
                         }
                     }
+                }
+            }
+
+            if (!generateXmlDocumentation)
+            {
+                RemoveXmlDocumentation(codeUnit.Namespaces);
+            }
+        }
+
+        private static void RemoveXmlDocumentation(CodeNamespaceCollection namespaces)
+        {
+            foreach (CodeNamespace @namespace in namespaces)
+            {
+                RemoveXmlDocumentation(@namespace.Comments);
+                foreach (CodeTypeDeclaration typeDeclaration in @namespace.Types)
+                {
+                    RemoveXmlDocumentation(typeDeclaration.Comments);
+                    foreach (CodeTypeMember typeMember in typeDeclaration.Members)
+                    {
+                        RemoveXmlDocumentation(typeMember.Comments);
+                    }
+                }
+            }
+        }
+
+        private static void RemoveXmlDocumentation(CodeCommentStatementCollection comments)
+        {
+            for (int i = 0; i < comments.Count; i++)
+            {
+                if (comments[i].Comment.DocComment)
+                {
+                    comments.RemoveAt(i);
+                    i -= 1;
                 }
             }
         }
