@@ -81,7 +81,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                             {
                                 if (!OptionSetEnumProperties)
                                 {
-                                    thisType.Members[j] = GenerateOptionSetProperty($"OptionSets.{property.Name}", property.Name, attribute);
+                                    thisType.Members[j] = GenerateOptionSetProperty($"OptionSets.{property.Name}", property.Name, attribute, thisType.Members[j].Comments);
                                 }
                                 if (GetOrCreateOptionSets(thisType.Members.ToEnumerable<CodeTypeDeclaration>(), out CodeTypeDeclaration optionSets))
                                 {
@@ -164,7 +164,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     generatedMember = GenerateEnumTwoOptions(booleanAttribute);
                     if (OptionSetEnumProperties)
                     {
-                        type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, isTwoOptions: true);
+                        type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, type.Members[i].Comments, isTwoOptions: true);
                     }
                 }
                 if (TwoOptionsConstants)
@@ -178,7 +178,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 isGlobal = stateAttribute.OptionSet.IsGlobal == true;
                 if (OptionSetEnumProperties)
                 {
-                    type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, isTwoOptions: true);
+                    type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, type.Members[i].Comments, isTwoOptions: true);
                 }
             }
             else if (attributeMetadata is StatusAttributeMetadata statusAttribute)
@@ -196,7 +196,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             {
                 if (OptionSetEnumProperties)
                 {
-                    type.Members[i] = GenerateOptionSetProperty($"{@namespace}.OptionSets.{generatedMember.Name}", property, attribute);
+                    type.Members[i] = GenerateOptionSetProperty($"{@namespace}.OptionSets.{generatedMember.Name}", property, attribute, type.Members[i].Comments);
                 }
                 if (globalOptionsetNames.Contains(generatedMember.Name)) return;
                 globalOptionsetNames.Add(generatedMember.Name);
@@ -204,9 +204,14 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             }
             else
             {
-                if (generatedMember.IsEnum && OptionSetEnumProperties)
+                if (OptionSetEnumProperties)
                 {
-                    type.Members[i] = GenerateOptionSetProperty($"OptionSets.{generatedMember.Name}", property, attribute, isTwoOptions);
+                    type.Members[i] =
+                        generatedMember.IsEnum ?
+                            GenerateOptionSetProperty($"OptionSets.{generatedMember.Name}", property, attribute, type.Members[i].Comments, isTwoOptions) :
+                            (isTwoOptions ?
+                                GenerateBoolProperty($"OptionSets.{generatedMember.Name}", property, attribute, type.Members[i].Comments) :
+                                type.Members[i]);
                 }
                 optionSets.Members.Add(generatedMember);
             }
@@ -299,7 +304,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             return booleanOptionSet;
         }
 
-        internal CodeTypeMember GenerateOptionSetProperty(string type, string name, string logicalName, bool isTwoOptions = false)
+        internal CodeTypeMember GenerateOptionSetProperty(string type, string name, string logicalName, CodeCommentStatementCollection comments, bool isTwoOptions = false)
         {
             CodeMemberProperty property = new CodeMemberProperty
             {
@@ -309,7 +314,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             };
             property.CustomAttributes.Add(new CodeAttributeDeclaration("Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute",
                                                                       new CodeAttributeArgument(new CodePrimitiveExpression(logicalName))));
-
+            if (generateXmlDocumentation)
+            {
+                property.Comments.AddRange(comments);
+            }
             var typeReference = isTwoOptions ? new CodeTypeReference(typeof(Nullable)) { TypeArguments = { new CodeTypeReference(typeof(bool)) } } : new CodeTypeReference(typeof(Microsoft.Xrm.Sdk.OptionSetValue));
             property.GetStatements.Add(
                 new CodeVariableDeclarationStatement(typeReference,
@@ -400,6 +408,56 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                                            (CodeExpression) new CodeObjectCreateExpression(typeof(Microsoft.Xrm.Sdk.OptionSetValue), new CodeCastExpression(typeof(int), new CodePropertySetValueReferenceExpression())) }))
                     }
                 ));
+            if (!removePropertyChanged)
+            {
+                property.SetStatements.Add(
+                    new CodeMethodInvokeExpression(
+                        new CodeThisReferenceExpression(),
+                        "OnPropertyChanged",
+                        new CodeExpression[] { new CodePrimitiveExpression(name) }));
+            }
+            return property;
+        }
+
+        internal CodeTypeMember GenerateBoolProperty(string type, string name, string logicalName, CodeCommentStatementCollection comments)
+        {
+            CodeMemberProperty property = new CodeMemberProperty
+            {
+                Type = new CodeTypeReference("System.Nullable", new CodeTypeReference(typeof(bool))),
+                Name = name,
+                Attributes = MemberAttributes.Public | MemberAttributes.Final
+            };
+            property.CustomAttributes.Add(new CodeAttributeDeclaration("Microsoft.Xrm.Sdk.AttributeLogicalNameAttribute",
+                                                                      new CodeAttributeArgument(new CodePrimitiveExpression(logicalName))));
+            if (generateXmlDocumentation)
+            {
+                property.Comments.AddRange(comments);
+                property.Comments.Insert(property.Comments.Count - 1, new CodeCommentStatement($"Possible values can be found in <see cref=\"{type}\" />", docComment: true));
+            }
+            var typeReference = new CodeTypeReference(typeof(Nullable)) { TypeArguments = { new CodeTypeReference(typeof(bool)) } };
+            property.GetStatements.Add(
+                new CodeMethodReturnStatement(
+                    new CodeMethodInvokeExpression(
+                        new CodeMethodReferenceExpression(
+                            new CodeThisReferenceExpression(),
+                            "GetAttributeValue",
+                            typeReference),
+                        new CodeExpression[] { new CodePrimitiveExpression(logicalName) })));
+
+            if (!removePropertyChanged)
+            {
+                property.SetStatements.Add(
+                    new CodeMethodInvokeExpression(
+                        new CodeThisReferenceExpression(),
+                        "OnPropertyChanging",
+                        new CodeExpression[] { new CodePrimitiveExpression(name) }));
+            }
+            property.SetStatements.Add(
+                new CodeExpressionStatement(
+                    new CodeMethodInvokeExpression(
+                        new CodeThisReferenceExpression(),
+                        "SetAttributeValue",
+                        new CodeExpression[] { new CodePrimitiveExpression(logicalName), new CodePropertySetValueReferenceExpression() })));
             if (!removePropertyChanged)
             {
                 property.SetStatements.Add(
