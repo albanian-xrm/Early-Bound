@@ -6,7 +6,6 @@ using System.Drawing.Design;
 namespace AlbanianXrm.EarlyBound
 {
     [Serializable]
-
     public class OrganizationOptions
     {
         private static class Defaults

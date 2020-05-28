@@ -123,11 +123,11 @@ namespace AlbanianXrm.EarlyBound
         }
 
         [Browsable(false)]
-#pragma warning disable CA2227 // Collection properties should be read only
-        public List<OrganizationOptions> OrganizationOptionsList
-#pragma warning restore CA2227 // Collection properties should be read only
+#pragma warning disable CA1819 // Properties should not return arrays
+        public OrganizationOptions[] OrganizationOptionsList
+#pragma warning restore CA1819 // Properties should not return arrays
         {
-            get => OrganizationOptions.Values.ToList();
+            get => OrganizationOptions.Values.ToArray();
             set
             {
                 OrganizationOptions = new Dictionary<string, OrganizationOptions>();
