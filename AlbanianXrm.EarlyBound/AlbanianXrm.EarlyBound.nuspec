@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>AlbanianXrm.EarlyBound</id>
-    <version>1.2020.05.1</version>
+    <version>1.2020.05.2</version>
     <title>Albanian Early Bound</title>
     <authors>Betim Beja</authors>
     <owners>Betim Beja</owners>
@@ -13,12 +13,11 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Generates Early Bound Entities. Uses CrmSvcUtil from the SDK which can be downloaded from any NuGet source (even local directory for isolated environments).</description>
     <releaseNotes>
+v1.2020.05.2:
+- Fixed bug. With the latest updates of XrmToolBox the OrganizationOptions were not being correctly serialized.
 v1.2020.05.1: 
-- Fixed bug. Now the tool correctly generates boolean properties for Two Options when Generate Boolean Constants is choosen
+- Fixed bug. Now the tool correctly generates boolean properties for Two Options when Generate Boolean Constants is choosen.
 - Fixed bug. When generating optionset properties and xml documentation now the tool preserves the original documentation.
-v1.2020.04.1:
-- Added option to choose if XML documentation will be generated or not
-- Added option to generate attribute constants
 
 For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
     </releaseNotes>
