@@ -21,7 +21,7 @@ namespace AlbanianXrm.EarlyBound.Extensions
             string password = "";
 
             var field = connection.GetType().GetField("userPassword", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (field != null)
+            if (field != null && (string)field.GetValue(connection)!=null)
             {
                 password = Decrypt((string)field.GetValue(connection));
             }
@@ -30,9 +30,18 @@ namespace AlbanianXrm.EarlyBound.Extensions
             {
                 // Lookup Old Public Property
                 var prop = connection.GetType().GetProperty("UserPassword", BindingFlags.Instance | BindingFlags.Public);
-                if (prop != null)
+                if (prop != null && (string)prop.GetValue(connection) != null)
                 {
                     password = (string)prop.GetValue(connection);
+                }
+            }
+
+            if (string.IsNullOrEmpty(password))
+            {
+                var prop = connection.GetType().GetProperty("ClientSecretEncrypted", BindingFlags.Instance | BindingFlags.Public);
+                if (prop != null && (string)prop.GetValue(connection) != null)
+                {
+                    password = Decrypt((string)prop.GetValue(connection));
                 }
             }
             
