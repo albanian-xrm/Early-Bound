@@ -45,56 +45,53 @@ namespace AlbanianXrm.EarlyBound.Logic
                         {
                             MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
-                        else if (args.Result is Dictionary<string, EntitySelection> entitySelection)
+                        else if (args.Result is Dictionary<string, EntitySelection> entitySelection && entitySelection.Any())
                         {
-                            if (entitySelection.Any())
+                            foreach (TreeNodeAdv entityNode in metadataTree.Nodes)
                             {
-                                foreach (TreeNodeAdv entityNode in metadataTree.Nodes)
+                                EntityMetadata entity = entityNode.Tag as EntityMetadata;
+                                if (entitySelection.TryGetValue(entity.LogicalName, out EntitySelection thisSelection))
                                 {
-                                    EntityMetadata entity = entityNode.Tag as EntityMetadata;
-                                    if (entitySelection.TryGetValue(entity.LogicalName, out EntitySelection thisSelection))
+                                    foreach (TreeNodeAdv node in entityNode.Nodes)
                                     {
-                                        foreach (TreeNodeAdv node in entityNode.Nodes)
+                                        if (node.Text == "Attributes")
                                         {
-                                            if (node.Text == "Attributes")
+                                            if (thisSelection.AllAttributes)
                                             {
-                                                if (thisSelection.AllAttributes)
+                                                node.Checked = true;
+                                            }
+                                            else if (thisSelection.SelectedAttributes.Any() && !node.ExpandedOnce)
+                                            {
+                                                attributeMetadataHandler.GetAttributes(entity.LogicalName, node, false, thisSelection.SelectedAttributes);
+                                            }
+                                            else if (thisSelection.SelectedAttributes.Any() && node.ExpandedOnce)
+                                            {
+                                                foreach (TreeNodeAdv attributeNode in node.Nodes)
                                                 {
-                                                    node.Checked = true;
-                                                }
-                                                else if (thisSelection.SelectedAttributes.Any() && !node.ExpandedOnce)
-                                                {
-                                                    attributeMetadataHandler.GetAttributes(entity.LogicalName, node, false, thisSelection.SelectedAttributes);
-                                                }
-                                                else if (thisSelection.SelectedAttributes.Any() && node.ExpandedOnce)
-                                                {
-                                                    foreach (TreeNodeAdv attributeNode in node.Nodes)
+                                                    if (attributeNode.Tag is AttributeMetadata attribute)
                                                     {
-                                                        if (attributeNode.Tag is AttributeMetadata attribute)
-                                                        {
-                                                            attributeNode.Checked = thisSelection.SelectedAttributes.Contains(attribute.LogicalName);
-                                                        }
+                                                        attributeNode.Checked = thisSelection.SelectedAttributes.Contains(attribute.LogicalName);
                                                     }
                                                 }
                                             }
-                                            else if (node.Text == "Relationships")
+                                        }
+                                        else if (node.Text == "Relationships")
+                                        {
+                                            if (thisSelection.AllRelationships)
                                             {
-                                                if (thisSelection.AllRelationships)
+                                                node.Checked = true;
+                                            }
+                                            else if (thisSelection.SelectedRelationships.Any() && !node.ExpandedOnce)
+                                            {
+                                                relationshipMetadataHandler.GetRelationships(entity.LogicalName, node, false, thisSelection.SelectedRelationships);
+                                            }
+                                            else if (thisSelection.SelectedRelationships.Any() && node.ExpandedOnce)
+                                            {
+                                                foreach (TreeNodeAdv relationshipNode in node.Nodes)
                                                 {
-                                                    node.Checked = true;
-                                                }
-                                                else if (thisSelection.SelectedRelationships.Any() && !node.ExpandedOnce)
-                                                {
-                                                    relationshipMetadataHandler.GetRelationships(entity.LogicalName, node, false, thisSelection.SelectedRelationships);
-                                                }
-                                                else if (thisSelection.SelectedRelationships.Any() && node.ExpandedOnce)
-                                                {
-                                                    foreach (TreeNodeAdv relationshipNode in node.Nodes)
+                                                    if (relationshipNode.Tag is RelationshipMetadataBase relationshipMetadata)
                                                     {
-                                                        if (relationshipNode.Tag is RelationshipMetadataBase relationshipMetadata)
-                                                        {
-                                                            relationshipNode.Checked = thisSelection.SelectedRelationships.Contains(relationshipMetadata.SchemaName);
-                                                        }
+                                                        relationshipNode.Checked = thisSelection.SelectedRelationships.Contains(relationshipMetadata.SchemaName);
                                                     }
                                                 }
                                             }
@@ -104,9 +101,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                             }
                         }
                     }
-#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                     catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

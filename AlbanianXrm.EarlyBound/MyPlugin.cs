@@ -59,7 +59,7 @@ namespace AlbanianXrm.EarlyBound
 
             // check to see if the failing assembly is one that we reference.
             List<AssemblyName> refAssemblies = currAssembly.GetReferencedAssemblies().ToList();
-            var refAssembly = refAssemblies.Where(a => a.Name == argName).FirstOrDefault();
+            var refAssembly = refAssemblies.FirstOrDefault(a => a.Name == argName);
 
             // if the current unresolved assembly is referenced by our plugin, attempt to load
             if (refAssembly != null)

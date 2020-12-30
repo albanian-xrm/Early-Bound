@@ -163,7 +163,7 @@ namespace AlbanianXrm.EarlyBound
         private void MyPluginControl_OnCloseTool(object sender, EventArgs e)
         {
             // Before leaving, save the settings
-            ShowInfoNotification(Resources.CONTRIBUTE_NOTIFICATION, new Uri("https://github.com/Albanian-Xrm/Early-Bound"));
+            ShowInfoNotification(Resources.CONTRIBUTE_NOTIFICATION, new Uri(Resources.CONTRIBUTE_URI));
             LogInfo(Resources.SAVING_SETTINGS);
             SettingsManager.Instance.Save(GetType(), options);
         }
@@ -258,7 +258,7 @@ namespace AlbanianXrm.EarlyBound
 
         private void MetadataTree_BeforeCheck(object sender, TreeNodeAdvBeforeCheckEventArgs e)
         {
-            if (e.Node.Tag is RelationshipMetadataBase)
+            if (e.Node.Tag as RelationshipMetadataBase != null)
             {
                 if (!options.CoupledRelationships) return;
                 string entity1 = "";

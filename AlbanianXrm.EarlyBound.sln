@@ -24,6 +24,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AlbanianXrm.Common.Shared",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.ForrestSerializer", "AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj", "{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.ForrestSerializer.Tests", "AlbanianXrm.ForrestSerializer.Tests\AlbanianXrm.ForrestSerializer.Tests.csproj", "{CF21D357-572C-4F9F-A586-FC32A95B0FED}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{8664d2b2-4cde-40ac-8e44-f2f4f308592b}*SharedItemsImports = 13
@@ -60,6 +62,12 @@ Global
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF21D357-572C-4F9F-A586-FC32A95B0FED}.Azure Pipelines|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF21D357-572C-4F9F-A586-FC32A95B0FED}.Azure Pipelines|Any CPU.Build.0 = Debug|Any CPU
+		{CF21D357-572C-4F9F-A586-FC32A95B0FED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF21D357-572C-4F9F-A586-FC32A95B0FED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF21D357-572C-4F9F-A586-FC32A95B0FED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF21D357-572C-4F9F-A586-FC32A95B0FED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

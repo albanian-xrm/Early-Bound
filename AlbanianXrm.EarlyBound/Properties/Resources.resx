@@ -123,6 +123,9 @@
   <data name="CONTRIBUTE_NOTIFICATION" xml:space="preserve">
     <value>To contribute to this plugin visit its code repository</value>
   </data>
+  <data name="CONTRIBUTE_URI" xml:space="preserve">
+    <value>https://github.com/Albanian-Xrm/Early-Bound</value>
+  </data>
   <data name="CORE_TOOLS_NOT_FOUND" xml:space="preserve">
     <value>{0} package not found on {1}</value>
   </data>

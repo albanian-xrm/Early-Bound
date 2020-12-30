@@ -10,6 +10,30 @@ namespace AlbanianXrm.CrmSvcUtilExtensions.Extensions
         {
             return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
         }
+        public static IEnumerable<CodeTypeMember> ToEnumerable(this CodeTypeMemberCollection collection)
+        {
+            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
+        }
+
+        public static IEnumerable<T> ToEnumerable<T>(this CodeTypeMemberCollection collection) where T : CodeTypeMember
+        {
+            return SafeToEnumerable<T>(collection ?? throw new ArgumentNullException(nameof(collection)));
+        }
+
+        public static IEnumerable<CodeNamespace> ToEnumerable(this CodeNamespaceCollection collection)
+        {
+            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
+        }
+
+        public static IEnumerable<CodeAttributeDeclaration> ToEnumerable(this CodeAttributeDeclarationCollection collection)
+        {
+            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
+        }
+
+        public static IEnumerable<CodeCommentStatement> ToEnumerable(this CodeCommentStatementCollection collection)
+        {
+            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
+        }
 
         private static IEnumerable<CodeTypeDeclaration> SafeToEnumerable(this CodeTypeDeclarationCollection collection)
         {
@@ -19,22 +43,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions.Extensions
             }
         }
 
-        public static IEnumerable<CodeTypeMember> ToEnumerable(this CodeTypeMemberCollection collection)
-        {
-            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
-        }
-
         private static IEnumerable<CodeTypeMember> SafeToEnumerable(CodeTypeMemberCollection collection)
         {
             foreach (CodeTypeMember codeTypeMember in collection)
             {
                 yield return codeTypeMember;
             }
-        }
-
-        public static IEnumerable<T> ToEnumerable<T>(this CodeTypeMemberCollection collection) where T : CodeTypeMember
-        {
-            return SafeToEnumerable<T>(collection ?? throw new ArgumentNullException(nameof(collection)));
         }
 
         private static IEnumerable<T> SafeToEnumerable<T>(CodeTypeMemberCollection collection) where T : CodeTypeMember
@@ -48,11 +62,6 @@ namespace AlbanianXrm.CrmSvcUtilExtensions.Extensions
             }
         }
 
-        public static IEnumerable<CodeNamespace> ToEnumerable(this CodeNamespaceCollection collection)
-        {
-            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
-        }
-
         private static IEnumerable<CodeNamespace> SafeToEnumerable(CodeNamespaceCollection collection)
         {
             foreach (CodeNamespace @namespace in collection)
@@ -61,22 +70,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions.Extensions
             }
         }
 
-        public static IEnumerable<CodeAttributeDeclaration> ToEnumerable(this CodeAttributeDeclarationCollection collection)
-        {
-            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
-        }
-
         private static IEnumerable<CodeAttributeDeclaration> SafeToEnumerable(CodeAttributeDeclarationCollection collection)
         {
             foreach (CodeAttributeDeclaration codeTypeDeclaration in collection)
             {
                 yield return codeTypeDeclaration;
             }
-        }
-
-        public static IEnumerable<CodeCommentStatement> ToEnumerable(this CodeCommentStatementCollection collection)
-        {
-            return SafeToEnumerable(collection ?? throw new ArgumentNullException(nameof(collection)));
         }
 
         private static IEnumerable<CodeCommentStatement> SafeToEnumerable(CodeCommentStatementCollection collection)

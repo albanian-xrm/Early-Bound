@@ -15,14 +15,14 @@ namespace AlbanianXrm.EarlyBound.Helpers
             this.target = target;
         }
 
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type srcType)
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
-            return typeof(string).Equals(srcType);
+            return typeof(string).Equals(sourceType);
         }
 
-        public override bool CanConvertTo(ITypeDescriptorContext context, Type destType)
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
-            return typeof(string).Equals(destType);
+            return typeof(string).Equals(destinationType);
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
@@ -36,7 +36,7 @@ namespace AlbanianXrm.EarlyBound.Helpers
             return Enum.Parse(target, (string)value);
         }
 
-        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destType)
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
             var fieldInfo = target.GetField(Enum.GetName(target, value));
             var description = fieldInfo.GetCustomAttribute<DescriptionAttribute>();

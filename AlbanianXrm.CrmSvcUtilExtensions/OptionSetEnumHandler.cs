@@ -15,7 +15,6 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
     internal class OptionSetEnumHandler
     {
         private readonly CodeCompileUnit codeUnit;
-        private readonly HashSet<string> entities;
         private readonly HashSet<string> allAttributes;
         private readonly Dictionary<string, HashSet<string>> entityAttributes;
         private readonly IOrganizationMetadata organizationMetadata;
@@ -32,7 +31,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             this.codeUnit = codeUnit;
             var metadataProvider = (IMetadataProviderService)services.GetService(typeof(IMetadataProviderService));
             this.organizationMetadata = metadataProvider.LoadMetadata();
-            entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
+            var entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
             allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES) ?? "").Split(","));
             entityAttributes = new Dictionary<string, HashSet<string>>();
             foreach (var entity in entities.Except(allAttributes))
@@ -204,14 +203,11 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             }
             else
             {
-                if (OptionSetEnumProperties)
+                if (OptionSetEnumProperties && (generatedMember.IsEnum || isTwoOptions))
                 {
-                    type.Members[i] =
-                        generatedMember.IsEnum ?
-                            GenerateOptionSetProperty($"OptionSets.{generatedMember.Name}", property, attribute, type.Members[i].Comments, isTwoOptions) :
-                            (isTwoOptions ?
-                                GenerateBoolProperty($"OptionSets.{generatedMember.Name}", property, attribute, type.Members[i].Comments) :
-                                type.Members[i]);
+                    type.Members[i] = generatedMember.IsEnum ?
+                                        GenerateOptionSetProperty($"OptionSets.{generatedMember.Name}", property, attribute, type.Members[i].Comments, isTwoOptions) :
+                                        GenerateBoolProperty($"OptionSets.{generatedMember.Name}", property, attribute, type.Members[i].Comments);
                 }
                 optionSets.Members.Add(generatedMember);
             }
@@ -488,12 +484,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         {
             foreach (CodeAttributeDeclaration attribute in type.CustomAttributes)
             {
-                if (attribute.Name == Constants.EntityLogicalNameAttributeType)
+                if (attribute.Name == Constants.EntityLogicalNameAttributeType &&
+                    attribute.Arguments[0].Value is CodePrimitiveExpression value)
                 {
-                    if (attribute.Arguments[0].Value is CodePrimitiveExpression value)
-                    {
-                        return (string)value.Value;
-                    }
+                    return (string)value.Value;
                 }
             }
             return null;
@@ -505,12 +499,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
             foreach (CodeAttributeDeclaration attribute in member.CustomAttributes)
             {
-                if (attribute.Name == Constants.AttributeLogicalNameAttributeType)
+                if (attribute.Name == Constants.AttributeLogicalNameAttributeType &&
+                    attribute.Arguments[0].Value is CodePrimitiveExpression value)
                 {
-                    if (attribute.Arguments[0].Value is CodePrimitiveExpression value)
-                    {
-                        return (string)value.Value;
-                    }
+                    return (string)value.Value;
                 }
             }
             return null;

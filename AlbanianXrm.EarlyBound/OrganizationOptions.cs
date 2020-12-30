@@ -88,9 +88,9 @@ namespace AlbanianXrm.EarlyBound
         [Category("OptionSet Enums")]
         [DisplayName("Generate TwoOptions")]
         [Description("Generate Enumerations or Constants for TwoOptions attribute.")]          
-        [DefaultValue(TwoOptionsEnum.NO)]
+        [DefaultValue(TwoOptions.NO)]
         [TypeConverter(typeof(DescriptionEnumConverter))]
-        public TwoOptionsEnum TwoOptions { get; set; }
+        public TwoOptions TwoOptions { get; set; }
 
         [Category("OptionSet Enums")]
         [DisplayName("Enum Properties")]

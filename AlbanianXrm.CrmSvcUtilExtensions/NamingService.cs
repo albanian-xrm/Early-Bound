@@ -148,7 +148,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 {
                     result += "_";
                 }
-                return namingService.GetNameForOptionSet(entityMetadata, optionSetMetadata, services);
+                return result;
             }
             else
             {
