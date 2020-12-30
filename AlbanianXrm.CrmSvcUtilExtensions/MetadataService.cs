@@ -26,7 +26,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_CACHEMEATADATA)))
             {
-                Console.WriteLine(string.Format(CultureInfo.InvariantCulture, Constants.CONSOLE_METADATA));
+                Console.WriteLine(Constants.CONSOLE_METADATA);
 
                 var manager = new RecyclableMemoryStreamManager();
                 using (var stream = manager.GetStream())

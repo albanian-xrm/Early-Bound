@@ -18,8 +18,8 @@ namespace AlbanianXrm.EarlyBound
         public Options()
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
-            _CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(_CrmSvcUtils);
-            _RecycableMemoryStream = MemoryStreamEditor.GetVersion(_RecycableMemoryStream);
+            _CrmSvcUtils = new CrmSvcUtilsEditor().GetVersion(_CrmSvcUtils);
+            _RecycableMemoryStream = new MemoryStreamEditor().GetVersion(_RecycableMemoryStream);
             CacheMetadata = true;
         }
 
@@ -123,9 +123,7 @@ namespace AlbanianXrm.EarlyBound
         }
 
         [Browsable(false)]
-#pragma warning disable CA1819 // Properties should not return arrays
         public OrganizationOptions[] OrganizationOptionsList
-#pragma warning restore CA1819 // Properties should not return arrays
         {
             get => OrganizationOptions.Values.ToArray();
             set

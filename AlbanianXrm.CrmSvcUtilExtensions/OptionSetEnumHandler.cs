@@ -164,7 +164,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     generatedMember = GenerateEnumTwoOptions(booleanAttribute);
                     if (OptionSetEnumProperties)
                     {
-                        type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, type.Members[i].Comments, isTwoOptions: true);
+                        type.Members[i] = GenerateOptionSetProperty(/*(isGlobal ? "" : "") + */generatedMember.Name, property, attribute, type.Members[i].Comments, isTwoOptions: true);
                     }
                 }
                 if (TwoOptionsConstants)
@@ -178,7 +178,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 isGlobal = stateAttribute.OptionSet.IsGlobal == true;
                 if (OptionSetEnumProperties)
                 {
-                    type.Members[i] = GenerateOptionSetProperty((isGlobal ? "" : "") + generatedMember.Name, property, attribute, type.Members[i].Comments, isTwoOptions: true);
+                    type.Members[i] = GenerateOptionSetProperty(/*(isGlobal ? "" : "") + */generatedMember.Name, property, attribute, type.Members[i].Comments, isTwoOptions: true);
                 }
             }
             else if (attributeMetadata is StatusAttributeMetadata statusAttribute)

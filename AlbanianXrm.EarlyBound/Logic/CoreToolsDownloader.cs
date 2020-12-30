@@ -60,12 +60,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                         {
                             MessageBox.Show(args.Result.ToString(), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
-                        myPlugin.options.CrmSvcUtils = CrmSvcUtilsEditor.GetVersion(myPlugin.options.CrmSvcUtils);
-                        myPlugin.options.RecycableMemoryStream = MemoryStreamEditor.GetVersion(myPlugin.options.RecycableMemoryStream);
+                        myPlugin.options.CrmSvcUtils = new CrmSvcUtilsEditor().GetVersion(myPlugin.options.CrmSvcUtils);
+                        myPlugin.options.RecycableMemoryStream = new MemoryStreamEditor().GetVersion(myPlugin.options.RecycableMemoryStream);
                     }
-#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                     catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
                     {
                         MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }

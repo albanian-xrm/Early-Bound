@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AlbanianXrm.CrmSvcUtilExtensions
@@ -62,26 +63,31 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         private static string ToValidIdentifier(string source)
         {
-            string result = string.Empty;
+            StringBuilder result = new StringBuilder();
 
             source = ReplaceSpecial(source ?? string.Empty);
+            
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                return "None";
+            }
 
             foreach (Match m in Regex.Matches(source, "[A-Za-z0-9]"))
             {
-                result += m.ToString();
+                result.Append(m.ToString());
             }
 
-            if (string.IsNullOrEmpty(source))
+            if (result.Length == 0)
             {
-                result = "None";
+                return "None";
             }
 
             if (char.IsDigit(result[0]))
             {
-                result = "_" + result;
+                result.Insert(0, "_");
             }
 
-            return result;
+            return result.ToString();
         }
 
         private static string ReplaceSpecial(string value)

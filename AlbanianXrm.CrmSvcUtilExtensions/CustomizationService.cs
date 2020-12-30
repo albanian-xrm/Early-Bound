@@ -82,7 +82,6 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                                     {
                                         property.SetStatements.RemoveAt(l);
                                         l -= 1;
-                                        continue;
                                     }
                                 }
                             }

@@ -58,8 +58,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         private static CodeTypeDeclaration GetOrCreateClass(string className, CodeTypeMemberCollection members)
         {
             var @class = members.ToEnumerable<CodeTypeDeclaration>()
-                                                .Where(_class => _class.Name == className)
-                                                .FirstOrDefault();
+                                .FirstOrDefault(_class => _class.Name == className);
             if (@class == null)
             {
                 @class = new CodeTypeDeclaration(className)
