@@ -127,7 +127,7 @@ steps:
     command: 'pack'
     packagesToPack: '**/*.nuspec'
     packDestination: '$(Build.ArtifactStagingDirectory)/NuGet'
-    buildProperties: version=$(MyVars.BuildNumber)
+    buildProperties: version=$(MyVars.BuildNumber);configuration=Release
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))  
 
 - task: PublishBuildArtifacts@1
@@ -137,13 +137,7 @@ steps:
     artifactName: 'NuGet Package'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))  
 
-- powershell: |
-    New-Item -Type dir Plugins
-    Copy-Item AlbanianXrm.EarlyBound\bin\Release\ILMerge\AlbanianXrm.EarlyBound.dll -Destination Plugins\AlbanianXrm.EarlyBound.dll
-    New-Item -Type dir Plugins\AlbanianXrm.EarlyBound
-    Copy-Item AlbanianXrm.CrmSvcUtilExtensions\bin\Release\AlbanianXrm.CrmSvcUtilExtensions.dll -Destination Plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.dll
-    Copy-Item AlbanianXrm.CrmSvcUtilExtensions\bin\Release\Microsoft.IO.RecyclableMemoryStream.dll -Destination Plugins\AlbanianXrm.EarlyBound\Microsoft.IO.RecyclableMemoryStream.dll
-    Compress-Archive -Path plugins\* -DestinationPath Plugins.zip
+- powershell: Compress-Archive -Path AlbanianXrm.EarlyBound\bin\Release\net462\XrmToolBox\Plugins\* -DestinationPath Plugins.zip
   displayName: 'Create zip for GitHub'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))  
 

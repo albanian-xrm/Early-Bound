@@ -60,9 +60,7 @@ namespace AlbanianXrm.EarlyBound.Extensions
                 {
                     var decryptor =
                         rijndaelManaged.CreateDecryptor(
-#pragma warning disable CA5373 // Decrypting a key encrypted this way
                             passwordDeriveBytes.GetBytes(KEY_SIZE / 8),
-#pragma warning restore CA5373 // Do not use obsolete key derivation function
                             Encoding.ASCII.GetBytes(IV));
                     var buffer = Convert.FromBase64String(cipherText);
                     using (var memoryStream = new MemoryStream(buffer))

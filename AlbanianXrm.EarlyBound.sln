@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD5FC625-EBE4-424A-9770-7E20A998FC55}"
 	ProjectSection(SolutionItems) = preProject
 		AlbanianXrm.EarlyBound\AlbanianXrm.EarlyBound.nuspec = AlbanianXrm.EarlyBound\AlbanianXrm.EarlyBound.nuspec
+		AlbanianXrm.EarlyBound.Version.props = AlbanianXrm.EarlyBound.Version.props
 		azure-pipelines.yml = azure-pipelines.yml
 		Logo.svg = Logo.svg
 		Logo_32x32.png = Logo_32x32.png
@@ -19,24 +20,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.CrmSvcUtilExtensions.Tests", "AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj", "{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.EarlyBound.Tests", "AlbanianXrm.EarlyBound.Tests\AlbanianXrm.EarlyBound.Tests.csproj", "{E499D864-F617-4C04-8BE7-DF7A93EC11FC}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AlbanianXrm.Common.Shared", "AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.shproj", "{8664D2B2-4CDE-40AC-8E44-F2F4F308592B}"
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AlbanianXrm.EarlyBound.Version", "AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.shproj", "{73752C56-1D23-46F3-9DA8-AE7EC9676D2D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.ForrestSerializer", "AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj", "{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.projitems*{4f4f88c3-ebf3-446d-b4ec-3beec7c8cc4c}*SharedItemsImports = 4
-		AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.projitems*{73752c56-1d23-46f3-9da8-ae7ec9676d2d}*SharedItemsImports = 13
 		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{8664d2b2-4cde-40ac-8e44-f2f4f308592b}*SharedItemsImports = 13
-		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{e047e333-0237-4fd9-b80a-1757d706630f}*SharedItemsImports = 4
-		AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.projitems*{e047e333-0237-4fd9-b80a-1757d706630f}*SharedItemsImports = 4
-		AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.projitems*{e499d864-f617-4c04-8be7-df7a93ec11fc}*SharedItemsImports = 4
-		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{f3efcbf0-762e-493d-99ea-f7d2c56dd30b}*SharedItemsImports = 4
-		AlbanianXrm.EarlyBound.Version\AlbanianXrm.EarlyBound.Version.projitems*{f3efcbf0-762e-493d-99ea-f7d2c56dd30b}*SharedItemsImports = 4
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{e047e333-0237-4fd9-b80a-1757d706630f}*SharedItemsImports = 5
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{f3efcbf0-762e-493d-99ea-f7d2c56dd30b}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Azure Pipelines|Any CPU = Azure Pipelines|Any CPU
@@ -62,12 +54,6 @@ Global
 		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E499D864-F617-4C04-8BE7-DF7A93EC11FC}.Azure Pipelines|Any CPU.ActiveCfg = Release|Any CPU
-		{E499D864-F617-4C04-8BE7-DF7A93EC11FC}.Azure Pipelines|Any CPU.Build.0 = Release|Any CPU
-		{E499D864-F617-4C04-8BE7-DF7A93EC11FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E499D864-F617-4C04-8BE7-DF7A93EC11FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E499D864-F617-4C04-8BE7-DF7A93EC11FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E499D864-F617-4C04-8BE7-DF7A93EC11FC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.ActiveCfg = Release|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.Build.0 = Release|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

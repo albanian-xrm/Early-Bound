@@ -333,9 +333,7 @@ namespace AlbanianXrm.EarlyBound
                                                     }
                                                 }
                                             }
-#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
                                             catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
                                             {
                                                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }
