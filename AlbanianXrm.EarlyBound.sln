@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.EarlyBound", "AlbanianXrm.EarlyBound\AlbanianXrm.EarlyBound.csproj", "{E047E333-0237-4FD9-B80A-1757D706630F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.EarlyBound", "AlbanianXrm.EarlyBound\AlbanianXrm.EarlyBound.csproj", "{E047E333-0237-4FD9-B80A-1757D706630F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.CrmSvcUtilExtensions", "AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj", "{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.CrmSvcUtilExtensions", "AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj", "{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD5FC625-EBE4-424A-9770-7E20A998FC55}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,11 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.CrmSvcUtilExtensions.Tests", "AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj", "{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.CrmSvcUtilExtensions.Tests", "AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj", "{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AlbanianXrm.Common.Shared", "AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.shproj", "{8664D2B2-4CDE-40AC-8E44-F2F4F308592B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.ForrestSerializer", "AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj", "{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.ForrestSerializer", "AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj", "{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -36,26 +36,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E047E333-0237-4FD9-B80A-1757D706630F}.Azure Pipelines|Any CPU.ActiveCfg = Release|Any CPU
-		{E047E333-0237-4FD9-B80A-1757D706630F}.Azure Pipelines|Any CPU.Build.0 = Release|Any CPU
+		{E047E333-0237-4FD9-B80A-1757D706630F}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
+		{E047E333-0237-4FD9-B80A-1757D706630F}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
 		{E047E333-0237-4FD9-B80A-1757D706630F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E047E333-0237-4FD9-B80A-1757D706630F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E047E333-0237-4FD9-B80A-1757D706630F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E047E333-0237-4FD9-B80A-1757D706630F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.ActiveCfg = Release|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.Build.0 = Release|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
 		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.ActiveCfg = Release|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.Build.0 = Release|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
 		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.ActiveCfg = Release|Any CPU
-		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.Build.0 = Release|Any CPU
+		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
+		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Release|Any CPU.ActiveCfg = Release|Any CPU

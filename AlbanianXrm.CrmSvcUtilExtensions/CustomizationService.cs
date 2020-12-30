@@ -76,18 +76,13 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                                 for (var l = 0; l < property.SetStatements.Count; l++)
                                 {
                                     var statement = property.SetStatements[l];
-                                    if (statement is CodeExpressionStatement codeStatement)
+                                    if (statement is CodeExpressionStatement codeStatement &&
+                                        codeStatement.Expression is CodeMethodInvokeExpression methodInvoke &&
+                                        (methodInvoke.Method.MethodName == "OnPropertyChanging" || methodInvoke.Method.MethodName == "OnPropertyChanged"))
                                     {
-                                        if (codeStatement.Expression is CodeMethodInvokeExpression methodInvoke)
-                                        {
-                                            if (methodInvoke.Method.MethodName == "OnPropertyChanging" ||
-                                                methodInvoke.Method.MethodName == "OnPropertyChanged")
-                                            {
-                                                property.SetStatements.RemoveAt(l);
-                                                l -= 1;
-                                                continue;
-                                            }
-                                        }
+                                        property.SetStatements.RemoveAt(l);
+                                        l -= 1;
+                                        continue;
                                     }
                                 }
                             }
