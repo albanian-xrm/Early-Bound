@@ -25,8 +25,8 @@ For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\ILMerge\AlbanianXrm.EarlyBound.dll" target="lib\net462\plugins" />
-    <file src="..\AlbanianXrm.CrmSvcUtilExtensions\bin\Release\AlbanianXrm.CrmSvcUtilExtensions.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
-    <file src="..\AlbanianXrm.CrmSvcUtilExtensions\bin\Release\Microsoft.IO.RecyclableMemoryStream.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
+    <file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound.dll" target="lib\net462\plugins" />
+    <file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
+    <file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\Microsoft.IO.RecyclableMemoryStream.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
   </files>
 </package>

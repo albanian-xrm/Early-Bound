@@ -1,4 +1,25 @@
 {
+  "General": {
+    "InputAssemblies": [
+      "AlbanianXrm.ForrestSerializer.dll",
+      "EnvDTE.dll",
+      "Syncfusion.Core.WinForms.dll",
+      "Syncfusion.Data.WinForms.dll",
+      "Syncfusion.DataSource.WinForms.dll",
+      "Syncfusion.Grid.Base.dll",
+      "Syncfusion.Grid.Windows.dll",
+      "Syncfusion.GridCommon.WinForms.dll",
+      "Syncfusion.Licensing.dll",
+      "Syncfusion.SfDataGrid.WinForms.dll",
+      "Syncfusion.SfInput.WinForms.dll",
+      "Syncfusion.SfListView.WinForms.dll",
+      "Syncfusion.Shared.Base.dll",
+      "Syncfusion.Shared.Windows.dll",
+      "Syncfusion.SpellChecker.Base.dll",
+      "Syncfusion.Tools.Base.dll",
+      "Syncfusion.Tools.Windows.dll"
+    ]
+  },
   "Advanced": {
     "CopyAttributes": false,
     "AttributeFile": "$(TargetDir)AlbanianXrm.EarlyBound.dll"
