@@ -56,8 +56,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     }
                     Process process = new Process();
                     var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
-                    process.StartInfo.Arguments = "/connectionstring:" + connectionString +
-                                                  (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
+                    var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
                                                   " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /codecustomization:AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions" +
                                                   " /metadataproviderservice:AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions" +
@@ -65,6 +64,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                                                   " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
                                                   (options.CurrentOrganizationOptions.Language == Language.VB ? " /language:VB" : "") +
                                                   (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
+
+                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + argumentsWithoutConnectionString;
+
                     process.StartInfo.WorkingDirectory = dir;
                     process.StartInfo.UseShellExecute = false;
                     process.StartInfo.CreateNoWindow = true;
@@ -177,7 +179,6 @@ namespace AlbanianXrm.EarlyBound.Logic
                     if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
                     if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
                     if (options.CurrentOrganizationOptions.RemovePublisherPrefix) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPUBLISHER, "YES");
-                    if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
                     if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
                     if (options.CurrentOrganizationOptions.OptionSetEnumProperties) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES, "YES");
                     if (options.CurrentOrganizationOptions.GenerateXmlDocumentation) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_GENERATEXML, "YES");
@@ -186,6 +187,8 @@ namespace AlbanianXrm.EarlyBound.Logic
 #if DEBUG
                     if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
 #endif
+                    myPlugin.pluginViewModel.LaunchCommand = $"{string.Join("\r\n", process.StartInfo.EnvironmentVariables.ToEnumerable().Where(x=>x.Key.StartsWith(Constants.ENVIRONMENT_VARIABLE_PREFIX)).Select(x => $"SET {x.Key}={x.Value}"))}\r\n{Path.Combine(dir, "CrmSvcUtil.exe")} /connectionstring:{myPlugin.ConnectionDetail.GetConnectionStringWithoutPassword()}{argumentsWithoutConnectionString}";
+                    if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
 
                     process.EnableRaisingEvents = true;
                     process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");

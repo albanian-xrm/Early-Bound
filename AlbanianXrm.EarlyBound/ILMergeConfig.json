@@ -1,8 +1,10 @@
 {
   "General": {
+    "OutputFile": "$(TargetDir)XrmToolBox\\Plugins\\$(TargetFileName)",
     "InputAssemblies": [
       "AlbanianXrm.ForrestSerializer.dll",
       "EnvDTE.dll",
+      "stdole.dll",
       "Syncfusion.Core.WinForms.dll",
       "Syncfusion.Data.WinForms.dll",
       "Syncfusion.DataSource.WinForms.dll",
@@ -22,6 +24,7 @@
   },
   "Advanced": {
     "CopyAttributes": false,
-    "AttributeFile": "$(TargetDir)AlbanianXrm.EarlyBound.dll"
+    "AttributeFile": "$(TargetDir)AlbanianXrm.EarlyBound.dll",
+    "DeleteCopiesOverwriteTarget":  true
   }
 }

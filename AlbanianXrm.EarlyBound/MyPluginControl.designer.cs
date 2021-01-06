@@ -28,7 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo treeNodeAdvStyleInfo2 = new Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo();
+            this.components = new System.ComponentModel.Container();
+            Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo treeNodeAdvStyleInfo1 = new Syncfusion.Windows.Forms.Tools.TreeNodeAdvStyleInfo();
             this.metadataTree = new Syncfusion.Windows.Forms.Tools.TreeViewAdv();
             this.mnuMetadataTree = new Syncfusion.Windows.Forms.Tools.ContextMenuStripEx();
             this.mnuGetMetadata = new System.Windows.Forms.ToolStripMenuItem();
@@ -36,6 +37,7 @@
             this.mnuSelectNone = new System.Windows.Forms.ToolStripMenuItem();
             this.mnuSelectGenerated = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip = new Syncfusion.Windows.Forms.Tools.ToolStripEx();
+            this.btnGetMetadata = new System.Windows.Forms.ToolStripButton();
             this.btnCoreTools = new System.Windows.Forms.ToolStripButton();
             this.btnGenerateEntities = new System.Windows.Forms.ToolStripButton();
             this.toolStripButton4 = new System.Windows.Forms.ToolStripButton();
@@ -43,7 +45,8 @@
             this.splitContainerVertical = new Syncfusion.Windows.Forms.Tools.SplitContainerAdv();
             this.optionsGrid = new System.Windows.Forms.PropertyGrid();
             this.txtOutput = new System.Windows.Forms.RichTextBox();
-            this.btnGetMetadata = new System.Windows.Forms.ToolStripButton();
+            this.mnuOutput = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.mnuCopyCommand = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.metadataTree)).BeginInit();
             this.mnuMetadataTree.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -55,6 +58,7 @@
             this.splitContainerVertical.Panel1.SuspendLayout();
             this.splitContainerVertical.Panel2.SuspendLayout();
             this.splitContainerVertical.SuspendLayout();
+            this.mnuOutput.SuspendLayout();
             this.SuspendLayout();
             // 
             // metadataTree
@@ -62,14 +66,14 @@
             this.metadataTree.AllowMouseBasedSelection = true;
             this.metadataTree.BackgroundImage = global::AlbanianXrm.EarlyBound.Properties.Resources.Logo;
             this.metadataTree.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            treeNodeAdvStyleInfo2.CheckBoxTickThickness = 1;
-            treeNodeAdvStyleInfo2.CheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo2.EnsureDefaultOptionedChild = true;
-            treeNodeAdvStyleInfo2.IntermediateCheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo2.OptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
-            treeNodeAdvStyleInfo2.SelectedOptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
+            treeNodeAdvStyleInfo1.CheckBoxTickThickness = 1;
+            treeNodeAdvStyleInfo1.CheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo1.EnsureDefaultOptionedChild = true;
+            treeNodeAdvStyleInfo1.IntermediateCheckColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo1.OptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(109)))), ((int)(((byte)(109)))), ((int)(((byte)(109)))));
+            treeNodeAdvStyleInfo1.SelectedOptionButtonColor = System.Drawing.Color.FromArgb(((int)(((byte)(210)))), ((int)(((byte)(210)))), ((int)(((byte)(210)))));
             this.metadataTree.BaseStylePairs.AddRange(new Syncfusion.Windows.Forms.Tools.StyleNamePair[] {
-            new Syncfusion.Windows.Forms.Tools.StyleNamePair("Standard", treeNodeAdvStyleInfo2)});
+            new Syncfusion.Windows.Forms.Tools.StyleNamePair("Standard", treeNodeAdvStyleInfo1)});
             this.metadataTree.BeforeTouchSize = new System.Drawing.Size(200, 275);
             this.metadataTree.ContextMenuStrip = this.mnuMetadataTree;
             this.metadataTree.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -175,6 +179,15 @@
             this.toolStrip.Size = new System.Drawing.Size(559, 25);
             this.toolStrip.TabIndex = 6;
             // 
+            // btnGetMetadata
+            // 
+            this.btnGetMetadata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnGetMetadata.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnGetMetadata.Name = "btnGetMetadata";
+            this.btnGetMetadata.Size = new System.Drawing.Size(82, 22);
+            this.btnGetMetadata.Text = "Get Metadata";
+            this.btnGetMetadata.Click += new System.EventHandler(this.BtnGetMetadata_Click);
+            // 
             // btnCoreTools
             // 
             this.btnCoreTools.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -200,7 +213,7 @@
             this.toolStripButton4.Name = "toolStripButton4";
             this.toolStripButton4.Size = new System.Drawing.Size(80, 22);
             this.toolStripButton4.Text = "Save Settings";
-            this.toolStripButton4.Click += new System.EventHandler(this.ToolStripButton4_Click);
+            this.toolStripButton4.Click += new System.EventHandler(this.MnuSaveSettings_Click);
             // 
             // splitContainer
             // 
@@ -264,6 +277,7 @@
             // txtOutput
             // 
             this.txtOutput.BackColor = System.Drawing.Color.Black;
+            this.txtOutput.ContextMenuStrip = this.mnuOutput;
             this.txtOutput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtOutput.ForeColor = System.Drawing.Color.White;
             this.txtOutput.Location = new System.Drawing.Point(0, 0);
@@ -273,14 +287,19 @@
             this.txtOutput.TabIndex = 1;
             this.txtOutput.Text = "";
             // 
-            // btnGetMetadata
+            // mnuOutput
             // 
-            this.btnGetMetadata.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.btnGetMetadata.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnGetMetadata.Name = "btnGetMetadata";
-            this.btnGetMetadata.Size = new System.Drawing.Size(82, 22);
-            this.btnGetMetadata.Text = "Get Metadata";
-            this.btnGetMetadata.Click += new System.EventHandler(this.BtnGetMetadata_Click);
+            this.mnuOutput.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuCopyCommand});
+            this.mnuOutput.Name = "mnuOutput";
+            this.mnuOutput.Size = new System.Drawing.Size(181, 48);
+            // 
+            // mnuCopyCommand
+            // 
+            this.mnuCopyCommand.Name = "mnuCopyCommand";
+            this.mnuCopyCommand.Size = new System.Drawing.Size(180, 22);
+            this.mnuCopyCommand.Text = "Copy Command";
+            this.mnuCopyCommand.Click += new System.EventHandler(this.MnuCopyCommand_Click);
             // 
             // MyPluginControl
             // 
@@ -304,6 +323,7 @@
             this.splitContainerVertical.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerVertical)).EndInit();
             this.splitContainerVertical.ResumeLayout(false);
+            this.mnuOutput.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -325,5 +345,7 @@
         private System.Windows.Forms.ToolStripMenuItem mnuSelectNone;
         private System.Windows.Forms.ToolStripMenuItem mnuSelectGenerated;
         internal System.Windows.Forms.ToolStripButton btnGetMetadata;
+        private System.Windows.Forms.ContextMenuStrip mnuOutput;
+        private System.Windows.Forms.ToolStripMenuItem mnuCopyCommand;
     }
 }

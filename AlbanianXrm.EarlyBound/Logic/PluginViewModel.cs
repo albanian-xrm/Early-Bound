@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
@@ -16,17 +17,17 @@ namespace AlbanianXrm.EarlyBound.Logic
                 _AllowRequests = value;
                 if (_MetadataTree_Enabled && _ActiveConnection) //true means MetadataTree_Enabled changed because AllowRequests changed
                 {
-                    OnPropertyChanged(nameof(MetadataTree_Enabled));
+                    NotifyPropertyChanged(nameof(MetadataTree_Enabled));
                 }
                 if (_OptionsGrid_Enabled) //true means OptionsGrid_Enabled changed because AllowRequests changed
                 {
-                    OnPropertyChanged(nameof(OptionsGrid_Enabled));
+                    NotifyPropertyChanged(nameof(OptionsGrid_Enabled));
                 }
                 if (_Generate_Enabled)
                 {
-                    OnPropertyChanged(nameof(Generate_Enabled));
+                    NotifyPropertyChanged(nameof(Generate_Enabled));
                 }
-                OnPropertyChanged(nameof(AllowRequests));
+                NotifyPropertyChanged(nameof(AllowRequests));
             }
         }
 
@@ -40,9 +41,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                 _ActiveConnection = value;
                 if (_MetadataTree_Enabled && _AllowRequests) //true means MetadataTree_Enabled changed because ActiveConnection changed
                 {
-                    OnPropertyChanged(nameof(MetadataTree_Enabled));
+                    NotifyPropertyChanged(nameof(MetadataTree_Enabled));
                 }
-                OnPropertyChanged(nameof(ActiveConnection));
+                NotifyPropertyChanged(nameof(ActiveConnection));
             }
         }
 
@@ -54,7 +55,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 if (_MetadataTree_Enabled == value) return;
                 _MetadataTree_Enabled = value;
-                OnPropertyChanged(nameof(MetadataTree_Enabled));
+                NotifyPropertyChanged(nameof(MetadataTree_Enabled));
             }
         }
 
@@ -66,7 +67,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 if (_OptionsGrid_Enabled == value) return;
                 _OptionsGrid_Enabled = value;
-                OnPropertyChanged(nameof(OptionsGrid_Enabled));
+                NotifyPropertyChanged(nameof(OptionsGrid_Enabled));
             }
         }
 
@@ -78,7 +79,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 if (_Generate_Enabled == value) return;
                 _Generate_Enabled = value;
-                OnPropertyChanged(nameof(Generate_Enabled));
+                NotifyPropertyChanged(nameof(Generate_Enabled));
             }
         }
 
@@ -90,11 +91,35 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 if (_All_Metadata_Requested == value) return;
                 _All_Metadata_Requested = value;
-                OnPropertyChanged(nameof(All_Metadata_Requested));
+                NotifyPropertyChanged(nameof(All_Metadata_Requested));
             }
         }
 
-        protected void OnPropertyChanged(string propertyName)
+        private string _LaunchCommand;
+
+        public string LaunchCommand
+        {
+            get
+            {
+                return _LaunchCommand;
+            }
+            set
+            {
+                _LaunchCommand = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(LaunchCommandEnabled));
+            }
+        }
+
+        public bool LaunchCommandEnabled
+        {
+            get
+            {
+                return !string.IsNullOrEmpty(_LaunchCommand);
+            }
+        }
+
+        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

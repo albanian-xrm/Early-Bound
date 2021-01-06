@@ -16,9 +16,28 @@ namespace AlbanianXrm.EarlyBound.Extensions
         private const int KEY_SIZE = 256;
         private const int ITERATIONS = 2;
 
+        public static string GetConnectionStringWithoutPassword(this ConnectionDetail connection)
+        {
+            if (!connection.ClientSecretIsEmpty)
+            {
+                return $"AuthType=ClientSecret;url={connection.OriginalUrl};ClientId={connection.UserName};Secret=********;SkipDiscovery=true;";
+            }
+            return connection.GetConnectionString();
+        }
+
         public static string GetConnectionStringWithPassword(this ConnectionDetail connection)
         {
             string password = "";
+
+            if (!connection.ClientSecretIsEmpty)
+            {
+                var prop = connection.GetType().GetProperty("ClientSecretEncrypted", BindingFlags.Instance | BindingFlags.Public);
+                if (prop != null && (string)prop.GetValue(connection) != null)
+                {
+                    password = Decrypt((string)prop.GetValue(connection));
+                }
+                return connection.GetConnectionStringWithoutPassword().Replace("********", password);
+            }
 
             var field = connection.GetType().GetField("userPassword", BindingFlags.Instance | BindingFlags.NonPublic);
             if (field != null && (string)field.GetValue(connection)!=null)
@@ -35,17 +54,8 @@ namespace AlbanianXrm.EarlyBound.Extensions
                     password = (string)prop.GetValue(connection);
                 }
             }
-
-            if (string.IsNullOrEmpty(password))
-            {
-                var prop = connection.GetType().GetProperty("ClientSecretEncrypted", BindingFlags.Instance | BindingFlags.Public);
-                if (prop != null && (string)prop.GetValue(connection) != null)
-                {
-                    password = Decrypt((string)prop.GetValue(connection));
-                }
-            }
             
-            return connection.GetConnectionString().Replace("********", password);
+            return connection.GetConnectionStringWithoutPassword().Replace("********", password);
         }
 
         private static string Decrypt(string cipherText)

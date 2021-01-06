@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Xml.Serialization;
 
 namespace AlbanianXrm.EarlyBound
@@ -62,7 +63,7 @@ namespace AlbanianXrm.EarlyBound
             {
                 if (_CrmSvcUtils == value) return;
                 _CrmSvcUtils = value;
-                OnPropertyChanged(nameof(CrmSvcUtils));
+                NotifyPropertyChanged();
             }
         }
 
@@ -80,7 +81,7 @@ namespace AlbanianXrm.EarlyBound
             {
                 if (_RecycableMemoryStream == value) return;
                 _RecycableMemoryStream = value;
-                OnPropertyChanged(nameof(RecycableMemoryStream));
+                NotifyPropertyChanged();
             }
         }
 
@@ -118,7 +119,7 @@ namespace AlbanianXrm.EarlyBound
             {
                 if (_CurrentOrganizationOptions == value) return;
                 _CurrentOrganizationOptions = value;
-                OnPropertyChanged(nameof(CurrentOrganizationOptions));
+                NotifyPropertyChanged();
             }
         }
 
@@ -147,8 +148,8 @@ namespace AlbanianXrm.EarlyBound
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
-        {           
+        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
+        {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 

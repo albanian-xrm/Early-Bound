@@ -79,15 +79,16 @@ namespace AlbanianXrm.EarlyBound
             btnGetMetadata.Enabled = pluginViewModel.ActiveConnection;
             mnuGetMetadata.Enabled = pluginViewModel.ActiveConnection;
             mnuSelectAll.Enabled = pluginViewModel.ActiveConnection;
+            mnuCopyCommand.Enabled = pluginViewModel.LaunchCommandEnabled;
             DataBind();
         }
 
         private void DataBind()
         {
-            metadataTree.DataBindings.Add(nameof(metadataTree.Enabled), pluginViewModel, nameof(pluginViewModel.MetadataTree_Enabled));
-            optionsGrid.DataBindings.Add(nameof(optionsGrid.Enabled), pluginViewModel, nameof(pluginViewModel.OptionsGrid_Enabled));
-            toolStrip.DataBindings.Add(nameof(toolStrip.Enabled), pluginViewModel, nameof(pluginViewModel.AllowRequests));
-            mnuMetadataTree.DataBindings.Add(nameof(mnuMetadataTree.Enabled), pluginViewModel, nameof(pluginViewModel.AllowRequests));
+            metadataTree.Bind(_ => _.Enabled, pluginViewModel, _ => _.MetadataTree_Enabled);
+            optionsGrid.Bind(_ => optionsGrid.Enabled, pluginViewModel, _ => _.OptionsGrid_Enabled);
+            toolStrip.Bind(_ => _.Enabled, pluginViewModel, _ => _.AllowRequests);
+            mnuMetadataTree.Bind(_ => _.Enabled, pluginViewModel, _ => _.AllowRequests);
             pluginViewModel.PropertyChanged += PluginViewModel_PropertyChanged;
         }
 
@@ -107,6 +108,9 @@ namespace AlbanianXrm.EarlyBound
                     break;
                 case nameof(pluginViewModel.All_Metadata_Requested):
                     mnuSelectAll.ToolTipText = pluginViewModel.All_Metadata_Requested ? Resources.SELECT_ALL_NO_REQUEST : Resources.SELECT_ALL_REQUEST;
+                    break;
+                case nameof(pluginViewModel.LaunchCommandEnabled):
+                    mnuCopyCommand.Enabled = pluginViewModel.LaunchCommandEnabled;
                     break;
                 default:
                     break;
@@ -250,7 +254,7 @@ namespace AlbanianXrm.EarlyBound
             EntityGeneratorHandler.GenerateEntities(options);
         }
 
-        private void ToolStripButton4_Click(object sender, EventArgs e)
+        private void MnuSaveSettings_Click(object sender, EventArgs e)
         {
             LogInfo(Resources.SAVING_SETTINGS);
             SettingsManager.Instance.Save(GetType(), options);
@@ -378,6 +382,11 @@ namespace AlbanianXrm.EarlyBound
         {
             MnuSelectNone_Click(sender, e);
             EntitySelectionHandler.SelectGenerated();
+        }
+
+        private void MnuCopyCommand_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(pluginViewModel.LaunchCommand);
         }
     }
 }

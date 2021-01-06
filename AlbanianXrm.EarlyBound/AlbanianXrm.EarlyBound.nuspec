@@ -14,7 +14,8 @@
     <description>Generates Early Bound Entities. Uses CrmSvcUtil from the SDK which can be downloaded from any NuGet source (even local directory for isolated environments).</description>
     <releaseNotes>
 v$version$:
-- Fixed bug. Error when decrypting password for authentication types different than username/password.      
+- Added option to allow the user to copy the command-line used to generate the tool.  
+* Please note that it is not possible to use the cache metadata option without XrmToolBox (from the command-line)
 
 For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
     </releaseNotes>
