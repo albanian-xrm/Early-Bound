@@ -14,6 +14,7 @@
         public const string ENVIRONMENT_RELATIONSHIPSN1 = ENVIRONMENT_VARIABLE_PREFIX + "RelationshipsN1:{0}";
         public const string ENVIRONMENT_RELATIONSHIPSNN = ENVIRONMENT_VARIABLE_PREFIX + "RelationshipsNN:{0}";
         public const string ENVIRONMENT_REMOVEPROPERTYCHANGED = ENVIRONMENT_VARIABLE_PREFIX + "RemovePropertyChanged";
+        public const string ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY = ENVIRONMENT_VARIABLE_PREFIX + "RemoveProxyTypesAssembly";
         public const string ENVIRONMENT_ATTACHDEBUGGER = ENVIRONMENT_VARIABLE_PREFIX + "AttachDebugger";
         public const string ENVIRONMENT_CACHEMEATADATA = ENVIRONMENT_VARIABLE_PREFIX + "CacheMetadata";
         public const string ENVIRONMENT_OPTIONSETENUMS = ENVIRONMENT_VARIABLE_PREFIX + "OptionSetEnums";

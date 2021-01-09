@@ -178,6 +178,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
                     if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
                     if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
+                    if (options.CurrentOrganizationOptions.RemoveProxyTypesAssembly) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY, "YES");
                     if (options.CurrentOrganizationOptions.RemovePublisherPrefix) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPUBLISHER, "YES");
                     if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
                     if (options.CurrentOrganizationOptions.OptionSetEnumProperties) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES, "YES");

@@ -58,6 +58,13 @@ namespace AlbanianXrm.EarlyBound
         public bool RemovePropertyChanged { get; set; }
 
         [Category("General")]
+        [DisplayName("Remove ProxyTypesAssembly")]
+        [Description("Remove ProxyTypesAssembly attribute from generated code.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool RemoveProxyTypesAssembly { get; set; }
+
+        [Category("General")]
         [DisplayName("Remove Prefix")]
         [Description("Remove Publisher Prefix from Entities, Attributes and Optionsets.")]
         [DefaultValue(false)]

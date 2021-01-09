@@ -23,6 +23,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             if (services == null) throw new ArgumentNullException(nameof(services));
 
             var removePropertyChanged = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED));
+            var removeProxyTypesAssembly = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY));
             var generateXmlDocumentation = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_GENERATEXML));
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS)))
@@ -36,6 +37,18 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS)))
             {
                 optionSetEnumHandler.GenerateOptionSets();
+            }
+
+            if (removeProxyTypesAssembly)
+            {
+                for (var i = 0; i < codeUnit.AssemblyCustomAttributes.Count; i++)
+                {
+                    if (codeUnit.AssemblyCustomAttributes[i].Name == "Microsoft.Xrm.Sdk.Client.ProxyTypesAssemblyAttribute")
+                    {
+                        codeUnit.AssemblyCustomAttributes.RemoveAt(i);
+                        break;
+                    }
+                }
             }
 
             if (removePropertyChanged)
