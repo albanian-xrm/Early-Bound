@@ -3,6 +3,9 @@ pool:
 
 name: $(SourceBranchName)+1.$(Date:yyyy.MM)$(Rev:.r)
 
+variables:
+  disable.coverage.autogenerate: 'true'
+
 steps:
 - script: echo Starting build pipeline!
   displayName: 'Hello from Albanian Xrm'
@@ -96,8 +99,21 @@ steps:
   inputs:
     solution: '**/*.sln'
     configuration: $(MyVars.configuration)
-    msbuildArguments: '/t:AlbanianXrm_CrmSvcUtilExtensions;AlbanianXrm_EarlyBound /p:Version=$(MyVars.BuildNumber)'
+    msbuildArguments: '/t:AlbanianXrm_CrmSvcUtilExtensions_Tests;AlbanianXrm_EarlyBound;AlbanianXrm_ForrestSerializer_Tests /p:Version=$(MyVars.BuildNumber)'
   displayName: 'Building Solution'
+
+- task: VSTest@2
+  inputs:
+    testSelector: 'testAssemblies'
+    testAssemblyVer2: |
+      **\*Tests.dll
+      !**\*TestAdapter.dll
+      !**\obj\**
+    searchFolder: '$(System.DefaultWorkingDirectory)'
+    testRunTitle: 'Unit Tests'
+    platform: 'AnyCPU'
+    configuration: $(MyVars.configuration)
+  displayName: 'Running unit tests'
 
 - task: MSBuild@1
   inputs:
