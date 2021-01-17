@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>   
+    <ProjectGuid>{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>AlbanianXrm.EarlyBound.Coverage</AssemblyName>
+    <TargetFramework>net462</TargetFramework>
+    <AlbanianXrmReports Condition="'$(AlbanianXrmReports)'==''">Html;Cobertura</AlbanianXrmReports>
+    <Configurations>Debug;Release;Azure Pipelines</Configurations>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="OpenCover" Version="4.7.922">
+      <GeneratePathProperty>true</GeneratePathProperty>
+      <PrivateAssets>All</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>
+    <PackageReference Include="ReportGenerator" Version="4.8.4">
+      <GeneratePathProperty>true</GeneratePathProperty>
+      <PrivateAssets>All</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+    </PackageReference>   
+    <PackageReference Include="xunit.runner.console" Version="2.4.1">
+      <GeneratePathProperty>true</GeneratePathProperty>
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>   
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+      <IncludeAssets>none</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer.Tests\AlbanianXrm.ForrestSerializer.Tests.csproj">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+      <IncludeAssets>none</IncludeAssets>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <Reference>
+      <Private>False</Private>
+    </Reference>
+    <ProjectReference>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent"> 
+    <Exec Command="&quot;$(PkgOpenCover)\tools\OpenCover.Console.exe&quot; -target:&quot;$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe&quot; -targetargs:&quot;&quot;&quot;$(SolutionDir)AlbanianXrm.CrmSvcUtilExtensions.Tests\bin\$(ConfigurationName)\net462\AlbanianXrm.CrmSvcUtilExtensions.Tests.dll&quot;&quot; -noshadow&quot; -output:&quot;$(OutDir)CrmSvcUtilExtensions.Coverage.xml&quot; -register:Path64 -filter:&quot;+[AlbanianXrm.CrmSvcUtilExtensions]* -[AlbanianXrm.CrmSvcUtilExtensions.Tests]*&quot;&#xD;&#xA;&quot;$(PkgOpenCover)\tools\OpenCover.Console.exe&quot; -target:&quot;$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe&quot; -targetargs:&quot;&quot;&quot;$(SolutionDir)AlbanianXrm.ForrestSerializer.Tests\bin\$(ConfigurationName)\net462\AlbanianXrm.ForrestSerializer.Tests.dll&quot;&quot; -noshadow&quot; -output:&quot;$(OutDir)ForrestSerializer.Coverage.xml&quot; -register:Path64 -filter:&quot;+[AlbanianXrm.ForrestSerializer]* -[AlbanianXrm.ForrestSerializer.Tests]*&quot;&#xD;&#xA;&quot;$(PkgReportGenerator)\tools\net47\ReportGenerator.exe&quot; -reports:&quot;$(OutDir)ForrestSerializer.Coverage.xml;$(OutDir)CrmSvcUtilExtensions.Coverage.xml&quot; -targetdir:&quot;$(TargetDir)CoverageReport&quot; -reporttypes:&quot;$(AlbanianXrmReports)&quot;" />
+  </Target>
+</Project>
