@@ -26,22 +26,14 @@
     </PackageReference>   
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj">
+    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj" />
+    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>
     </ProjectReference>
-    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj" >
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer.Tests\AlbanianXrm.ForrestSerializer.Tests.csproj">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj" >
+    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer.Tests\AlbanianXrm.ForrestSerializer.Tests.csproj" />
+    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>
@@ -65,6 +57,7 @@
       <AlbanianXrmReports Condition="'$(AlbanianXrmReports)'==''">Html;Cobertura</AlbanianXrmReports>
       <_AlbanianXrmCoverageOutput Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))">@(ProjectReference->'$(OutDir)%(Filename).Coverage.xml')</_AlbanianXrmCoverageOutput>
     </PropertyGroup>
+    <Error Condition="'$(_AlbanianXrmCoverageOutput)'==''" Code="ALBXRMCOV1" Text="No test projects have been configured as Project Reference" />
     <Exec Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))" Command="&quot;$(PkgOpenCover)\tools\OpenCover.Console.exe&quot; -target:&quot;$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe&quot; -targetargs:&quot;&quot;&quot;%(ProjectReference.RelativeDir)\bin\$(ConfigurationName)\net462\%(ProjectReference.FileName).dll&quot;&quot; -noshadow&quot; -output:&quot;$(OutDir)%(ProjectReference.FileName).Coverage.xml&quot; -register:Path64 -filter:&quot;+[%(ProjectReference.ProjectBeingTested)]* -[%(ProjectReference.FileName)]*&quot;" />
     <Exec Command="&quot;$(PkgReportGenerator)\tools\net47\ReportGenerator.exe&quot; -reports:&quot;$(_AlbanianXrmCoverageOutput)&quot; -targetdir:&quot;$(TargetDir)CoverageReport&quot; -reporttypes:&quot;$(AlbanianXrmReports)&quot;" />
   </Target>
