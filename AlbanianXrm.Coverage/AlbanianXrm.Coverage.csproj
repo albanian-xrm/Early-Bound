@@ -5,7 +5,6 @@
     <OutputType>Library</OutputType>
     <AssemblyName>AlbanianXrm.EarlyBound.Coverage</AssemblyName>
     <TargetFramework>net462</TargetFramework>
-    <AlbanianXrmReports Condition="'$(AlbanianXrmReports)'==''">Html;Cobertura</AlbanianXrmReports>
     <Configurations>Debug;Release;Azure Pipelines</Configurations>
   </PropertyGroup>
   <ItemGroup>
@@ -32,7 +31,17 @@
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>
     </ProjectReference>
+    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj" >
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+      <IncludeAssets>none</IncludeAssets>
+    </ProjectReference>
     <ProjectReference Include="..\AlbanianXrm.ForrestSerializer.Tests\AlbanianXrm.ForrestSerializer.Tests.csproj">
+      <PrivateAssets>all</PrivateAssets>
+      <ExcludeAssets>All</ExcludeAssets>
+      <IncludeAssets>none</IncludeAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj" >
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>
@@ -46,7 +55,17 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemDefinitionGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent"> 
-    <Exec Command="&quot;$(PkgOpenCover)\tools\OpenCover.Console.exe&quot; -target:&quot;$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe&quot; -targetargs:&quot;&quot;&quot;$(SolutionDir)AlbanianXrm.CrmSvcUtilExtensions.Tests\bin\$(ConfigurationName)\net462\AlbanianXrm.CrmSvcUtilExtensions.Tests.dll&quot;&quot; -noshadow&quot; -output:&quot;$(OutDir)CrmSvcUtilExtensions.Coverage.xml&quot; -register:Path64 -filter:&quot;+[AlbanianXrm.CrmSvcUtilExtensions]* -[AlbanianXrm.CrmSvcUtilExtensions.Tests]*&quot;&#xD;&#xA;&quot;$(PkgOpenCover)\tools\OpenCover.Console.exe&quot; -target:&quot;$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe&quot; -targetargs:&quot;&quot;&quot;$(SolutionDir)AlbanianXrm.ForrestSerializer.Tests\bin\$(ConfigurationName)\net462\AlbanianXrm.ForrestSerializer.Tests.dll&quot;&quot; -noshadow&quot; -output:&quot;$(OutDir)ForrestSerializer.Coverage.xml&quot; -register:Path64 -filter:&quot;+[AlbanianXrm.ForrestSerializer]* -[AlbanianXrm.ForrestSerializer.Tests]*&quot;&#xD;&#xA;&quot;$(PkgReportGenerator)\tools\net47\ReportGenerator.exe&quot; -reports:&quot;$(OutDir)ForrestSerializer.Coverage.xml;$(OutDir)CrmSvcUtilExtensions.Coverage.xml&quot; -targetdir:&quot;$(TargetDir)CoverageReport&quot; -reporttypes:&quot;$(AlbanianXrmReports)&quot;" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">   
+    <ItemGroup>
+      <ProjectReference Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))">
+        <ProjectBeingTested>$([System.String]::Copy('%(Filename)').Substring(0, $([System.String]::Copy('%(Filename)').LastIndexOf('.Test'))))</ProjectBeingTested>
+      </ProjectReference>
+    </ItemGroup>
+    <PropertyGroup>
+      <AlbanianXrmReports Condition="'$(AlbanianXrmReports)'==''">Html;Cobertura</AlbanianXrmReports>
+      <_AlbanianXrmCoverageOutput Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))">@(ProjectReference->'$(OutDir)%(Filename).Coverage.xml')</_AlbanianXrmCoverageOutput>
+    </PropertyGroup>
+    <Exec Condition="$([System.String]::Copy('%(Filename)').EndsWith('.Test')) OR $([System.String]::Copy('%(Filename)').EndsWith('.Tests'))" Command="&quot;$(PkgOpenCover)\tools\OpenCover.Console.exe&quot; -target:&quot;$(Pkgxunit_runner_console)\tools\net47\xunit.console.exe&quot; -targetargs:&quot;&quot;&quot;%(ProjectReference.RelativeDir)\bin\$(ConfigurationName)\net462\%(ProjectReference.FileName).dll&quot;&quot; -noshadow&quot; -output:&quot;$(OutDir)%(ProjectReference.FileName).Coverage.xml&quot; -register:Path64 -filter:&quot;+[%(ProjectReference.ProjectBeingTested)]* -[%(ProjectReference.FileName)]*&quot;" />
+    <Exec Command="&quot;$(PkgReportGenerator)\tools\net47\ReportGenerator.exe&quot; -reports:&quot;$(_AlbanianXrmCoverageOutput)&quot; -targetdir:&quot;$(TargetDir)CoverageReport&quot; -reporttypes:&quot;$(AlbanianXrmReports)&quot;" />
   </Target>
 </Project>
