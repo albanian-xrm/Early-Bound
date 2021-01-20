@@ -8,7 +8,7 @@
     <Configurations>Debug;Release;Azure Pipelines</Configurations>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MSBuild.AlbanianXrm.Coverage" Version="1.2021.1.3" />
+    <PackageReference Include="MSBuild.AlbanianXrm.Coverage" Version="1.2021.1.4" />
   </ItemGroup>
 
   <ItemGroup>
