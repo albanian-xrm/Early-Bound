@@ -28,11 +28,6 @@ steps:
     projectKey: 'albanian-xrm_Early-Bound'
     projectName: 'Early-Bound'
 
-- task: NuGetToolInstaller@0
-  inputs:
-    versionSpec: '4.9.x' 
-  displayName: 'Install NuGet 4.9.x'
-
 - task: NuGetCommand@2
   displayName: 'Restoring NuGet packages'
   inputs:
