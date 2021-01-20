@@ -1,5 +1,5 @@
 pool:
-  vmImage: 'vs2017-win2016'
+  vmImage: 'windows-2019'
 
 name: $(SourceBranchName)+1.$(Date:yyyy.MM)$(Rev:.r)
 
@@ -119,7 +119,7 @@ steps:
   inputs:
     solution: '**/*.sln'
     configuration: Debug
-    msbuildArguments: '/t:AlbanianXrm_Coverage /p:Version=$(MyVars.BuildNumber);AlbanianXrmReports=Cobertura%3BHtmlInline_AzurePipelines%3BSonarQube'
+    msbuildArguments: '/t:AlbanianXrm_Coverage /p:Version=$(MyVars.BuildNumber);AlbanianXrm-Coverage-Reports=Cobertura%3BHtmlInline_AzurePipelines%3BSonarQube'
   displayName: 'Testing & Coverage'
 
 - task: PublishCodeCoverageResults@1
