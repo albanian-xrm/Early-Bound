@@ -1,33 +1,22 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using AlbanianXrm.XrmToolBox.Shared;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
-    internal class PluginViewModel : INotifyPropertyChanged
+    internal class PluginViewModel : ToolViewModelBase
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private bool _AllowRequests = true;
-        public bool AllowRequests
+        protected override void AllowRequestsChanged()
         {
-            get { return _AllowRequests; }
-            set
+            if (_MetadataTree_Enabled && _ActiveConnection) //true means MetadataTree_Enabled changed because AllowRequests changed
             {
-                if (_AllowRequests == value) return;
-                _AllowRequests = value;
-                if (_MetadataTree_Enabled && _ActiveConnection) //true means MetadataTree_Enabled changed because AllowRequests changed
-                {
-                    NotifyPropertyChanged(nameof(MetadataTree_Enabled));
-                }
-                if (_OptionsGrid_Enabled) //true means OptionsGrid_Enabled changed because AllowRequests changed
-                {
-                    NotifyPropertyChanged(nameof(OptionsGrid_Enabled));
-                }
-                if (_Generate_Enabled)
-                {
-                    NotifyPropertyChanged(nameof(Generate_Enabled));
-                }
-                NotifyPropertyChanged(nameof(AllowRequests));
+                NotifyPropertyChanged(nameof(MetadataTree_Enabled));
+            }
+            if (_OptionsGrid_Enabled) //true means OptionsGrid_Enabled changed because AllowRequests changed
+            {
+                NotifyPropertyChanged(nameof(OptionsGrid_Enabled));
+            }
+            if (_Generate_Enabled)
+            {
+                NotifyPropertyChanged(nameof(Generate_Enabled));
             }
         }
 
@@ -117,11 +106,6 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 return !string.IsNullOrEmpty(_LaunchCommand);
             }
-        }
-
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

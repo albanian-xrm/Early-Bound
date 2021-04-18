@@ -1,4 +1,5 @@
 ﻿using AlbanianXrm.EarlyBound.Properties;
+using AlbanianXrm.XrmToolBox.Shared;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System;
@@ -13,13 +14,15 @@ namespace AlbanianXrm.EarlyBound.Logic
     internal class EntitySelectionHandler
     {
         private readonly MyPluginControl myPlugin;
+        BackgroundWorkHandler backgroundWorkHandler;
         private readonly TreeViewAdv metadataTree;
         private readonly AttributeMetadataHandler attributeMetadataHandler;
         private readonly RelationshipMetadataHandler relationshipMetadataHandler;
 
-        public EntitySelectionHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
+        public EntitySelectionHandler(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
         {
             this.myPlugin = myPlugin;
+            this.backgroundWorkHandler = backgroundWorkHandler;
             this.metadataTree = metadataTree;
             this.attributeMetadataHandler = attributeMetadataHandler;
             this.relationshipMetadataHandler = relationshipMetadataHandler;
@@ -28,72 +31,73 @@ namespace AlbanianXrm.EarlyBound.Logic
         internal void SelectGenerated()
         {
             var options = this.myPlugin.options;
-            myPlugin.StartWorkAsync(new WorkAsyncInfo
+            backgroundWorkHandler.EnqueueWork(
+                Resources.SELECTING_GENERATED, Deserialize, 
+                (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb",
+                SelectEntities);
+        }
+
+        private Dictionary<string, EntitySelection> Deserialize(string path)
+        {
+            ForrestSerializer forrestSerializer = new ForrestSerializer(path);
+            return forrestSerializer.Deserialize();
+        }
+
+        public void SelectEntities(BackgroundWorkResult<string, Dictionary<string, EntitySelection>> args)
+        {
+            try
             {
-                Message = Resources.SELECTING_GENERATED,
-                AsyncArgument = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb",
-                Work = (worker, args) =>
+                if (args.Exception != null)
                 {
-                    ForrestSerializer forrestSerializer = new ForrestSerializer(args.Argument as string);
-                    args.Result = forrestSerializer.Deserialize();
-                },
-                PostWorkCallBack = (args) =>
+                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else if (args.Value is Dictionary<string, EntitySelection> entitySelection && entitySelection.Any())
                 {
-                    try
+                    foreach (TreeNodeAdv entityNode in metadataTree.Nodes)
                     {
-                        if (args.Error != null)
+                        EntityMetadata entity = entityNode.Tag as EntityMetadata;
+                        if (entitySelection.TryGetValue(entity.LogicalName, out EntitySelection thisSelection))
                         {
-                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        else if (args.Result is Dictionary<string, EntitySelection> entitySelection && entitySelection.Any())
-                        {
-                            foreach (TreeNodeAdv entityNode in metadataTree.Nodes)
+                            foreach (TreeNodeAdv node in entityNode.Nodes)
                             {
-                                EntityMetadata entity = entityNode.Tag as EntityMetadata;
-                                if (entitySelection.TryGetValue(entity.LogicalName, out EntitySelection thisSelection))
+                                if (node.Text == "Attributes")
                                 {
-                                    foreach (TreeNodeAdv node in entityNode.Nodes)
+                                    if (thisSelection.AllAttributes)
                                     {
-                                        if (node.Text == "Attributes")
+                                        node.Checked = true;
+                                    }
+                                    else if (thisSelection.SelectedAttributes.Any() && !node.ExpandedOnce)
+                                    {
+                                        attributeMetadataHandler.GetAttributes(entity.LogicalName, node, false, thisSelection.SelectedAttributes);
+                                    }
+                                    else if (thisSelection.SelectedAttributes.Any() && node.ExpandedOnce)
+                                    {
+                                        foreach (TreeNodeAdv attributeNode in node.Nodes)
                                         {
-                                            if (thisSelection.AllAttributes)
+                                            if (attributeNode.Tag is AttributeMetadata attribute)
                                             {
-                                                node.Checked = true;
-                                            }
-                                            else if (thisSelection.SelectedAttributes.Any() && !node.ExpandedOnce)
-                                            {
-                                                attributeMetadataHandler.GetAttributes(entity.LogicalName, node, false, thisSelection.SelectedAttributes);
-                                            }
-                                            else if (thisSelection.SelectedAttributes.Any() && node.ExpandedOnce)
-                                            {
-                                                foreach (TreeNodeAdv attributeNode in node.Nodes)
-                                                {
-                                                    if (attributeNode.Tag is AttributeMetadata attribute)
-                                                    {
-                                                        attributeNode.Checked = thisSelection.SelectedAttributes.Contains(attribute.LogicalName);
-                                                    }
-                                                }
+                                                attributeNode.Checked = thisSelection.SelectedAttributes.Contains(attribute.LogicalName);
                                             }
                                         }
-                                        else if (node.Text == "Relationships")
+                                    }
+                                }
+                                else if (node.Text == "Relationships")
+                                {
+                                    if (thisSelection.AllRelationships)
+                                    {
+                                        node.Checked = true;
+                                    }
+                                    else if (thisSelection.SelectedRelationships.Any() && !node.ExpandedOnce)
+                                    {
+                                        relationshipMetadataHandler.GetRelationships(entity.LogicalName, node, false, thisSelection.SelectedRelationships);
+                                    }
+                                    else if (thisSelection.SelectedRelationships.Any() && node.ExpandedOnce)
+                                    {
+                                        foreach (TreeNodeAdv relationshipNode in node.Nodes)
                                         {
-                                            if (thisSelection.AllRelationships)
+                                            if (relationshipNode.Tag is RelationshipMetadataBase relationshipMetadata)
                                             {
-                                                node.Checked = true;
-                                            }
-                                            else if (thisSelection.SelectedRelationships.Any() && !node.ExpandedOnce)
-                                            {
-                                                relationshipMetadataHandler.GetRelationships(entity.LogicalName, node, false, thisSelection.SelectedRelationships);
-                                            }
-                                            else if (thisSelection.SelectedRelationships.Any() && node.ExpandedOnce)
-                                            {
-                                                foreach (TreeNodeAdv relationshipNode in node.Nodes)
-                                                {
-                                                    if (relationshipNode.Tag is RelationshipMetadataBase relationshipMetadata)
-                                                    {
-                                                        relationshipNode.Checked = thisSelection.SelectedRelationships.Contains(relationshipMetadata.SchemaName);
-                                                    }
-                                                }
+                                                relationshipNode.Checked = thisSelection.SelectedRelationships.Contains(relationshipMetadata.SchemaName);
                                             }
                                         }
                                     }
@@ -101,16 +105,12 @@ namespace AlbanianXrm.EarlyBound.Logic
                             }
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    finally
-                    {
-                        myPlugin.WorkAsyncEnded();
-                    }
                 }
-            });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }         
         }
     }
 }

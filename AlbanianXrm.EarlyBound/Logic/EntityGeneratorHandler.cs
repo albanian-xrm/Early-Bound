@@ -15,18 +15,21 @@ using System.Xml;
 using System.Drawing;
 using AlbanianXrm.EarlyBound.Properties;
 using System.Globalization;
+using AlbanianXrm.XrmToolBox.Shared;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class EntityGeneratorHandler
     {
         readonly MyPluginControl myPlugin;
+        BackgroundWorkHandler backgroundWorkHandler;
         readonly TreeViewAdv metadataTree;
         readonly RichTextBox output;
 
-        public EntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox output)
+        public EntityGeneratorHandler(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, RichTextBox output)
         {
             this.myPlugin = myPlugin;
+            this.backgroundWorkHandler = backgroundWorkHandler;
             this.metadataTree = metadataTree;
             this.output = output;
         }
@@ -34,232 +37,229 @@ namespace AlbanianXrm.EarlyBound.Logic
         public void GenerateEntities(Options options)
         {
             output.ResetText();
-            myPlugin.StartWorkAsync(new WorkAsyncInfo()
+            backgroundWorkHandler.EnqueueWork<Options, string, ProgressData<string>>(
+                Resources.GENERATING_ENTITIES,
+                GenerateEntitiesInner,
+                options,
+                Progress,
+                GenerateEntitiesEnd
+                );
+        }
+
+        private string GenerateEntitiesInner(Options options, Reporter<ProgressData<string>> reporter)
+        {
+            string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
+            string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
+            dir = Path.Combine(dir, folder);
+
+            if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe")))
             {
-                Message = Resources.GENERATING_ENTITIES,
-                Work = (worker, args) =>
+                return Resources.CRMSVCUTIL_MISSING;
+            }
+            if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll"))) // specific version included with the plugin
+            {
+                return Resources.MEMORYSTREAM_MISSING;
+            }
+            Process process = new Process();
+            var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
+            var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
+                                          " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                          " /codecustomization:AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                          " /metadataproviderservice:AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                          " /namingservice:AlbanianXrm.CrmSvcUtilExtensions.NamingService,AlbanianXrm.CrmSvcUtilExtensions" +
+                                          " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
+                                          (options.CurrentOrganizationOptions.Language == Language.VB ? " /language:VB" : "") +
+                                          (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
+
+            process.StartInfo.Arguments = "/connectionstring:" + connectionString + argumentsWithoutConnectionString;
+
+            process.StartInfo.WorkingDirectory = dir;
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+
+            HashSet<string> entities = new HashSet<string>();
+            HashSet<string> relationshipEntities = new HashSet<string>();
+            List<string> allAttributes = new List<string>();
+            List<string> allRelationships = new List<string>();
+            Dictionary<string, EntitySelection> entitySelections = new Dictionary<string, EntitySelection>();
+
+            foreach (TreeNodeAdv entity in metadataTree.Nodes)
+            {
+                if (entity.CheckState != CheckState.Unchecked)
                 {
-                    string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
-                    string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
-                    dir = Path.Combine(dir, folder);
-
-
-                    if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe")))
+                    EntityMetadata metadata = (EntityMetadata)entity.Tag;
+                    entities.Add(metadata.LogicalName);
+                    EntitySelection entitySelection = new EntitySelection(metadata.LogicalName);
+                    entitySelections.Add(entitySelection.LogicalName, entitySelection);
+                    foreach (TreeNodeAdv item in entity.Nodes)
                     {
-                        args.Result = Resources.CRMSVCUTIL_MISSING;
-                        return;
-                    }
-                    if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll"))) // specific version included with the plugin
-                    {
-                        args.Result = Resources.MEMORYSTREAM_MISSING;
-                        return;
-                    }
-                    Process process = new Process();
-                    var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
-                    var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
-                                                  " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                                  " /codecustomization:AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                                  " /metadataproviderservice:AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                                  " /namingservice:AlbanianXrm.CrmSvcUtilExtensions.NamingService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                                  " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
-                                                  (options.CurrentOrganizationOptions.Language == Language.VB ? " /language:VB" : "") +
-                                                  (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
-
-                    process.StartInfo.Arguments = "/connectionstring:" + connectionString + argumentsWithoutConnectionString;
-
-                    process.StartInfo.WorkingDirectory = dir;
-                    process.StartInfo.UseShellExecute = false;
-                    process.StartInfo.CreateNoWindow = true;
-                    process.StartInfo.RedirectStandardInput = true;
-                    process.StartInfo.RedirectStandardOutput = true;
-                    process.StartInfo.RedirectStandardError = true;
-
-                    HashSet<string> entities = new HashSet<string>();
-                    HashSet<string> relationshipEntities = new HashSet<string>();
-                    List<string> allAttributes = new List<string>();
-                    List<string> allRelationships = new List<string>();
-                    Dictionary<string, EntitySelection> entitySelections = new Dictionary<string, EntitySelection>();
-
-                    foreach (TreeNodeAdv entity in metadataTree.Nodes)
-                    {
-                        if (entity.CheckState != CheckState.Unchecked)
+                        if (item.Text == "Attributes")
                         {
-                            EntityMetadata metadata = (EntityMetadata)entity.Tag;
-                            entities.Add(metadata.LogicalName);
-                            EntitySelection entitySelection = new EntitySelection(metadata.LogicalName);
-                            entitySelections.Add(entitySelection.LogicalName, entitySelection);
-                            foreach (TreeNodeAdv item in entity.Nodes)
+                            if (item.CheckState == CheckState.Checked)
                             {
-                                if (item.Text == "Attributes")
+                                allAttributes.Add(metadata.LogicalName);
+                                entitySelection.AllAttributes = true;
+                            }
+                            else if (item.CheckState == CheckState.Indeterminate)
+                            {
+                                List<string> attributes = new List<string>();
+                                foreach (TreeNodeAdv attribute in item.Nodes)
                                 {
-                                    if (item.CheckState == CheckState.Checked)
+                                    if (attribute.Checked)
                                     {
-                                        allAttributes.Add(metadata.LogicalName);
-                                        entitySelection.AllAttributes = true;
-                                    }
-                                    else if (item.CheckState == CheckState.Indeterminate)
-                                    {
-                                        List<string> attributes = new List<string>();
-                                        foreach (TreeNodeAdv attribute in item.Nodes)
-                                        {
-                                            if (attribute.Checked)
-                                            {
-                                                var attributeMetadata = (AttributeMetadata)attribute.Tag;
-                                                attributes.Add(attributeMetadata.LogicalName);
-                                                entitySelection.SelectedAttributes.Add(attributeMetadata.LogicalName);
-                                            }
-                                        }
-                                        process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, metadata.LogicalName), string.Join(",", attributes));
+                                        var attributeMetadata = (AttributeMetadata)attribute.Tag;
+                                        attributes.Add(attributeMetadata.LogicalName);
+                                        entitySelection.SelectedAttributes.Add(attributeMetadata.LogicalName);
                                     }
                                 }
-                                else if (item.Text == "Relationships")
+                                process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_ENTITY_ATTRIBUTES, metadata.LogicalName), string.Join(",", attributes));
+                            }
+                        }
+                        else if (item.Text == "Relationships")
+                        {
+                            if (item.CheckState == CheckState.Checked)
+                            {
+                                allRelationships.Add(metadata.LogicalName);
+                                entitySelection.AllRelationships = true;
+                                foreach (TreeNodeAdv relationship in item.Nodes)
                                 {
-                                    if (item.CheckState == CheckState.Checked)
+                                    if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadataO)
                                     {
-                                        allRelationships.Add(metadata.LogicalName);
-                                        entitySelection.AllRelationships = true;
-                                        foreach (TreeNodeAdv relationship in item.Nodes)
-                                        {
-                                            if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadataO)
-                                            {
-                                                if (!relationshipEntities.Contains(relationshipMetadataO.ReferencedEntity)) relationshipEntities.Add(relationshipMetadataO.ReferencedEntity);
-                                                if (!relationshipEntities.Contains(relationshipMetadataO.ReferencingEntity)) relationshipEntities.Add(relationshipMetadataO.ReferencingEntity);
-                                            }
-                                            else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
-                                            {
-                                                if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
-                                                if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
-                                            }
-                                        }
+                                        if (!relationshipEntities.Contains(relationshipMetadataO.ReferencedEntity)) relationshipEntities.Add(relationshipMetadataO.ReferencedEntity);
+                                        if (!relationshipEntities.Contains(relationshipMetadataO.ReferencingEntity)) relationshipEntities.Add(relationshipMetadataO.ReferencingEntity);
                                     }
-                                    else if (item.CheckState == CheckState.Indeterminate)
+                                    else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
                                     {
-                                        List<string> relationships1N = new List<string>();
-                                        List<string> relationshipsN1 = new List<string>();
-                                        List<string> relationshipsNN = new List<string>();
-                                        foreach (TreeNodeAdv relationship in item.Nodes)
-                                        {
-                                            if (relationship.Checked)
-                                            {
-                                                if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadata)
-                                                {
-                                                    entitySelection.SelectedRelationships.Add(relationshipMetadata.SchemaName);
-                                                    if (relationshipMetadata.ReferencingEntity == metadata.LogicalName)
-                                                    {
-                                                        relationshipsN1.Add(relationshipMetadata.SchemaName);
-                                                    }
-                                                    else
-                                                    {
-                                                        relationships1N.Add(relationshipMetadata.SchemaName);
-                                                    }
-                                                    if (!relationshipEntities.Contains(relationshipMetadata.ReferencedEntity)) relationshipEntities.Add(relationshipMetadata.ReferencedEntity);
-                                                    if (!relationshipEntities.Contains(relationshipMetadata.ReferencingEntity)) relationshipEntities.Add(relationshipMetadata.ReferencingEntity);
-                                                }
-                                                else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
-                                                {
-                                                    entitySelection.SelectedRelationships.Add(relationshipMetadataM.SchemaName);
-                                                    relationshipsNN.Add(relationshipMetadataM.SchemaName);
-                                                    if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
-                                                    if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
-
-                                                }
-                                            }
-                                        }
-                                        if (relationships1N.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPS1N, metadata.LogicalName), string.Join(",", relationships1N.Distinct()));
-                                        if (relationshipsN1.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSN1, metadata.LogicalName), string.Join(",", relationshipsN1.Distinct()));
-                                        if (relationshipsNN.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSNN, metadata.LogicalName), string.Join(",", relationshipsNN.Distinct()));
+                                        if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
+                                        if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
                                     }
                                 }
                             }
-                        }
-                    }
+                            else if (item.CheckState == CheckState.Indeterminate)
+                            {
+                                List<string> relationships1N = new List<string>();
+                                List<string> relationshipsN1 = new List<string>();
+                                List<string> relationshipsNN = new List<string>();
+                                foreach (TreeNodeAdv relationship in item.Nodes)
+                                {
+                                    if (relationship.Checked)
+                                    {
+                                        if (relationship.Tag is OneToManyRelationshipMetadata relationshipMetadata)
+                                        {
+                                            entitySelection.SelectedRelationships.Add(relationshipMetadata.SchemaName);
+                                            if (relationshipMetadata.ReferencingEntity == metadata.LogicalName)
+                                            {
+                                                relationshipsN1.Add(relationshipMetadata.SchemaName);
+                                            }
+                                            else
+                                            {
+                                                relationships1N.Add(relationshipMetadata.SchemaName);
+                                            }
+                                            if (!relationshipEntities.Contains(relationshipMetadata.ReferencedEntity)) relationshipEntities.Add(relationshipMetadata.ReferencedEntity);
+                                            if (!relationshipEntities.Contains(relationshipMetadata.ReferencingEntity)) relationshipEntities.Add(relationshipMetadata.ReferencingEntity);
+                                        }
+                                        else if (relationship.Tag is ManyToManyRelationshipMetadata relationshipMetadataM)
+                                        {
+                                            entitySelection.SelectedRelationships.Add(relationshipMetadataM.SchemaName);
+                                            relationshipsNN.Add(relationshipMetadataM.SchemaName);
+                                            if (!relationshipEntities.Contains(relationshipMetadataM.Entity1LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity1LogicalName);
+                                            if (!relationshipEntities.Contains(relationshipMetadataM.Entity2LogicalName)) relationshipEntities.Add(relationshipMetadataM.Entity2LogicalName);
 
-                    if (entities.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ENTITIES, string.Join(",", entities));
-                    if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
-                    if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
-                    if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
-                    if (options.CurrentOrganizationOptions.RemoveProxyTypesAssembly) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY, "YES");
-                    if (options.CurrentOrganizationOptions.RemovePublisherPrefix) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPUBLISHER, "YES");
-                    if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
-                    if (options.CurrentOrganizationOptions.OptionSetEnumProperties) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES, "YES");
-                    if (options.CurrentOrganizationOptions.GenerateXmlDocumentation) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_GENERATEXML, "YES");
-                    if (options.CurrentOrganizationOptions.GenerateAttributeConstants) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS, "YES");
-                    process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_TWOOPTIONS, ((int)options.CurrentOrganizationOptions.TwoOptions).ToString(CultureInfo.InvariantCulture));
-#if DEBUG
-                    if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
-#endif
-                    myPlugin.pluginViewModel.LaunchCommand = $"{string.Join("\r\n", process.StartInfo.EnvironmentVariables.ToEnumerable().Where(x=>x.Key.StartsWith(Constants.ENVIRONMENT_VARIABLE_PREFIX)).Select(x => $"SET {x.Key}={x.Value}"))}\r\n{Path.Combine(dir, "CrmSvcUtil.exe")} /connectionstring:{myPlugin.ConnectionDetail.GetConnectionStringWithoutPassword()}{argumentsWithoutConnectionString}";
-                    if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
-
-                    process.EnableRaisingEvents = true;
-                    process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
-                    ForrestSerializer serializer = new ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb");
-                    serializer.Serialize(entitySelections);
-                    process.Start();
-
-                    while (!process.StandardOutput.EndOfStream)
-                    {
-                        var line = process.StandardOutput.ReadLine();
-                        if (line.EndsWith(Constants.CONSOLE_METADATA, StringComparison.InvariantCulture))
-                        {
-                            line = TrimEnd(line, Constants.CONSOLE_METADATA);
-                            SerializeMetadata(process.StandardInput, entities, relationshipEntities);
+                                        }
+                                    }
+                                }
+                                if (relationships1N.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPS1N, metadata.LogicalName), string.Join(",", relationships1N.Distinct()));
+                                if (relationshipsN1.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSN1, metadata.LogicalName), string.Join(",", relationshipsN1.Distinct()));
+                                if (relationshipsNN.Any()) process.StartInfo.EnvironmentVariables.Add(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSNN, metadata.LogicalName), string.Join(",", relationshipsNN.Distinct()));
+                            }
                         }
-                        if (line != null)
-                        {
-                            worker.ReportProgress(0, line);
-                        }
-                    }
-                    while (!process.StandardError.EndOfStream)
-                    {
-                        worker.ReportProgress(50, process.StandardError.ReadLine());
-                    }
-                    process.WaitForExit();
-                    worker.ReportProgress(100, "Ended");
-                },
-                PostWorkCallBack = (args) =>
-                {
-                    try
-                    {
-                        if (args.Error != null)
-                        {
-                            MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        if (args.Result != null)
-                        {
-                            MessageBox.Show(args.Result.ToString(), "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                    }
-#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
-                    catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
-                    {
-                        MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    finally
-                    {
-                        myPlugin.WorkAsyncEnded();
-                    }
-                },
-                ProgressChanged = (args) =>
-                {
-
-
-                    if (args.ProgressPercentage == 0)
-                    {
-                        output.AppendText(args.UserState + Environment.NewLine);
-                    }
-                    else if (args.ProgressPercentage == 50)
-                    {
-                        output.AppendText(args.UserState + Environment.NewLine, Color.Red);
-                    }
-                    else if (args.ProgressPercentage == 100)
-                    {
-                        Debug.WriteLine(args.UserState);
                     }
                 }
-            });
+            }
 
+            if (entities.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ENTITIES, string.Join(",", entities));
+            if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
+            if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
+            if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
+            if (options.CurrentOrganizationOptions.RemoveProxyTypesAssembly) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY, "YES");
+            if (options.CurrentOrganizationOptions.RemovePublisherPrefix) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPUBLISHER, "YES");
+            if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
+            if (options.CurrentOrganizationOptions.OptionSetEnumProperties) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES, "YES");
+            if (options.CurrentOrganizationOptions.GenerateXmlDocumentation) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_GENERATEXML, "YES");
+            if (options.CurrentOrganizationOptions.GenerateAttributeConstants) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS, "YES");
+            process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_TWOOPTIONS, ((int)options.CurrentOrganizationOptions.TwoOptions).ToString(CultureInfo.InvariantCulture));
+#if DEBUG
+            if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
+#endif
+            myPlugin.pluginViewModel.LaunchCommand = $"{string.Join("\r\n", process.StartInfo.EnvironmentVariables.ToEnumerable().Where(x => x.Key.StartsWith(Constants.ENVIRONMENT_VARIABLE_PREFIX)).Select(x => $"SET {x.Key}={x.Value}"))}\r\n{Path.Combine(dir, "CrmSvcUtil.exe")} /connectionstring:{myPlugin.ConnectionDetail.GetConnectionStringWithoutPassword()}{argumentsWithoutConnectionString}";
+            if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
+
+            process.EnableRaisingEvents = true;
+            process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
+            ForrestSerializer serializer = new ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb");
+            serializer.Serialize(entitySelections);
+            process.Start();
+
+            while (!process.StandardOutput.EndOfStream)
+            {
+                var line = process.StandardOutput.ReadLine();
+                if (line.EndsWith(Constants.CONSOLE_METADATA, StringComparison.InvariantCulture))
+                {
+                    line = TrimEnd(line, Constants.CONSOLE_METADATA);
+                    SerializeMetadata(process.StandardInput, entities, relationshipEntities);
+                }
+                if (line != null)
+                {
+                    reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 0, UserState = line });
+                }
+            }
+            while (!process.StandardError.EndOfStream)
+            {
+                reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 50, UserState =  process.StandardError.ReadLine() });
+            }
+            process.WaitForExit();
+            reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 100, UserState = "Ended" });
+            return null;
+        }
+
+        private void Progress(ProgressData<string> args)
+        {
+            if (args.ProgressPercentage == 0)
+            {
+                output.AppendText(args.UserState + Environment.NewLine);
+            }
+            else if (args.ProgressPercentage == 50)
+            {
+                output.AppendText(args.UserState + Environment.NewLine, Color.Red);
+            }
+            else if (args.ProgressPercentage == 100)
+            {
+                Debug.WriteLine(args.UserState);
+            }
+        }
+
+        private void GenerateEntitiesEnd(BackgroundWorkResult<Options, string> args)
+        {
+            try
+            {
+                if (args.Exception != null)
+                {
+                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                if (args.Value != null)
+                {
+                    MessageBox.Show(args.Value, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
+            catch (Exception ex)
+#pragma warning restore CA1031 // Do not catch general exception types
+            {
+                MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void SerializeMetadata(StreamWriter standardInput, HashSet<string> entities, HashSet<string> relationshipEntities)

@@ -3,6 +3,7 @@
     "OutputFile": "$(TargetDir)XrmToolBox\\Plugins\\$(TargetFileName)",
     "InputAssemblies": [
       "AlbanianXrm.ForrestSerializer.dll",
+      "AlbanianXrm.XrmToolBox.Shared.dll",
       "NuGet.Common.dll",
       "NuGet.Configuration.dll",
       "NuGet.Frameworks.dll",

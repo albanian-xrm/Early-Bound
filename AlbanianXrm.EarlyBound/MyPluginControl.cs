@@ -9,52 +9,29 @@ using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using XrmToolBox.Extensibility.Interfaces;
-using System.Collections.Generic;
 using AlbanianXrm.EarlyBound.Properties;
 using System.Globalization;
 using AlbanianXrm.EarlyBound.Extensions;
+using AlbanianXrm.EarlyBound.Interfaces;
+using AlbanianXrm.XrmToolBox.Shared;
 
 namespace AlbanianXrm.EarlyBound
 {
     public partial class MyPluginControl : PluginControlBase, IGitHubPlugin
     {
         private TreeViewAdvBeforeCheckEventHandler treeEventHandler;
-        private readonly Factories.MyPluginFactory MyPluginFactory;
+        private readonly IMyPluginFactory MyPluginFactory;
         private readonly Logic.EntityMetadataHandler EntityMetadataHandler;
         private readonly Logic.AttributeMetadataHandler AttributeMetadataHandler;
         private readonly Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
         private readonly Logic.CoreToolsDownloader CoreToolsDownloader;
         private readonly Logic.EntityGeneratorHandler EntityGeneratorHandler;
         private readonly Logic.EntitySelectionHandler EntitySelectionHandler;
+        private readonly BackgroundWorkHandler BackgroundWorkHandler;
         internal Logic.PluginViewModel pluginViewModel;
         internal EntityMetadata[] entityMetadatas = Array.Empty<EntityMetadata>();
         internal OptionSetMetadataBase[] optionSetMetadatas = Array.Empty<OptionSetMetadataBase>();
         internal Options options;
-        internal Queue<WorkAsyncInfo> queue = new Queue<WorkAsyncInfo>();
-
-        public void StartWorkAsync(WorkAsyncInfo work)
-        {
-            if (!queue.Any())
-            {
-                pluginViewModel.AllowRequests = false;
-                WorkAsync(work);
-            }
-            queue.Enqueue(work);
-        }
-
-        public void WorkAsyncEnded()
-        {
-            queue.Dequeue();
-            if (queue.Any())
-            {
-                WorkAsync(queue.Peek());
-            }
-            else
-            {
-                pluginViewModel.AllowRequests = true;
-            }
-
-        }
 
         public string RepositoryName { get { return "Early-Bound"; } }
 
@@ -63,14 +40,15 @@ namespace AlbanianXrm.EarlyBound
         public MyPluginControl()
         {
             InitializeComponent();
-            MyPluginFactory = new Factories.MyPluginFactory();
-            AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler(this);
-            CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader(this);
-            EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(this, metadataTree, txtOutput);
-            RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler(this);
-            EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(this, metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
-            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(this, metadataTree, EntitySelectionHandler);
+            MyPluginFactory = Factories.MyPluginFactory.GetMyPluginFactory(this);
             pluginViewModel = MyPluginFactory.NewPluginViewModel();
+            BackgroundWorkHandler = MyPluginFactory.NewBackgroundWorkHandler();
+            AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler();
+            CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader();
+            EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(metadataTree, txtOutput);
+            RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler();
+            EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
+            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(metadataTree, EntitySelectionHandler);
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
             btnGenerateEntities.Enabled = pluginViewModel.Generate_Enabled;
@@ -292,26 +270,19 @@ namespace AlbanianXrm.EarlyBound
                             {
                                 if (!item.ExpandedOnce)
                                 {
-                                    StartWorkAsync(new WorkAsyncInfo
-                                    {
-                                        Message = string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName),
-                                        Work = (worker, args) =>
-                                        {
-                                            args.Result = Service.Execute(new RetrieveEntityRequest()
-                                            {
-                                                EntityFilters = EntityFilters.Relationships,
-                                                LogicalName = entityName
-                                            });
-                                        },
-                                        PostWorkCallBack = (args) =>
+                                    BackgroundWorkHandler.EnqueueWork<string, RetrieveEntityResponse>(
+                                        message: string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName),
+                                        work: RetrieveRelationships,
+                                        argument: entityName,
+                                        workFinished: (args) =>
                                         {
                                             try
                                             {
-                                                if (args.Error != null)
+                                                if (args.Exception != null)
                                                 {
-                                                    MessageBox.Show(args.Error.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                                 }
-                                                if (args.Result is RetrieveEntityResponse result)
+                                                if (args.Value is RetrieveEntityResponse result)
                                                 {
                                                     item.ExpandedOnce = true;
                                                     var entityMetadata = entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
@@ -341,13 +312,7 @@ namespace AlbanianXrm.EarlyBound
                                             {
                                                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }
-                                            finally
-                                            {
-                                                WorkAsyncEnded();
-                                            }
-
-                                        }
-                                    });
+                                        });
                                 }
                                 else
                                 {
@@ -376,6 +341,15 @@ namespace AlbanianXrm.EarlyBound
             {
                 RelationshipMetadataHandler.GetRelationships(((EntityMetadata)e.Node.Parent.Tag).LogicalName, e.Node, checkedState: true);
             }
+        }
+
+        private RetrieveEntityResponse RetrieveRelationships(string entity)
+        {
+            return Service.Execute(new RetrieveEntityRequest()
+            {
+                EntityFilters = EntityFilters.Relationships,
+                LogicalName = entity
+            }) as RetrieveEntityResponse;
         }
 
         private void MnuSelectGenerated_Click(object sender, EventArgs e)

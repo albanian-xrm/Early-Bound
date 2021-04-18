@@ -1,5 +1,6 @@
 ﻿using AlbanianXrm.EarlyBound.Interfaces;
 using AlbanianXrm.EarlyBound.Logic;
+using AlbanianXrm.XrmToolBox.Shared;
 using Syncfusion.Windows.Forms.Tools;
 using System.Windows.Forms;
 
@@ -7,39 +8,60 @@ namespace AlbanianXrm.EarlyBound.Factories
 {
     internal class MyPluginFactory : IMyPluginFactory
     {
-        public AttributeMetadataHandler NewAttributeMetadataHandler(MyPluginControl myPlugin)
+        MyPluginControl myPlugin;
+        PluginViewModel pluginViewModel;
+        BackgroundWorkHandler backgroundWorkHandler; 
+
+        private MyPluginFactory(MyPluginControl myPlugin)
         {
-            return new AttributeMetadataHandler(myPlugin);
+            this.myPlugin = myPlugin;
+            this.pluginViewModel = new PluginViewModel();
+            this.backgroundWorkHandler = new BackgroundWorkHandler(myPlugin, pluginViewModel);
         }
 
-        public CoreToolsDownloader NewCoreToolsDownloader(MyPluginControl myPlugin)
+        public BackgroundWorkHandler NewBackgroundWorkHandler()
         {
-            return new CoreToolsDownloader(myPlugin);
+            return backgroundWorkHandler;
         }
 
-        public EntitySelectionHandler NewEntitySelectionHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
+        public static IMyPluginFactory GetMyPluginFactory(MyPluginControl myPlugin)
         {
-            return new EntitySelectionHandler(myPlugin, metadataTree, attributeMetadataHandler,relationshipMetadataHandler);
+            return new MyPluginFactory(myPlugin);
         }
 
-        public EntityMetadataHandler NewEntityMetadataHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
+        public AttributeMetadataHandler NewAttributeMetadataHandler()
         {
-            return new EntityMetadataHandler(myPlugin, metadataTree, entitySelectionHandler);
+            return new AttributeMetadataHandler(myPlugin, backgroundWorkHandler);
         }
 
-        public RelationshipMetadataHandler NewRelationshipMetadataHandler(MyPluginControl myPlugin)
+        public CoreToolsDownloader NewCoreToolsDownloader()
         {
-            return new RelationshipMetadataHandler(myPlugin);
+            return new CoreToolsDownloader(myPlugin, backgroundWorkHandler);
         }
 
-        public EntityGeneratorHandler NewEntityGeneratorHandler(MyPluginControl myPlugin, TreeViewAdv metadataTree, RichTextBox txtOutput)
+        public EntitySelectionHandler NewEntitySelectionHandler(TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
         {
-            return new EntityGeneratorHandler(myPlugin, metadataTree, txtOutput);
+            return new EntitySelectionHandler(myPlugin, backgroundWorkHandler, metadataTree, attributeMetadataHandler, relationshipMetadataHandler);
+        }
+
+        public EntityMetadataHandler NewEntityMetadataHandler(TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
+        {
+            return new EntityMetadataHandler(myPlugin, backgroundWorkHandler, metadataTree, entitySelectionHandler);
+        }
+
+        public RelationshipMetadataHandler NewRelationshipMetadataHandler()
+        {
+            return new RelationshipMetadataHandler(myPlugin, backgroundWorkHandler);
+        }
+
+        public EntityGeneratorHandler NewEntityGeneratorHandler(TreeViewAdv metadataTree, RichTextBox txtOutput)
+        {
+            return new EntityGeneratorHandler(myPlugin, backgroundWorkHandler, metadataTree, txtOutput);
         }
 
         public PluginViewModel NewPluginViewModel()
         {
-            return new PluginViewModel();
+            return pluginViewModel;
         }
     }
 }
