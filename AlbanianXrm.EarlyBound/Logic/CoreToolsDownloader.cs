@@ -66,7 +66,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             CancellationToken cancellationToken = CancellationToken.None;
             SourceCacheContext cache = new SourceCacheContext();
 
-            SourceRepository repository = Repository.Factory.GetCoreV3("https://api.nuget.org/v3/index.json");
+            SourceRepository repository = Repository.Factory.GetCoreV3(myPlugin.options.NuGetFeed);
             PackageSearchResource packageSearch = await repository.GetResourceAsync<PackageSearchResource>();
             FindPackageByIdResource findPackageById = await repository.GetResourceAsync<FindPackageByIdResource>();
 

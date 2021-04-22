@@ -8,9 +8,9 @@ namespace AlbanianXrm.EarlyBound.Factories
 {
     internal class MyPluginFactory : IMyPluginFactory
     {
-        MyPluginControl myPlugin;
-        PluginViewModel pluginViewModel;
-        BackgroundWorkHandler backgroundWorkHandler; 
+        private readonly MyPluginControl myPlugin;
+        private readonly PluginViewModel pluginViewModel;
+        private readonly BackgroundWorkHandler backgroundWorkHandler;
 
         private MyPluginFactory(MyPluginControl myPlugin)
         {

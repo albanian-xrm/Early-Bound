@@ -7,14 +7,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using XrmToolBox.Extensibility;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class EntitySelectionHandler
     {
         private readonly MyPluginControl myPlugin;
-        BackgroundWorkHandler backgroundWorkHandler;
+        private readonly BackgroundWorkHandler backgroundWorkHandler;
         private readonly TreeViewAdv metadataTree;
         private readonly AttributeMetadataHandler attributeMetadataHandler;
         private readonly RelationshipMetadataHandler relationshipMetadataHandler;
@@ -32,7 +31,7 @@ namespace AlbanianXrm.EarlyBound.Logic
         {
             var options = this.myPlugin.options;
             backgroundWorkHandler.EnqueueWork(
-                Resources.SELECTING_GENERATED, Deserialize, 
+                Resources.SELECTING_GENERATED, Deserialize,
                 (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb",
                 SelectEntities);
         }
@@ -110,7 +109,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             catch (Exception ex)
             {
                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }         
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ namespace AlbanianXrm.EarlyBound.Logic
     internal class EntityGeneratorHandler
     {
         readonly MyPluginControl myPlugin;
-        BackgroundWorkHandler backgroundWorkHandler;
+        readonly BackgroundWorkHandler backgroundWorkHandler;
         readonly TreeViewAdv metadataTree;
         readonly RichTextBox output;
 
@@ -218,7 +218,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             }
             while (!process.StandardError.EndOfStream)
             {
-                reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 50, UserState =  process.StandardError.ReadLine() });
+                reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 50, UserState = process.StandardError.ReadLine() });
             }
             process.WaitForExit();
             reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 100, UserState = "Ended" });
@@ -254,9 +254,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     MessageBox.Show(args.Value, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
-#pragma warning disable CA1031 // We don't want our plugin to crash because of unhandled exceptions
             catch (Exception ex)
-#pragma warning restore CA1031 // Do not catch general exception types
             {
                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

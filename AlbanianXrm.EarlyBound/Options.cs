@@ -13,7 +13,7 @@ namespace AlbanianXrm.EarlyBound
     {
         private static class Defaults
         {
-            public const string NuGetFeed = "https://packages.nuget.org/api/v2";
+            public const string NuGetFeed = "https://api.nuget.org/v3/index.json";
         }
 
         public Options()
