@@ -1,6 +1,7 @@
-﻿using AlbanianXrm.EarlyBound.Helpers;
+﻿using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.EarlyBound.Helpers;
 using AlbanianXrm.EarlyBound.Properties;
-using AlbanianXrm.XrmToolBox.Shared;
+using AlbanianXrm.XrmToolBox.Shared.Extensions;
 using NuGet.Common;
 using NuGet.Packaging;
 using NuGet.Protocol;
@@ -17,9 +18,9 @@ namespace AlbanianXrm.EarlyBound.Logic
     internal class CoreToolsDownloader
     {
         private readonly MyPluginControl myPlugin;
-        private readonly BackgroundWorkHandler backgroundWorkHandler;
+        private readonly AlBackgroundWorkHandler backgroundWorkHandler;
 
-        public CoreToolsDownloader(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler)
+        public CoreToolsDownloader(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
@@ -27,20 +28,24 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void DownloadCoreTools()
         {
-            backgroundWorkHandler.EnqueueAsyncWork(Resources.DOWNLOADING_CORE_TOOLS, DownloadCoreToolsAsync, DownloadCoreToolsEnded);
+            backgroundWorkHandler.EnqueueBackgroundWork(
+                AlBackgroundWorkerFactory.NewAsyncWorker(DownloadCoreToolsAsync, DownloadCoreToolsEnded)
+                                         .WithViewModel(myPlugin.pluginViewModel)
+                                         .WithMessage(myPlugin, Resources.DOWNLOADING_CORE_TOOLS));
+
         }
 
-        public void DownloadCoreToolsEnded(BackgroundWorkResult<string> args)
+        public void DownloadCoreToolsEnded(string value, Exception exception) 
         {
             try
             {
-                if (args.Exception != null)
+                if (exception != null)
                 {
-                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                if (args.Value != null)
+                if (value != null)
                 {
-                    MessageBox.Show(args.Value, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(value, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 myPlugin.options.CrmSvcUtils = new CrmSvcUtilsEditor().GetVersion(myPlugin.options.CrmSvcUtils);
                 myPlugin.options.RecycableMemoryStream = new MemoryStreamEditor().GetVersion(myPlugin.options.RecycableMemoryStream);

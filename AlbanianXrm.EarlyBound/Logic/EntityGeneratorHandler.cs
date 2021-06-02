@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using XrmToolBox.Extensibility;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System.IO;
@@ -15,18 +14,19 @@ using System.Xml;
 using System.Drawing;
 using AlbanianXrm.EarlyBound.Properties;
 using System.Globalization;
-using AlbanianXrm.XrmToolBox.Shared;
+using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.XrmToolBox.Shared.Extensions;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class EntityGeneratorHandler
     {
         readonly MyPluginControl myPlugin;
-        readonly BackgroundWorkHandler backgroundWorkHandler;
+        readonly AlBackgroundWorkHandler backgroundWorkHandler;
         readonly TreeViewAdv metadataTree;
         readonly RichTextBox output;
 
-        public EntityGeneratorHandler(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, RichTextBox output)
+        public EntityGeneratorHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, RichTextBox output)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
@@ -37,16 +37,16 @@ namespace AlbanianXrm.EarlyBound.Logic
         public void GenerateEntities(Options options)
         {
             output.ResetText();
-            backgroundWorkHandler.EnqueueWork<Options, string, ProgressData<string>>(
-                Resources.GENERATING_ENTITIES,
+            backgroundWorkHandler.EnqueueBackgroundWork(
+                AlBackgroundWorkerFactory.NewWorker<Options, string, string>(
                 GenerateEntitiesInner,
                 options,
                 Progress,
                 GenerateEntitiesEnd
-                );
+                ).WithMessage(myPlugin, Resources.GENERATING_ENTITIES));
         }
 
-        private string GenerateEntitiesInner(Options options, Reporter<ProgressData<string>> reporter)
+        private string GenerateEntitiesInner(Options options, Reporter<string> reporter)
         {
             string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
             string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
@@ -213,45 +213,45 @@ namespace AlbanianXrm.EarlyBound.Logic
                 }
                 if (line != null)
                 {
-                    reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 0, UserState = line });
+                    reporter.ReportProgress(0, line);
                 }
             }
             while (!process.StandardError.EndOfStream)
             {
-                reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 50, UserState = process.StandardError.ReadLine() });
+                reporter.ReportProgress(50, process.StandardError.ReadLine());
             }
             process.WaitForExit();
-            reporter.ReportProgress(new ProgressData<string>() { ProgressPercentage = 100, UserState = "Ended" });
+            reporter.ReportProgress(100, "Ended");
             return null;
         }
 
-        private void Progress(ProgressData<string> args)
+        private void Progress(int percentage, string userState)
         {
-            if (args.ProgressPercentage == 0)
+            if (percentage == 0)
             {
-                output.AppendText(args.UserState + Environment.NewLine);
+                output.AppendText(userState + Environment.NewLine);
             }
-            else if (args.ProgressPercentage == 50)
+            else if (percentage == 50)
             {
-                output.AppendText(args.UserState + Environment.NewLine, Color.Red);
+                output.AppendText(userState + Environment.NewLine, Color.Red);
             }
-            else if (args.ProgressPercentage == 100)
+            else if (percentage == 100)
             {
-                Debug.WriteLine(args.UserState);
+                Debug.WriteLine(userState);
             }
         }
 
-        private void GenerateEntitiesEnd(BackgroundWorkResult<Options, string> args)
+        private void GenerateEntitiesEnd(Options input, string value, Exception exception)
         {
             try
             {
-                if (args.Exception != null)
+                if (exception != null)
                 {
-                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                if (args.Value != null)
+                if (value != null)
                 {
-                    MessageBox.Show(args.Value, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(value, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)

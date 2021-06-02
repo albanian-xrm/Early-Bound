@@ -1,6 +1,6 @@
-﻿using AlbanianXrm.EarlyBound.Interfaces;
+﻿using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.EarlyBound.Interfaces;
 using AlbanianXrm.EarlyBound.Logic;
-using AlbanianXrm.XrmToolBox.Shared;
 using Syncfusion.Windows.Forms.Tools;
 using System.Windows.Forms;
 
@@ -10,16 +10,16 @@ namespace AlbanianXrm.EarlyBound.Factories
     {
         private readonly MyPluginControl myPlugin;
         private readonly PluginViewModel pluginViewModel;
-        private readonly BackgroundWorkHandler backgroundWorkHandler;
+        private readonly AlBackgroundWorkHandler backgroundWorkHandler;
 
         private MyPluginFactory(MyPluginControl myPlugin)
         {
             this.myPlugin = myPlugin;
             this.pluginViewModel = new PluginViewModel();
-            this.backgroundWorkHandler = new BackgroundWorkHandler(myPlugin, pluginViewModel);
+            this.backgroundWorkHandler = new AlBackgroundWorkHandler();
         }
 
-        public BackgroundWorkHandler NewBackgroundWorkHandler()
+        public AlBackgroundWorkHandler NewBackgroundWorkHandler()
         {
             return backgroundWorkHandler;
         }

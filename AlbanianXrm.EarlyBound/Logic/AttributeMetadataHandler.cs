@@ -1,5 +1,6 @@
-﻿using AlbanianXrm.EarlyBound.Properties;
-using AlbanianXrm.XrmToolBox.Shared;
+﻿using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.EarlyBound.Properties;
+using AlbanianXrm.XrmToolBox.Shared.Extensions;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
@@ -8,16 +9,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using XrmToolBox.Extensibility;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
     internal class AttributeMetadataHandler
     {
         private readonly MyPluginControl myPlugin;
-        private readonly BackgroundWorkHandler backgroundWorkHandler;
+        private readonly AlBackgroundWorkHandler backgroundWorkHandler;
 
-        public AttributeMetadataHandler(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler)
+        public AttributeMetadataHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
@@ -25,23 +25,23 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false, HashSet<string> checkedAttributes = default(HashSet<string>))
         {
-            backgroundWorkHandler.EnqueueWork(
-                string.Format(CultureInfo.CurrentCulture, Resources.GETTING_ATTRIBUTES, entityName),
-                () => myPlugin.Service.Execute(new RetrieveEntityRequest()
-                {
-                    EntityFilters = EntityFilters.Attributes,
-                    LogicalName = entityName
-                })
-                 ,
-                 (args) =>
+            backgroundWorkHandler.EnqueueBackgroundWork(
+                AlBackgroundWorkerFactory.NewWorker(
+                () => myPlugin.Service.Execute(
+                    new RetrieveEntityRequest()
+                    {
+                        EntityFilters = EntityFilters.Attributes,
+                        LogicalName = entityName
+                    }),
+                 (value, exception) =>
                  {
                      try
                      {
-                         if (args.Exception != null)
+                         if (exception != null)
                          {
-                             MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                             MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                          }
-                         if (args.Value is RetrieveEntityResponse result)
+                         if (value is RetrieveEntityResponse result)
                          {
                              if (checkedAttributes == null) checkedAttributes = new HashSet<string>();
 
@@ -57,6 +57,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                          MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                      }
                  }
+                 )
+                .WithViewModel(myPlugin.pluginViewModel)
+                .WithMessage(myPlugin, string.Format(CultureInfo.CurrentCulture, Resources.GETTING_ATTRIBUTES, entityName))
              );
         }
 

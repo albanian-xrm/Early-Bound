@@ -1,6 +1,8 @@
-﻿using AlbanianXrm.EarlyBound.Extensions;
+﻿using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.EarlyBound.Extensions;
 using AlbanianXrm.EarlyBound.Properties;
 using AlbanianXrm.XrmToolBox.Shared;
+using AlbanianXrm.XrmToolBox.Shared.Extensions;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
@@ -15,11 +17,11 @@ namespace AlbanianXrm.EarlyBound.Logic
     internal class EntityMetadataHandler
     {
         private readonly MyPluginControl myPlugin;
-        private readonly BackgroundWorkHandler backgroundWorkHandler;
+        private readonly AlBackgroundWorkHandler backgroundWorkHandler;
         private readonly TreeViewAdv metadataTree;
         private readonly EntitySelectionHandler entitySelectionHandler;
 
-        public EntityMetadataHandler(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
+        public EntityMetadataHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
@@ -30,12 +32,12 @@ namespace AlbanianXrm.EarlyBound.Logic
         public void GetEntityList(bool selectAll = false)
         {
             var options = this.myPlugin.options;
-            backgroundWorkHandler.EnqueueWork(
-                Resources.GETTING_ENTITY_LIST,
+            backgroundWorkHandler.EnqueueBackgroundWork(AlBackgroundWorkerFactory.NewWorker(              
                 DoWork,
                 new Tuple<string, bool>((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb", selectAll),
                 WorkEnded
-                );
+                ).WithViewModel(myPlugin.pluginViewModel)
+                 .WithMessage(myPlugin, Resources.GETTING_ENTITY_LIST));
         }
 
         public Tuple<RetrieveAllEntitiesResponse, Dictionary<string, EntitySelection>> DoWork(Tuple<string, bool> arg)
@@ -59,17 +61,17 @@ namespace AlbanianXrm.EarlyBound.Logic
             return new Tuple<RetrieveAllEntitiesResponse, Dictionary<string, EntitySelection>>(result, forrestSerializer.Deserialize());
         }
 
-        public void WorkEnded(BackgroundWorkResult<Tuple<string, bool>, Tuple<RetrieveAllEntitiesResponse, Dictionary<string, EntitySelection>>> args)
+        public void WorkEnded(Tuple<string, bool> input, Tuple<RetrieveAllEntitiesResponse, Dictionary<string, EntitySelection>> value, Exception exception)
         {
             try
             {
-                if (args.Exception != null)
+                if (exception != null)
                 {
-                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                else if (args.Value !=null)
+                else if (value !=null)
                 {
-                    RetrieveAllEntitiesResponse result = args.Value.Item1;
+                    RetrieveAllEntitiesResponse result = value.Item1;
                     metadataTree.BackgroundImage = null;
                     metadataTree.Enabled = true;
                     metadataTree.Nodes.Clear();
@@ -99,18 +101,18 @@ namespace AlbanianXrm.EarlyBound.Logic
                             Tag = item
                         };
                         metadataTree.Nodes.Add(node);
-                        if (args.Argument.Item2)
+                        if (input.Item2)
                         {
                             AttributeMetadataHandler.CreateAttributeNodes(attributes, item, checkedState: true);
                             RelationshipMetadataHandler.CreateRelationshipNodes(relationships, item, checkedState: true);
                         }
                     }
-                    if (!args.Argument.Item2)
+                    if (!input.Item2)
                     {
                         entitySelectionHandler.SelectGenerated();
                     }
 
-                    myPlugin.pluginViewModel.All_Metadata_Requested = args.Argument.Item2;
+                    myPlugin.pluginViewModel.All_Metadata_Requested = input.Item2;
                     myPlugin.pluginViewModel.Generate_Enabled = true;
                 }
             }

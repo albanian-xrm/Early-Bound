@@ -213,7 +213,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             }
         }
 
-        private static bool GetOrCreateOptionSets(IEnumerable<CodeTypeDeclaration> codeTypeDeclarations, out CodeTypeDeclaration optionSets)
+        private bool GetOrCreateOptionSets(IEnumerable<CodeTypeDeclaration> codeTypeDeclarations, out CodeTypeDeclaration optionSets)
         {
             foreach (CodeTypeDeclaration type in codeTypeDeclarations)
             {
@@ -228,6 +228,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 TypeAttributes = TypeAttributes.Public | TypeAttributes.Sealed,
                 IsClass = true
             };
+            if (generateXmlDocumentation)
+            {
+                CustomizationService.AddMissingXmlDocumentation("OptionSets", optionSets.Comments);
+            }
             return true;
         }
 
@@ -244,8 +248,13 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             };
             optionSetEnum.CustomAttributes.Add(new CodeAttributeDeclaration("System.Runtime.Serialization.DataContractAttribute"));
             optionSetEnum.CustomAttributes.Add(new CodeAttributeDeclaration("System.CodeDom.Compiler.GeneratedCodeAttribute",
-                                                       new CodeAttributeArgument(new CodePrimitiveExpression(CrmSvcUtilsName)),
-                                                       new CodeAttributeArgument(new CodePrimitiveExpression(CrmSvcUtilsVersion))));
+                                                    new CodeAttributeArgument(new CodePrimitiveExpression(CrmSvcUtilsName)),
+                                                    new CodeAttributeArgument(new CodePrimitiveExpression(CrmSvcUtilsVersion))));
+            if (generateXmlDocumentation)
+            {
+                CustomizationService.AddMissingXmlDocumentation(schemaName, optionSetEnum.Comments);
+            }
+
             foreach (var value in values)
             {
                 CodeMemberField codeMemberField = new CodeMemberField(string.Empty, value.Value)
@@ -255,9 +264,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
                 if (generateXmlDocumentation)
                 {
-                    codeMemberField.Comments.Add(new CodeCommentStatement("<summary>", docComment: true));
-                    codeMemberField.Comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(value.Description), docComment: true));
-                    codeMemberField.Comments.Add(new CodeCommentStatement("</summary>", docComment: true));
+                    CustomizationService.AddMissingXmlDocumentation(value.Description, codeMemberField.Comments);
                 }
 
                 codeMemberField.CustomAttributes.Add(new CodeAttributeDeclaration("System.Runtime.Serialization.EnumMemberAttribute"));
@@ -279,6 +286,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 IsClass = true,
                 Attributes = MemberAttributes.Static | MemberAttributes.Public
             };
+            if (generateXmlDocumentation)
+            {
+                CustomizationService.AddMissingXmlDocumentation(booleanAttribute.SchemaName, booleanOptionSet.Comments);              
+            }
             var values = EnumItem.ToUniqueValues(booleanAttribute.OptionSet);
             foreach (var value in values)
             {
@@ -290,9 +301,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
                 if (generateXmlDocumentation)
                 {
-                    codeMemberField.Comments.Add(new CodeCommentStatement("<summary>", docComment: true));
-                    codeMemberField.Comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(value.Description), docComment: true));
-                    codeMemberField.Comments.Add(new CodeCommentStatement("</summary>", docComment: true));
+                    CustomizationService.AddMissingXmlDocumentation(value.Description, codeMemberField.Comments);
                 }
 
                 booleanOptionSet.Members.Add(codeMemberField);

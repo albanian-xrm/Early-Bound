@@ -103,10 +103,42 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 }
             }
 
-            if (!generateXmlDocumentation)
+            if (generateXmlDocumentation)
+            {
+                AddMissingXmlDocumentation(codeUnit.Namespaces);
+            }
+            else
             {
                 RemoveXmlDocumentation(codeUnit.Namespaces);
             }
+        }
+
+        private static void AddMissingXmlDocumentation(CodeNamespaceCollection namespaces)
+        {
+            foreach (CodeNamespace @namespace in namespaces)
+            {
+                foreach (CodeTypeDeclaration typeDeclaration in @namespace.Types)
+                {
+                    if (typeDeclaration.Comments.Count == 0)
+                    {
+                        AddMissingXmlDocumentation(typeDeclaration.Name, typeDeclaration.Comments);
+                    }
+                    foreach (CodeTypeMember typeMember in typeDeclaration.Members)
+                    {
+                        if (typeMember.Comments.Count == 0)
+                        {
+                            AddMissingXmlDocumentation(typeMember.Name, typeMember.Comments);
+                        }
+                    }
+                }
+            }
+        }
+
+        internal static void AddMissingXmlDocumentation(string typeName, CodeCommentStatementCollection comments)
+        {
+            comments.Add(new CodeCommentStatement("<summary>", docComment: true));
+            comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(typeName), docComment: true));
+            comments.Add(new CodeCommentStatement("</summary>", docComment: true));
         }
 
         private static void RemoveXmlDocumentation(CodeNamespaceCollection namespaces)
