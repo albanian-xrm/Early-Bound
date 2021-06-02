@@ -93,9 +93,9 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: '**/*.sln'
-    msbuildVersion: '16.0'
     configuration: '$(MyVars.configuration)'
-    msbuildArguments: '/t:AlbanianXrm_CrmSvcUtilExtensions;AlbanianXrm_EarlyBound;AlbanianXrm_ForrestSerializer /p:Version=$(MyVars.BuildNumber)'
+    msbuildArguments: '/t:AlbanianXrm_ForrestSerializer;AlbanianXrm_CrmSvcUtilExtensions;AlbanianXrm_EarlyBound /p:Version=$(MyVars.BuildNumber)'
+    clean: true
   displayName: 'Building Solution'
 
 - task: VSTest@2
