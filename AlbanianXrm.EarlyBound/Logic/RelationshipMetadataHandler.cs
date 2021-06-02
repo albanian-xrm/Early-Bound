@@ -1,6 +1,7 @@
-﻿using AlbanianXrm.EarlyBound.Extensions;
+﻿using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.EarlyBound.Extensions;
 using AlbanianXrm.EarlyBound.Properties;
-using AlbanianXrm.XrmToolBox.Shared;
+using AlbanianXrm.XrmToolBox.Shared.Extensions;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
@@ -15,9 +16,9 @@ namespace AlbanianXrm.EarlyBound.Logic
     internal class RelationshipMetadataHandler
     {
         private readonly MyPluginControl myPlugin;
-        private readonly BackgroundWorkHandler backgroundWorkHandler;
+        private readonly AlBackgroundWorkHandler backgroundWorkHandler;
 
-        public RelationshipMetadataHandler(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler)
+        public RelationshipMetadataHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
@@ -25,11 +26,12 @@ namespace AlbanianXrm.EarlyBound.Logic
 
         public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode, bool checkedState = false, HashSet<string> checkedRelationships = default(HashSet<string>))
         {
-            backgroundWorkHandler.EnqueueWork(
-                string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName),
+            backgroundWorkHandler.EnqueueBackgroundWork(
+                AlBackgroundWorkerFactory.NewWorker(
                 GetRelationships,
                new Tuple<string, TreeNodeAdv, bool, HashSet<string>>(entityName, relationshipsNode, checkedState, checkedRelationships),
-               GetRelationships);
+               GetRelationships).WithViewModel(myPlugin.pluginViewModel)
+                                .WithMessage(myPlugin, string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName)));
         }
 
         private RetrieveEntityResponse GetRelationships(Tuple<string, TreeNodeAdv, bool, HashSet<string>> args)
@@ -41,20 +43,20 @@ namespace AlbanianXrm.EarlyBound.Logic
             }) as RetrieveEntityResponse;
         }
 
-        private void GetRelationships(BackgroundWorkResult<Tuple<string, TreeNodeAdv, bool, HashSet<string>>, RetrieveEntityResponse> args)
+        private void GetRelationships(Tuple<string, TreeNodeAdv, bool, HashSet<string>> input, RetrieveEntityResponse value, Exception exception)
         {
             try
             {
-                if (args.Exception != null)
+                if (exception != null)
                 {
-                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                if (args.Value is RetrieveEntityResponse result)
+                if (value is RetrieveEntityResponse result)
                 {
-                    var checkedRelationships = args.Argument.Item4;
-                    var entityName = args.Argument.Item1;
-                    var checkedState = args.Argument.Item3;
-                    var relationshipsNode = args.Argument.Item2;
+                    var checkedRelationships = input.Item4;
+                    var entityName = input.Item1;
+                    var checkedState = input.Item3;
+                    var relationshipsNode = input.Item2;
                     if (checkedRelationships == null) checkedRelationships = new HashSet<string>();
 
                     var entityMetadata = myPlugin.entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);

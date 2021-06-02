@@ -51,11 +51,15 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 {
                     attributeConstant.Comments.Add(documentation);
                 }
+                if (attributeConstant.Comments.Count == 0)
+                {
+                    CustomizationService.AddMissingXmlDocumentation(attributeConstant.Name, attributeConstant.Comments);
+                }
             }
             return attributeConstant;
         }
 
-        private static CodeTypeDeclaration GetOrCreateClass(string className, CodeTypeMemberCollection members)
+        private CodeTypeDeclaration GetOrCreateClass(string className, CodeTypeMemberCollection members)
         {
             var @class = members.ToEnumerable<CodeTypeDeclaration>()
                                 .FirstOrDefault(_class => _class.Name == className);
@@ -66,6 +70,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     TypeAttributes = TypeAttributes.Public | TypeAttributes.Sealed,
                     IsClass = true
                 };
+                if (generateXmlDocumentation)
+                {
+                    CustomizationService.AddMissingXmlDocumentation(className, @class.Comments);
+                }
                 members.Add(@class);
             }
             return @class;

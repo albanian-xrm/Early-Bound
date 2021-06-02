@@ -1,5 +1,6 @@
-﻿using AlbanianXrm.EarlyBound.Properties;
-using AlbanianXrm.XrmToolBox.Shared;
+﻿using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.EarlyBound.Properties;
+using AlbanianXrm.XrmToolBox.Shared.Extensions;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
 using System;
@@ -13,12 +14,12 @@ namespace AlbanianXrm.EarlyBound.Logic
     internal class EntitySelectionHandler
     {
         private readonly MyPluginControl myPlugin;
-        private readonly BackgroundWorkHandler backgroundWorkHandler;
+        private readonly AlBackgroundWorkHandler backgroundWorkHandler;
         private readonly TreeViewAdv metadataTree;
         private readonly AttributeMetadataHandler attributeMetadataHandler;
         private readonly RelationshipMetadataHandler relationshipMetadataHandler;
 
-        public EntitySelectionHandler(MyPluginControl myPlugin, BackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
+        public EntitySelectionHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
@@ -30,10 +31,12 @@ namespace AlbanianXrm.EarlyBound.Logic
         internal void SelectGenerated()
         {
             var options = this.myPlugin.options;
-            backgroundWorkHandler.EnqueueWork(
-                Resources.SELECTING_GENERATED, Deserialize,
+            backgroundWorkHandler.EnqueueBackgroundWork(
+                AlBackgroundWorkerFactory.NewWorker(
+                Deserialize,
                 (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb",
-                SelectEntities);
+                SelectEntities).WithViewModel(myPlugin.pluginViewModel)
+                               .WithMessage(myPlugin, Resources.SELECTING_GENERATED));
         }
 
         private Dictionary<string, EntitySelection> Deserialize(string path)
@@ -42,15 +45,15 @@ namespace AlbanianXrm.EarlyBound.Logic
             return forrestSerializer.Deserialize();
         }
 
-        public void SelectEntities(BackgroundWorkResult<string, Dictionary<string, EntitySelection>> args)
+        public void SelectEntities(string input, Dictionary<string, EntitySelection> value, Exception exception)
         {
             try
             {
-                if (args.Exception != null)
+                if (exception != null)
                 {
-                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                else if (args.Value is Dictionary<string, EntitySelection> entitySelection && entitySelection.Any())
+                else if (value is Dictionary<string, EntitySelection> entitySelection && entitySelection.Any())
                 {
                     foreach (TreeNodeAdv entityNode in metadataTree.Nodes)
                     {

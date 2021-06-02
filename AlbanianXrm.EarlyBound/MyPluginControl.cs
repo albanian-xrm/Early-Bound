@@ -14,6 +14,8 @@ using System.Globalization;
 using AlbanianXrm.EarlyBound.Extensions;
 using AlbanianXrm.EarlyBound.Interfaces;
 using AlbanianXrm.XrmToolBox.Shared;
+using AlbanianXrm.BackgroundWorker;
+using AlbanianXrm.XrmToolBox.Shared.Extensions;
 
 namespace AlbanianXrm.EarlyBound
 {
@@ -27,7 +29,7 @@ namespace AlbanianXrm.EarlyBound
         private readonly Logic.CoreToolsDownloader CoreToolsDownloader;
         private readonly Logic.EntityGeneratorHandler EntityGeneratorHandler;
         private readonly Logic.EntitySelectionHandler EntitySelectionHandler;
-        private readonly BackgroundWorkHandler BackgroundWorkHandler;
+        private readonly AlBackgroundWorkHandler BackgroundWorkHandler;
         internal Logic.PluginViewModel pluginViewModel;
         internal EntityMetadata[] entityMetadatas = Array.Empty<EntityMetadata>();
         internal OptionSetMetadataBase[] optionSetMetadatas = Array.Empty<OptionSetMetadataBase>();
@@ -270,19 +272,19 @@ namespace AlbanianXrm.EarlyBound
                             {
                                 if (!item.ExpandedOnce)
                                 {
-                                    BackgroundWorkHandler.EnqueueWork<string, RetrieveEntityResponse>(
-                                        message: string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName),
+                                    BackgroundWorkHandler.EnqueueBackgroundWork(
+                                        AlBackgroundWorkerFactory.NewWorker<string, RetrieveEntityResponse>(
                                         work: RetrieveRelationships,
                                         argument: entityName,
-                                        workFinished: (args) =>
+                                        workFinished: (string argument, RetrieveEntityResponse value, Exception exception) =>
                                         {
                                             try
                                             {
-                                                if (args.Exception != null)
+                                                if (exception != null)
                                                 {
-                                                    MessageBox.Show(args.Exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                                    MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                                 }
-                                                if (args.Value is RetrieveEntityResponse result)
+                                                if (value is RetrieveEntityResponse result)
                                                 {
                                                     item.ExpandedOnce = true;
                                                     var entityMetadata = entityMetadatas.FirstOrDefault(x => x.LogicalName == entityName);
@@ -312,7 +314,7 @@ namespace AlbanianXrm.EarlyBound
                                             {
                                                 MessageBox.Show(ex.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                             }
-                                        });
+                                        }).WithViewModel(pluginViewModel).WithMessage(this, string.Format(CultureInfo.CurrentCulture, Resources.GETTING_RELATIONSHIPS, entityName)));
                                 }
                                 else
                                 {

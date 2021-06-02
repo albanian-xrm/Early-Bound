@@ -1,6 +1,6 @@
 ﻿
+using AlbanianXrm.BackgroundWorker;
 using AlbanianXrm.EarlyBound.Logic;
-using AlbanianXrm.XrmToolBox.Shared;
 using Syncfusion.Windows.Forms.Tools;
 using System.Windows.Forms;
 
@@ -8,7 +8,7 @@ namespace AlbanianXrm.EarlyBound.Interfaces
 {
     interface IMyPluginFactory
     {
-        BackgroundWorkHandler NewBackgroundWorkHandler();
+        AlBackgroundWorkHandler NewBackgroundWorkHandler();
         AttributeMetadataHandler NewAttributeMetadataHandler();
         CoreToolsDownloader NewCoreToolsDownloader();
         EntityMetadataHandler NewEntityMetadataHandler(TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler);
