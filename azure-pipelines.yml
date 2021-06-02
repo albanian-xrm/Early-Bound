@@ -93,7 +93,8 @@ steps:
 - task: MSBuild@1
   inputs:
     solution: '**/*.sln'
-    configuration: $(MyVars.configuration)
+    msbuildVersion: '16.0'
+    configuration: '$(MyVars.configuration)'
     msbuildArguments: '/t:AlbanianXrm_CrmSvcUtilExtensions;AlbanianXrm_EarlyBound;AlbanianXrm_ForrestSerializer /p:Version=$(MyVars.BuildNumber)'
   displayName: 'Building Solution'
 
