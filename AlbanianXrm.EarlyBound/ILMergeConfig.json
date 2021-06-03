@@ -4,6 +4,7 @@
     "InputAssemblies": [
       "AlbanianXrm.ForrestSerializer.dll",
       "AlbanianXrm.XrmToolBox.Shared.dll",    
+      "AlbanianXrm.BackgroundWorker.dll",    
       "EnvDTE.dll",
       "stdole.dll",
       "Syncfusion.Core.WinForms.dll",
