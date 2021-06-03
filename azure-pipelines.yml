@@ -94,8 +94,7 @@ steps:
   inputs:
     solution: '**/*.sln'
     configuration: '$(MyVars.configuration)'
-    msbuildArguments: '/t:AlbanianXrm_ForrestSerializer;AlbanianXrm_CrmSvcUtilExtensions;AlbanianXrm_EarlyBound /p:Version=$(MyVars.BuildNumber)'
-    clean: true
+    msbuildArguments: '/p:Version=$(MyVars.BuildNumber)'
   displayName: 'Building Solution'
 
 - task: VSTest@2
@@ -113,9 +112,9 @@ steps:
 
 - task: MSBuild@1
   inputs:
-    solution: '**/*.sln'
+    solution: 'AlbanianXrm.Coverage\AlbanianXrm.Coverage.csproj'
     configuration: Debug
-    msbuildArguments: '/t:AlbanianXrm_Coverage /p:Version=$(MyVars.BuildNumber);AlbanianXrm-Coverage-Reports=Cobertura%3BHtmlInline_AzurePipelines%3BSonarQube'
+    msbuildArguments: '/p:Version=$(MyVars.BuildNumber);AlbanianXrm-Coverage-Reports=Cobertura%3BHtmlInline_AzurePipelines%3BSonarQube'
   displayName: 'Testing & Coverage'
 
 - task: PublishCodeCoverageResults@1
