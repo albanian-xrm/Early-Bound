@@ -25,6 +25,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             var removePropertyChanged = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED));
             var removeProxyTypesAssembly = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY));
             var generateXmlDocumentation = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_GENERATEXML));
+            var fixXmlDocumentation = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_FIXXML));
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS)))
             {
@@ -105,7 +106,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
             if (generateXmlDocumentation)
             {
-                AddMissingXmlDocumentation(codeUnit.Namespaces);
+                AddMissingXmlDocumentation(codeUnit.Namespaces, fixXmlDocumentation);
             }
             else
             {
@@ -113,7 +114,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             }
         }
 
-        private static void AddMissingXmlDocumentation(CodeNamespaceCollection namespaces)
+        private static void AddMissingXmlDocumentation(CodeNamespaceCollection namespaces, bool fixXmlDocumentation)
         {
             foreach (CodeNamespace @namespace in namespaces)
             {
@@ -123,11 +124,19 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     {
                         AddMissingXmlDocumentation(typeDeclaration.Name, typeDeclaration.Comments);
                     }
+                    else if (fixXmlDocumentation)
+                    {
+                        EscapeSummary(typeDeclaration.Comments);
+                    }
                     foreach (CodeTypeMember typeMember in typeDeclaration.Members)
                     {
                         if (typeMember.Comments.Count == 0)
                         {
                             AddMissingXmlDocumentation(typeMember.Name, typeMember.Comments);
+                        }
+                        else if (fixXmlDocumentation)
+                        {
+                            EscapeSummary(typeMember.Comments);
                         }
                     }
                 }
@@ -139,6 +148,28 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             comments.Add(new CodeCommentStatement("<summary>", docComment: true));
             comments.Add(new CodeCommentStatement(System.Security.SecurityElement.Escape(typeName), docComment: true));
             comments.Add(new CodeCommentStatement("</summary>", docComment: true));
+        }
+
+        internal static void EscapeSummary(CodeCommentStatementCollection comments)
+        {
+            bool insideSummary = false;
+            for (int i = 0; i < comments.Count; i++)
+            {
+                if ("<summary>".Equals(comments[i].Comment.Text, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    insideSummary = true;
+                    continue;
+                }
+                if ("</summary>".Equals(comments[i].Comment.Text, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    insideSummary = false;
+                    continue;
+                }
+                if (insideSummary)
+                {
+                    comments[i].Comment.Text = System.Security.SecurityElement.Escape(comments[i].Comment.Text);
+                }
+            }
         }
 
         private static void RemoveXmlDocumentation(CodeNamespaceCollection namespaces)

@@ -79,6 +79,13 @@ namespace AlbanianXrm.EarlyBound
         public bool GenerateXmlDocumentation { get; set; }
 
         [Category("General")]
+        [DisplayName("Xml Workaround")]
+        [Description("Apply a workaround to fix xml documentation escaping.")]
+        [DefaultValue(false)]
+        [TypeConverter(typeof(YesNoConverter))]
+        public bool XmlDocumentationWorkaround { get; set; }
+
+        [Category("General")]
         [DisplayName("Attribute Constants")]
         [Description("Generate Attributes as Constants in the class Fields.")]
         [DefaultValue(false)]
