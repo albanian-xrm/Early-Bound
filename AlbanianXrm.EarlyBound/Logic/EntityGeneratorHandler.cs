@@ -189,6 +189,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
             if (options.CurrentOrganizationOptions.OptionSetEnumProperties) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES, "YES");
             if (options.CurrentOrganizationOptions.GenerateXmlDocumentation) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_GENERATEXML, "YES");
+            if (options.CurrentOrganizationOptions.XmlDocumentationWorkaround) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_FIXXML, "YES");
             if (options.CurrentOrganizationOptions.GenerateAttributeConstants) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS, "YES");
             process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_TWOOPTIONS, ((int)options.CurrentOrganizationOptions.TwoOptions).ToString(CultureInfo.InvariantCulture));
 #if DEBUG

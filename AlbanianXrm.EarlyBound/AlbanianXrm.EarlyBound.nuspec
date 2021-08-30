@@ -14,12 +14,12 @@
     <description>Generates Early Bound Entities. Uses CrmSvcUtil from the SDK which can be downloaded from any NuGet source (even local directory for isolated environments).</description>
     <releaseNotes>
 v$version$:
-- Fixed Xml Documentation generation.
+- Workaround to escape xml documentation because CrmSvcUtil.exe doesn't do it correctly.
 
 For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
     </releaseNotes>
     <copyright>Copyright 2021</copyright>
-    <tags>XrmToolBox Plugins Xrm AlbanianXrm EarlyBound</tags>
+    <tags>XrmToolBox Xrm AlbanianXrm EarlyBound</tags>
     <dependencies>
       <dependency id="XrmToolBox" version="1.2021.5.47" />
     </dependencies>

@@ -22,6 +22,7 @@
         public const string ENVIRONMENT_OPTIONSETENUMPROPERTIES = ENVIRONMENT_VARIABLE_PREFIX + "OptionSetEnumProperties";
         public const string ENVIRONMENT_REMOVEPUBLISHER = ENVIRONMENT_VARIABLE_PREFIX + "RemovePublisher";
         public const string ENVIRONMENT_GENERATEXML = ENVIRONMENT_VARIABLE_PREFIX + "GenerateXML";
+        public const string ENVIRONMENT_FIXXML = ENVIRONMENT_VARIABLE_PREFIX + "FixXML";
         public const string ENVIRONMENT_ATTRIBUTECONSTANTS = ENVIRONMENT_VARIABLE_PREFIX + "GenerateAttributeConstants";
 
         public const string EntityLogicalNameAttributeType = "Microsoft.Xrm.Sdk.Client.EntityLogicalNameAttribute";
