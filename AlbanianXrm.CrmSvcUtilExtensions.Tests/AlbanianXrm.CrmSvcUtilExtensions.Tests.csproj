@@ -45,13 +45,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile Condition="'$(Configuration)'=='Azure Pipelines'" >AlbanianXrm.Tests.snk</AssemblyOriginatorKeyFile> 
-    <AssemblyOriginatorKeyFile Condition="'$(Configuration)'!='Azure Pipelines'" >AlbanianXrm.Tests.NoPipeline.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(Configuration)'=='Azure Pipelines'">AlbanianXrm.Tests.snk</AssemblyOriginatorKeyFile> 
+    <AssemblyOriginatorKeyFile Condition="'$(Configuration)'!='Azure Pipelines'">AlbanianXrm.Tests.NoPipeline.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup> 
   <ItemGroup>
     <PackageReference Include="FakeItEasy" Version="5.1.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="Microsoft.CrmSdk.CoreTools" version="9.0.0.5">
       <GeneratePathProperty>true</GeneratePathProperty>
       <PrivateAssets>All</PrivateAssets>

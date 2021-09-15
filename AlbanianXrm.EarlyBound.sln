@@ -26,7 +26,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.ForrestSerializ
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.ForrestSerializer.Tests", "AlbanianXrm.ForrestSerializer.Tests\AlbanianXrm.ForrestSerializer.Tests.csproj", "{CF21D357-572C-4F9F-A586-FC32A95B0FED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlbanianXrm.Coverage", "AlbanianXrm.Coverage\AlbanianXrm.Coverage.csproj", "{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.Coverage", "AlbanianXrm.Coverage\AlbanianXrm.Coverage.csproj", "{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -79,6 +81,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C} = {7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}
+		{CF21D357-572C-4F9F-A586-FC32A95B0FED} = {7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}
+		{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370} = {7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C7AFA91-C6E5-4A8D-B256-0B0F008F3951}

@@ -49,10 +49,9 @@
     <PackageReference Include="EnvDTE" Version="8.0.2" />
     <PackageReference Include="ILMerge" Version="3.0.41" />
     <PackageReference Include="ILMerge.MSBuild.Task" Version="1.0.7" />
-    <PackageReference Include="NuGet.Protocol" Version="5.9.1" />
     <PackageReference Include="Syncfusion.Tools.Windows" Version="17.2.0.34" />
     <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="17.2.0.34" />
-    <PackageReference Include="XrmToolBoxPackage" Version="1.2021.5.47" Link="Test" />
+    <PackageReference Include="XrmToolBoxPackage" Version="1.2021.9.52" Link="Test" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj" />
