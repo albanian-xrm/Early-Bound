@@ -2,6 +2,7 @@
 using AlbanianXrm.EarlyBound.Interfaces;
 using AlbanianXrm.EarlyBound.Logic;
 using Syncfusion.Windows.Forms.Tools;
+using Syncfusion.WinForms.ListView;
 using System.Windows.Forms;
 
 namespace AlbanianXrm.EarlyBound.Factories
@@ -44,14 +45,19 @@ namespace AlbanianXrm.EarlyBound.Factories
             return new EntitySelectionHandler(myPlugin, backgroundWorkHandler, metadataTree, attributeMetadataHandler, relationshipMetadataHandler);
         }
 
-        public EntityMetadataHandler NewEntityMetadataHandler(TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
+        public EntityMetadataHandler NewEntityMetadataHandler(TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler, SfComboBox cmbFindEntity)
         {
-            return new EntityMetadataHandler(myPlugin, backgroundWorkHandler, metadataTree, entitySelectionHandler);
+            return new EntityMetadataHandler(myPlugin, backgroundWorkHandler, metadataTree, entitySelectionHandler, cmbFindEntity);
         }
 
         public RelationshipMetadataHandler NewRelationshipMetadataHandler()
         {
             return new RelationshipMetadataHandler(myPlugin, backgroundWorkHandler);
+        }
+
+        public FindEntityHandler NewFindEntityHandler(TreeViewAdv metadataTree, SfComboBox cmbFindEntity)
+        {
+            return new FindEntityHandler(metadataTree, cmbFindEntity);
         }
 
         public EntityGeneratorHandler NewEntityGeneratorHandler(TreeViewAdv metadataTree, RichTextBox txtOutput)

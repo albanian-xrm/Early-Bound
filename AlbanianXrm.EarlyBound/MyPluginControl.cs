@@ -29,6 +29,7 @@ namespace AlbanianXrm.EarlyBound
         private readonly Logic.CoreToolsDownloader CoreToolsDownloader;
         private readonly Logic.EntityGeneratorHandler EntityGeneratorHandler;
         private readonly Logic.EntitySelectionHandler EntitySelectionHandler;
+        private readonly Logic.FindEntityHandler FindEntityHandler;
         private readonly AlBackgroundWorkHandler BackgroundWorkHandler;
         internal Logic.PluginViewModel pluginViewModel;
         internal EntityMetadata[] entityMetadatas = Array.Empty<EntityMetadata>();
@@ -41,7 +42,7 @@ namespace AlbanianXrm.EarlyBound
 
         public MyPluginControl()
         {
-            InitializeComponent();
+            InitializeComponent();           
             MyPluginFactory = Factories.MyPluginFactory.GetMyPluginFactory(this);
             pluginViewModel = MyPluginFactory.NewPluginViewModel();
             BackgroundWorkHandler = MyPluginFactory.NewBackgroundWorkHandler();
@@ -50,7 +51,8 @@ namespace AlbanianXrm.EarlyBound
             EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(metadataTree, txtOutput);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler();
             EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
-            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(metadataTree, EntitySelectionHandler);
+            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(metadataTree, EntitySelectionHandler, cmbFindEntity);
+            FindEntityHandler = MyPluginFactory.NewFindEntityHandler(metadataTree, cmbFindEntity);
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
             btnGenerateEntities.Enabled = pluginViewModel.Generate_Enabled;
