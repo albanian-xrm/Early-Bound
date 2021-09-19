@@ -23,7 +23,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             this.backgroundWorkHandler = backgroundWorkHandler;
         }
 
-        public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false, HashSet<string> checkedAttributes = default(HashSet<string>))
+        public void GetAttributes(string entityName, TreeNodeAdv attributesNode, bool checkedState = false, HashSet<string> checkedAttributes = default)
         {
             backgroundWorkHandler.EnqueueBackgroundWork(
                 AlBackgroundWorkerFactory.NewWorker(
@@ -63,7 +63,7 @@ namespace AlbanianXrm.EarlyBound.Logic
              );
         }
 
-        public static void CreateAttributeNodes(TreeNodeAdv attributesNode, EntityMetadata entityMetadata, bool checkedState = false, HashSet<string> checkedAttributes = default(HashSet<string>))
+        public static void CreateAttributeNodes(TreeNodeAdv attributesNode, EntityMetadata entityMetadata, bool checkedState = false, HashSet<string> checkedAttributes = default)
         {
             attributesNode.ExpandedOnce = true;
             foreach (var item in entityMetadata.Attributes.OrderBy(x => x.LogicalName))

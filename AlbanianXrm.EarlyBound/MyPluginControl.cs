@@ -13,7 +13,6 @@ using AlbanianXrm.EarlyBound.Properties;
 using System.Globalization;
 using AlbanianXrm.EarlyBound.Extensions;
 using AlbanianXrm.EarlyBound.Interfaces;
-using AlbanianXrm.XrmToolBox.Shared;
 using AlbanianXrm.BackgroundWorker;
 using AlbanianXrm.XrmToolBox.Shared.Extensions;
 
@@ -52,7 +51,7 @@ namespace AlbanianXrm.EarlyBound
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler();
             EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
             EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(metadataTree, EntitySelectionHandler, cmbFindEntity);
-            FindEntityHandler = MyPluginFactory.NewFindEntityHandler(metadataTree, cmbFindEntity);
+            FindEntityHandler = MyPluginFactory.NewFindEntityHandler(metadataTree, cmbFindEntity, cmbFindChild);
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
             btnGenerateEntities.Enabled = pluginViewModel.Generate_Enabled;

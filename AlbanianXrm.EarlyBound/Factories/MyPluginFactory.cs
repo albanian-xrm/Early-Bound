@@ -55,9 +55,9 @@ namespace AlbanianXrm.EarlyBound.Factories
             return new RelationshipMetadataHandler(myPlugin, backgroundWorkHandler);
         }
 
-        public FindEntityHandler NewFindEntityHandler(TreeViewAdv metadataTree, SfComboBox cmbFindEntity)
+        public FindEntityHandler NewFindEntityHandler(TreeViewAdv metadataTree, SfComboBox cmbFindEntity, SfComboBox cmbFindChild)
         {
-            return new FindEntityHandler(metadataTree, cmbFindEntity);
+            return new FindEntityHandler(metadataTree, cmbFindEntity, cmbFindChild);
         }
 
         public EntityGeneratorHandler NewEntityGeneratorHandler(TreeViewAdv metadataTree, RichTextBox txtOutput)
