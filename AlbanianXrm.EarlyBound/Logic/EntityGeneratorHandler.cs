@@ -43,7 +43,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                 options,
                 Progress,
                 GenerateEntitiesEnd
-                ).WithMessage(myPlugin, Resources.GENERATING_ENTITIES));
+                ).WithViewModel(myPlugin.pluginViewModel)
+                 .WithMessage(myPlugin, Resources.GENERATING_ENTITIES));
         }
 
         private string GenerateEntitiesInner(Options options, Reporter<string> reporter)

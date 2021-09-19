@@ -24,7 +24,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             this.backgroundWorkHandler = backgroundWorkHandler;
         }
 
-        public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode, bool checkedState = false, HashSet<string> checkedRelationships = default(HashSet<string>))
+        public void GetRelationships(string entityName, TreeNodeAdv relationshipsNode, bool checkedState = false, HashSet<string> checkedRelationships = default)
         {
             backgroundWorkHandler.EnqueueBackgroundWork(
                 AlBackgroundWorkerFactory.NewWorker(
@@ -75,8 +75,9 @@ namespace AlbanianXrm.EarlyBound.Logic
             }
         }
 
-        public static void CreateRelationshipNodes(TreeNodeAdv relationshipsNode, EntityMetadata entityMetadata, bool checkedState = false, HashSet<string> checkedRelationships = default(HashSet<string>))
+        public void CreateRelationshipNodes(TreeNodeAdv relationshipsNode, EntityMetadata entityMetadata, bool checkedState = false, HashSet<string> checkedRelationships = default)
         {
+            var relationshipNodeList = new List<TreeNodeAdv>();
             relationshipsNode.ExpandedOnce = true;
             foreach (var item in entityMetadata.ManyToManyRelationships.Union<RelationshipMetadataBase>(
                                  entityMetadata.OneToManyRelationships).Union(
@@ -89,9 +90,10 @@ namespace AlbanianXrm.EarlyBound.Logic
                     Tag = item,
                     Checked = checkedState || checkedRelationships.Contains(item.SchemaName)
                 };
-
+                relationshipNodeList.Add(node);
                 relationshipsNode.Nodes.Add(node);
             }
+            myPlugin.pluginViewModel.AllRelationships[entityMetadata.LogicalName] = relationshipNodeList.ToArray();
             if (entityMetadata.ManyToManyRelationships.Length == 0 &&
                 entityMetadata.OneToManyRelationships.Length == 0 &&
                 entityMetadata.ManyToOneRelationships.Length == 0)

@@ -1,11 +1,12 @@
 ﻿using AlbanianXrm.BackgroundWorker;
 using AlbanianXrm.EarlyBound.Extensions;
+using AlbanianXrm.EarlyBound.Helpers;
 using AlbanianXrm.EarlyBound.Properties;
-using AlbanianXrm.XrmToolBox.Shared;
 using AlbanianXrm.XrmToolBox.Shared.Extensions;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Syncfusion.Windows.Forms.Tools;
+using Syncfusion.WinForms.ListView;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,24 +21,32 @@ namespace AlbanianXrm.EarlyBound.Logic
         private readonly AlBackgroundWorkHandler backgroundWorkHandler;
         private readonly TreeViewAdv metadataTree;
         private readonly EntitySelectionHandler entitySelectionHandler;
+        private readonly AttributeMetadataHandler attributeMetadataHandler;
+        private readonly RelationshipMetadataHandler relationshipMetadataHandler;
+        private readonly SfComboBox cmbFindEntity;
 
-        public EntityMetadataHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler)
+        public EntityMetadataHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler, SfComboBox cmbFindEntity)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
             this.metadataTree = metadataTree;
             this.entitySelectionHandler = entitySelectionHandler;
+            this.attributeMetadataHandler = attributeMetadataHandler;
+            this.relationshipMetadataHandler = relationshipMetadataHandler;
+            this.cmbFindEntity = cmbFindEntity;
         }
 
         public void GetEntityList(bool selectAll = false)
         {
             var options = this.myPlugin.options;
-            backgroundWorkHandler.EnqueueBackgroundWork(AlBackgroundWorkerFactory.NewWorker(              
-                DoWork,
-                new Tuple<string, bool>((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb", selectAll),
-                WorkEnded
+            backgroundWorkHandler.EnqueueBackgroundWork(
+                AlBackgroundWorkerFactory.NewWorker(
+                    DoWork,
+                    new Tuple<string, bool>((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb", selectAll),
+                    WorkEnded
                 ).WithViewModel(myPlugin.pluginViewModel)
-                 .WithMessage(myPlugin, Resources.GETTING_ENTITY_LIST));
+                 .WithMessage(myPlugin, Resources.GETTING_ENTITY_LIST)
+            );
         }
 
         public Tuple<RetrieveAllEntitiesResponse, Dictionary<string, EntitySelection>> DoWork(Tuple<string, bool> arg)
@@ -69,12 +78,14 @@ namespace AlbanianXrm.EarlyBound.Logic
                 {
                     MessageBox.Show(exception.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                else if (value !=null)
+                else if (value != null)
                 {
                     RetrieveAllEntitiesResponse result = value.Item1;
                     metadataTree.BackgroundImage = null;
                     metadataTree.Enabled = true;
                     metadataTree.Nodes.Clear();
+                    var entityNodes = new List<TreeNodeAdv>();
+                    var dataSource = new List<ComboItem>();
                     myPlugin.entityMetadatas = result.EntityMetadata;
                     foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))
                     {
@@ -91,8 +102,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                             ShowCheckBox = true,
                             InteractiveCheckBox = true
                         };
-
-                        TreeNodeAdv node = new TreeNodeAdv($"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}",
+                        var entityName = $"{item.LogicalName}: {item.DisplayName.LocalizedLabels[0].Label}";
+                        dataSource.Add(new ComboItem() { Key = item.LogicalName, Value = entityName });
+                        TreeNodeAdv node = new TreeNodeAdv(entityName,
                             new TreeNodeAdv[] { attributes, relationships })
                         {
                             ExpandedOnce = true,
@@ -101,17 +113,24 @@ namespace AlbanianXrm.EarlyBound.Logic
                             Tag = item
                         };
                         metadataTree.Nodes.Add(node);
+                        entityNodes.Add(node);
                         if (input.Item2)
                         {
-                            AttributeMetadataHandler.CreateAttributeNodes(attributes, item, checkedState: true);
-                            RelationshipMetadataHandler.CreateRelationshipNodes(relationships, item, checkedState: true);
+                            attributeMetadataHandler.CreateAttributeNodes(attributes, item, checkedState: true);
+                            relationshipMetadataHandler.CreateRelationshipNodes(relationships, item, checkedState: true);
+                        }
+                        else
+                        {
+                            attributes.Nodes.CollectionChanged += new CollectionEventHandler(attributes, item.LogicalName, cmbFindEntity).Nodes_CollectionChanged;
+                            relationships.Nodes.CollectionChanged += new CollectionEventHandler(relationships, item.LogicalName, cmbFindEntity).Nodes_CollectionChanged;
                         }
                     }
                     if (!input.Item2)
                     {
                         entitySelectionHandler.SelectGenerated();
                     }
-
+                    myPlugin.pluginViewModel.AllEntities = entityNodes.ToArray();
+                    cmbFindEntity.DataSource = dataSource;
                     myPlugin.pluginViewModel.All_Metadata_Requested = input.Item2;
                     myPlugin.pluginViewModel.Generate_Enabled = true;
                 }

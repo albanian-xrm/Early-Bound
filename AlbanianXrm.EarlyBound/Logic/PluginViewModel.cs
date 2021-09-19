@@ -1,4 +1,6 @@
 ﻿using AlbanianXrm.XrmToolBox.Shared;
+using Syncfusion.Windows.Forms.Tools;
+using System.Collections.Generic;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
@@ -107,5 +109,9 @@ namespace AlbanianXrm.EarlyBound.Logic
                 return !string.IsNullOrEmpty(_LaunchCommand);
             }
         }
+
+        internal TreeNodeAdv[] AllEntities = new TreeNodeAdv[] { };
+        public readonly Dictionary<string, TreeNodeAdv[]> AllAttributes = new Dictionary<string, TreeNodeAdv[]>();
+        public readonly Dictionary<string, TreeNodeAdv[]> AllRelationships = new Dictionary<string, TreeNodeAdv[]>();
     }
 }
