@@ -28,6 +28,7 @@ namespace AlbanianXrm.EarlyBound
         private readonly Logic.CoreToolsDownloader CoreToolsDownloader;
         private readonly Logic.EntityGeneratorHandler EntityGeneratorHandler;
         private readonly Logic.EntitySelectionHandler EntitySelectionHandler;
+        private readonly Logic.FilterSelectedHandler FilterSelectedHandler;
         private readonly Logic.FindEntityHandler FindEntityHandler;
         private readonly AlBackgroundWorkHandler BackgroundWorkHandler;
         internal Logic.PluginViewModel pluginViewModel;
@@ -41,7 +42,7 @@ namespace AlbanianXrm.EarlyBound
 
         public MyPluginControl()
         {
-            InitializeComponent();           
+            InitializeComponent();
             MyPluginFactory = Factories.MyPluginFactory.GetMyPluginFactory(this);
             pluginViewModel = MyPluginFactory.NewPluginViewModel();
             BackgroundWorkHandler = MyPluginFactory.NewBackgroundWorkHandler();
@@ -50,7 +51,8 @@ namespace AlbanianXrm.EarlyBound
             EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(metadataTree, txtOutput);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler();
             EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
-            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(metadataTree, EntitySelectionHandler, cmbFindEntity);
+            EntityMetadataHandler = MyPluginFactory.NewEntityMetadataHandler(metadataTree, EntitySelectionHandler, AttributeMetadataHandler, RelationshipMetadataHandler, cmbFindEntity);
+            FilterSelectedHandler = MyPluginFactory.NewFilterSelectedHandler(metadataTree, chkOnlySelected);
             FindEntityHandler = MyPluginFactory.NewFindEntityHandler(metadataTree, cmbFindEntity, cmbFindChild);
             treeEventHandler = new TreeViewAdvBeforeCheckEventHandler(this.MetadataTree_BeforeCheck);
             this.metadataTree.BeforeCheck += treeEventHandler;
@@ -69,6 +71,9 @@ namespace AlbanianXrm.EarlyBound
             metadataTree.Bind(_ => _.Enabled, pluginViewModel, _ => _.MetadataTree_Enabled);
             optionsGrid.Bind(_ => optionsGrid.Enabled, pluginViewModel, _ => _.OptionsGrid_Enabled);
             toolStrip.Bind(_ => _.Enabled, pluginViewModel, _ => _.AllowRequests);
+            chkOnlySelected.Bind(_ => _.Enabled, pluginViewModel, _ => _.AllowRequests);
+            cmbFindEntity.Bind(_ => _.Enabled, pluginViewModel, _ => _.AllowRequests);
+            cmbFindChild.Bind(_ => _.Enabled, pluginViewModel, _ => _.AllowRequests);
             mnuMetadataTree.Bind(_ => _.Enabled, pluginViewModel, _ => _.AllowRequests);
             pluginViewModel.PropertyChanged += PluginViewModel_PropertyChanged;
         }

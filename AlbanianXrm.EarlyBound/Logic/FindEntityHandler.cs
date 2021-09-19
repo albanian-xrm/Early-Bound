@@ -29,10 +29,19 @@ namespace AlbanianXrm.EarlyBound.Logic
             cmbFindEntity.Enter += CmbFindEntity_Enter;
             cmbFindChild.SelectedValueChanged += CmbFindChild_SelectedValueChanged;
             cmbFindChild.Enter += CmbFindChild_Enter;
-            metadataTree.SelectedNodes.CollectionChanged += SelectedNodes_CollectionChanged;
+            metadataTree.SelectedNodes.CollectionChanged += SelectedNodes_CollectionChanged;          
         }
 
-
+        private void MetadataTree_AfterExpand(object sender, TreeViewAdvNodeEventArgs e)
+        {
+            if ((e.Node.Text == "Attributes" || e.Node.Text == "Relationships") && e.Node.Tag == null &&
+                e.Node.Parent.Tag is EntityMetadata entityMetadata &&
+                entityMetadata.LogicalName == lastSelectedEntity)
+            {
+                lastSelectedEntity = null;
+                cmbFindEntity.SelectedValue = entityMetadata.LogicalName;
+            }
+        }
 
         private void SelectedNodes_CollectionChanged(object sender, System.ComponentModel.CollectionChangeEventArgs e)
         {

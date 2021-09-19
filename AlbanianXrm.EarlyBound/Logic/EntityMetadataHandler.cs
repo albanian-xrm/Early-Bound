@@ -21,14 +21,18 @@ namespace AlbanianXrm.EarlyBound.Logic
         private readonly AlBackgroundWorkHandler backgroundWorkHandler;
         private readonly TreeViewAdv metadataTree;
         private readonly EntitySelectionHandler entitySelectionHandler;
+        private readonly AttributeMetadataHandler attributeMetadataHandler;
+        private readonly RelationshipMetadataHandler relationshipMetadataHandler;
         private readonly SfComboBox cmbFindEntity;
 
-        public EntityMetadataHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler, SfComboBox cmbFindEntity)
+        public EntityMetadataHandler(MyPluginControl myPlugin, AlBackgroundWorkHandler backgroundWorkHandler, TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler, SfComboBox cmbFindEntity)
         {
             this.myPlugin = myPlugin;
             this.backgroundWorkHandler = backgroundWorkHandler;
             this.metadataTree = metadataTree;
             this.entitySelectionHandler = entitySelectionHandler;
+            this.attributeMetadataHandler = attributeMetadataHandler;
+            this.relationshipMetadataHandler = relationshipMetadataHandler;
             this.cmbFindEntity = cmbFindEntity;
         }
 
@@ -80,6 +84,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                     metadataTree.BackgroundImage = null;
                     metadataTree.Enabled = true;
                     metadataTree.Nodes.Clear();
+                    var entityNodes = new List<TreeNodeAdv>();
                     var dataSource = new List<ComboItem>();
                     myPlugin.entityMetadatas = result.EntityMetadata;
                     foreach (var item in result.EntityMetadata.OrderBy(x => x.LogicalName))
@@ -108,16 +113,23 @@ namespace AlbanianXrm.EarlyBound.Logic
                             Tag = item
                         };
                         metadataTree.Nodes.Add(node);
+                        entityNodes.Add(node);
                         if (input.Item2)
                         {
-                            AttributeMetadataHandler.CreateAttributeNodes(attributes, item, checkedState: true);
-                            RelationshipMetadataHandler.CreateRelationshipNodes(relationships, item, checkedState: true);
+                            attributeMetadataHandler.CreateAttributeNodes(attributes, item, checkedState: true);
+                            relationshipMetadataHandler.CreateRelationshipNodes(relationships, item, checkedState: true);
+                        }
+                        else
+                        {
+                            attributes.Nodes.CollectionChanged += new CollectionEventHandler(attributes, item.LogicalName, cmbFindEntity).Nodes_CollectionChanged;
+                            relationships.Nodes.CollectionChanged += new CollectionEventHandler(relationships, item.LogicalName, cmbFindEntity).Nodes_CollectionChanged;
                         }
                     }
                     if (!input.Item2)
                     {
                         entitySelectionHandler.SelectGenerated();
                     }
+                    myPlugin.pluginViewModel.AllEntities = entityNodes.ToArray();
                     cmbFindEntity.DataSource = dataSource;
                     myPlugin.pluginViewModel.All_Metadata_Requested = input.Item2;
                     myPlugin.pluginViewModel.Generate_Enabled = true;

@@ -45,14 +45,19 @@ namespace AlbanianXrm.EarlyBound.Factories
             return new EntitySelectionHandler(myPlugin, backgroundWorkHandler, metadataTree, attributeMetadataHandler, relationshipMetadataHandler);
         }
 
-        public EntityMetadataHandler NewEntityMetadataHandler(TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler, SfComboBox cmbFindEntity)
+        public EntityMetadataHandler NewEntityMetadataHandler(TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler, SfComboBox cmbFindEntity)
         {
-            return new EntityMetadataHandler(myPlugin, backgroundWorkHandler, metadataTree, entitySelectionHandler, cmbFindEntity);
+            return new EntityMetadataHandler(myPlugin, backgroundWorkHandler, metadataTree, entitySelectionHandler, attributeMetadataHandler, relationshipMetadataHandler, cmbFindEntity);
         }
 
         public RelationshipMetadataHandler NewRelationshipMetadataHandler()
         {
             return new RelationshipMetadataHandler(myPlugin, backgroundWorkHandler);
+        }
+
+        public FilterSelectedHandler NewFilterSelectedHandler(TreeViewAdv metadataTree, CheckBox chkOnlySelected)
+        {
+            return new FilterSelectedHandler(pluginViewModel, metadataTree, chkOnlySelected);
         }
 
         public FindEntityHandler NewFindEntityHandler(TreeViewAdv metadataTree, SfComboBox cmbFindEntity, SfComboBox cmbFindChild)

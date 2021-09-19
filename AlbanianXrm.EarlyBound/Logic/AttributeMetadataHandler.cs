@@ -63,9 +63,10 @@ namespace AlbanianXrm.EarlyBound.Logic
              );
         }
 
-        public static void CreateAttributeNodes(TreeNodeAdv attributesNode, EntityMetadata entityMetadata, bool checkedState = false, HashSet<string> checkedAttributes = default)
+        public void CreateAttributeNodes(TreeNodeAdv attributesNode, EntityMetadata entityMetadata, bool checkedState = false, HashSet<string> checkedAttributes = default)
         {
             attributesNode.ExpandedOnce = true;
+            var attributeNodeList = new List<TreeNodeAdv>();
             foreach (var item in entityMetadata.Attributes.OrderBy(x => x.LogicalName))
             {
                 if (!item.DisplayName.LocalizedLabels.Any()) continue;
@@ -78,9 +79,11 @@ namespace AlbanianXrm.EarlyBound.Logic
                     Tag = item,
                     Checked = checkedState || checkedAttributes.Contains(item.LogicalName)
                 };
+                attributeNodeList.Add(node);
 
                 attributesNode.Nodes.Add(node);
             }
+            myPlugin.pluginViewModel.AllAttributes[entityMetadata.LogicalName] = attributeNodeList.ToArray();
             if (entityMetadata.Attributes.Length == 0) attributesNode.Checked = checkedState;
         }
     }
