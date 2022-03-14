@@ -6,6 +6,7 @@ using NuGet.Common;
 using NuGet.Packaging;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
+using NuGet.Versioning;
 using System;
 using System.IO;
 using System.Linq;
@@ -26,16 +27,17 @@ namespace AlbanianXrm.EarlyBound.Logic
             this.backgroundWorkHandler = backgroundWorkHandler;
         }
 
-        public void DownloadCoreTools()
+        public void DownloadCoreTools(string specificVersion)
         {
+            NuGetVersion version = string.IsNullOrWhiteSpace(specificVersion) ? null : new NuGetVersion(specificVersion);
             backgroundWorkHandler.EnqueueBackgroundWork(
-                AlBackgroundWorkerFactory.NewAsyncWorker(DownloadCoreToolsAsync, DownloadCoreToolsEnded)
+                AlBackgroundWorkerFactory.NewAsyncWorker(DownloadCoreToolsAsync, version, DownloadCoreToolsEnded)
                                          .WithViewModel(myPlugin.pluginViewModel)
                                          .WithMessage(myPlugin, Resources.DOWNLOADING_CORE_TOOLS));
 
         }
 
-        public void DownloadCoreToolsEnded(string value, Exception exception) 
+        public void DownloadCoreToolsEnded(NuGetVersion version, string value, Exception exception)
         {
             try
             {
@@ -56,7 +58,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             }
         }
 
-        public async Task<string> DownloadCoreToolsAsync()
+        public async Task<string> DownloadCoreToolsAsync(NuGetVersion version)
         {
             //ID of the package to be looked 
             string coreToolsId = "Microsoft.CrmSdk.CoreTools";
@@ -74,10 +76,16 @@ namespace AlbanianXrm.EarlyBound.Logic
             SourceRepository repository = Repository.Factory.GetCoreV3(myPlugin.options.NuGetFeed);
             PackageSearchResource packageSearch = await repository.GetResourceAsync<PackageSearchResource>();
             FindPackageByIdResource findPackageById = await repository.GetResourceAsync<FindPackageByIdResource>();
+            if (version == null)
+            {
+                var metadata = (await packageSearch.SearchAsync(coreToolsId, new SearchFilter(false, SearchFilterType.IsLatestVersion), 0, 1, logger, cancellationToken)).FirstOrDefault();
+                version = (await metadata.GetVersionsAsync()).Max(v => v.Version);
+            }
 
-            var metadata = (await packageSearch.SearchAsync(coreToolsId, new SearchFilter(false, SearchFilterType.IsLatestVersion), 0, 1, logger, cancellationToken)).FirstOrDefault();
-            var version = (await metadata.GetVersionsAsync()).Max(v => v.Version);
+#if DEBUG
             System.Diagnostics.Debug.WriteLine($"Version {version}");
+#endif
+
             using (MemoryStream packageStream = new MemoryStream())
             {
                 if (!await findPackageById.CopyNupkgToStreamAsync(
@@ -90,8 +98,6 @@ namespace AlbanianXrm.EarlyBound.Logic
                 {
                     return string.Format(Resources.Culture, Resources.CORE_TOOLS_NOT_FOUND, coreToolsId, myPlugin.options.NuGetFeed);
                 }
-
-
 
                 using (PackageArchiveReader packageReader = new PackageArchiveReader(packageStream))
                 {

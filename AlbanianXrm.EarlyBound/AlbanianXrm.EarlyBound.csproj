@@ -51,7 +51,7 @@
     <PackageReference Include="ILMerge.MSBuild.Task" Version="1.0.7" />
     <PackageReference Include="Syncfusion.Tools.Windows" Version="17.2.0.34" />
     <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="17.2.0.34" />
-    <PackageReference Include="XrmToolBoxPackage" Version="1.2021.9.52" Link="Test" />
+    <PackageReference Include="XrmToolBoxPackage" Version="1.2022.2.54" Link="Test" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj" />

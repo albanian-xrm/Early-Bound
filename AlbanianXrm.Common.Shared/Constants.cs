@@ -16,6 +16,7 @@
         public const string ENVIRONMENT_REMOVEPROPERTYCHANGED = ENVIRONMENT_VARIABLE_PREFIX + "RemovePropertyChanged";
         public const string ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY = ENVIRONMENT_VARIABLE_PREFIX + "RemoveProxyTypesAssembly";
         public const string ENVIRONMENT_ATTACHDEBUGGER = ENVIRONMENT_VARIABLE_PREFIX + "AttachDebugger";
+        public const string ENVIRONMENT_VERBOSE = ENVIRONMENT_VARIABLE_PREFIX + "Verbose";
         public const string ENVIRONMENT_CACHEMEATADATA = ENVIRONMENT_VARIABLE_PREFIX + "CacheMetadata";
         public const string ENVIRONMENT_OPTIONSETENUMS = ENVIRONMENT_VARIABLE_PREFIX + "OptionSetEnums";
         public const string ENVIRONMENT_TWOOPTIONS = ENVIRONMENT_VARIABLE_PREFIX + "TwoOptions";

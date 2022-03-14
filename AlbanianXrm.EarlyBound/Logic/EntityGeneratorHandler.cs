@@ -195,6 +195,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_TWOOPTIONS, ((int)options.CurrentOrganizationOptions.TwoOptions).ToString(CultureInfo.InvariantCulture));
 #if DEBUG
             if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
+            if (options.VerboseLogging) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_VERBOSE, "YES");
 #endif
             myPlugin.pluginViewModel.LaunchCommand = $"{string.Join("\r\n", process.StartInfo.EnvironmentVariables.ToEnumerable().Where(x => x.Key.StartsWith(Constants.ENVIRONMENT_VARIABLE_PREFIX)).Select(x => $"SET {x.Key}={x.Value}"))}\r\n{Path.Combine(dir, "CrmSvcUtil.exe")} /connectionstring:{myPlugin.ConnectionDetail.GetConnectionStringWithoutPassword()}{argumentsWithoutConnectionString}";
             if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");

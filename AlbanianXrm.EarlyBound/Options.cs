@@ -49,6 +49,11 @@ namespace AlbanianXrm.EarlyBound
             set { _NuGetFeed = string.IsNullOrEmpty(value) ? Defaults.NuGetFeed : value; }
         }
 
+        [Category("General")]
+        [DisplayName("Specific Version")]
+        [Description("Try to download a specific version of Microsoft.CrmSdk.CoreTools for compatibility reasons.")]     
+        public string SpecificVersion { get; set; }
+
         Version _CrmSvcUtils;
 
         [Category("Version")]
@@ -101,6 +106,11 @@ namespace AlbanianXrm.EarlyBound
         [Description("Launch the debugger in certain instants of the lifetime of CrmSvcUtils.")]
         [XmlIgnore]
         public bool LaunchDebugger { get; set; }
+        [Category("Debug")]
+        [DisplayName("Verbose Logging")]
+        [Description("Write verbose logging in certain instants of the lifetime of CrmSvcUtils.")]
+        [XmlIgnore]
+        public bool VerboseLogging { get; set; }
 #endif
 
         private OrganizationOptions _CurrentOrganizationOptions;

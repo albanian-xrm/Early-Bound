@@ -232,7 +232,7 @@ namespace AlbanianXrm.EarlyBound
 
         private void BtnCoreTools_Click(object sender, EventArgs e)
         {
-            CoreToolsDownloader.DownloadCoreTools();
+            CoreToolsDownloader.DownloadCoreTools(options.SpecificVersion);
         }
 
         private void BtnGenerateEntities_Click(object sender, EventArgs e)

@@ -14,9 +14,8 @@
     <description>Generates Early Bound Entities. Uses CrmSvcUtil from the SDK which can be downloaded from any NuGet source (even local directory for isolated environments).</description>
     <releaseNotes>
 v$version$:
-- Added the possibility to show only the selected nodes.
-- Now you can find an entity and focus its node on the tree.
-- Also you can find an attribute or relationship and focus its node on the tree.
+- Added option to download a specific version of Microsoft.CrmSdk.CoreTools for compatibility reasons. Version 9.1.0.108 introduced breaking changes!
+- Fixed some breaking changes introduced from version 9.1.0.108 of Microsoft.CrmSdk.CoreTools
 
 For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
     </releaseNotes>

@@ -72,6 +72,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                         {
                             var attribute = GetAttributeLogicalName(property);
                             if (attribute != "statecode") continue;
+                            if(property.Type.TypeArguments.Count >= 1)
                             RemoveClass(property.Type.TypeArguments[0].BaseType);
 
                             if (allAttributes.Contains(entity) ||

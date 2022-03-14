@@ -45,6 +45,8 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             {
                 entityNNRelationships.Add(entity, new HashSet<string>((Environment.GetEnvironmentVariable(string.Format(CultureInfo.InvariantCulture, Constants.ENVIRONMENT_RELATIONSHIPSNN, entity)) ?? "").Split(",")));
             }
+
+            referencedOptionSets = new HashSet<Guid>();
         }
 
         private ICodeWriterFilterService DefaultService { get; set; }
@@ -56,13 +58,34 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         private readonly Dictionary<string, HashSet<string>> entity1NRelationships;
         private readonly Dictionary<string, HashSet<string>> entityN1Relationships;
         private readonly Dictionary<string, HashSet<string>> entityNNRelationships;
+        private readonly HashSet<Guid> referencedOptionSets;
 
         bool ICodeWriterFilterService.GenerateAttribute(AttributeMetadata attributeMetadata, IServiceProvider services)
         {
+#if DEBUG
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_VERBOSE)))
+            {
+                Console.WriteLine($"Generate Attribute '{attributeMetadata.LogicalName}' of entity {attributeMetadata.EntityLogicalName}");
+            }
+#endif
             if (attributeMetadata.LogicalName == "statecode" ||
                 entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out HashSet<string> attributes) &&
                 attributes.Contains(attributeMetadata.LogicalName))
             {
+                if ( attributeMetadata is PicklistAttributeMetadata p)
+                {
+                    if (!referencedOptionSets.Contains(p.OptionSet.MetadataId.Value))
+                    {
+                        referencedOptionSets.Add(p.OptionSet.MetadataId.Value);
+                    }
+                }
+                else if (attributeMetadata is MultiSelectPicklistAttributeMetadata mp)
+                {
+                    if (!referencedOptionSets.Contains(mp.OptionSet.MetadataId.Value))
+                    {
+                        referencedOptionSets.Add(mp.OptionSet.MetadataId.Value);
+                    }
+                }
                 return true;
             }
             else if (!allAttributes.Contains(attributeMetadata.EntityLogicalName) &&
@@ -72,7 +95,22 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             }
             else
             {
-                return this.DefaultService.GenerateAttribute(attributeMetadata, services);
+                var result = this.DefaultService.GenerateAttribute(attributeMetadata, services);
+                if (result == true && attributeMetadata is PicklistAttributeMetadata p)
+                {
+                    if (!referencedOptionSets.Contains(p.OptionSet.MetadataId.Value))
+                    {
+                        referencedOptionSets.Add(p.OptionSet.MetadataId.Value);
+                    }
+                }
+                else if (result == true && attributeMetadata is MultiSelectPicklistAttributeMetadata mp)
+                {
+                    if (!referencedOptionSets.Contains(mp.OptionSet.MetadataId.Value))
+                    {
+                        referencedOptionSets.Add(mp.OptionSet.MetadataId.Value);
+                    }
+                }
+                return result;
             }
         }
 
@@ -99,6 +137,17 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         bool ICodeWriterFilterService.GenerateOptionSet(OptionSetMetadataBase optionSetMetadata, IServiceProvider services)
         {
+#if DEBUG
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_VERBOSE)))
+            {
+                Console.WriteLine($"Generate OptionSet '{optionSetMetadata.Name}' of type {optionSetMetadata.OptionSetType} MetadataId '{optionSetMetadata.MetadataId}'");
+            }
+#endif
+
+            if (!referencedOptionSets.Contains(optionSetMetadata.MetadataId.Value))
+            {
+                return false;
+            }
             return this.DefaultService.GenerateOptionSet(optionSetMetadata, services);
         }
 
