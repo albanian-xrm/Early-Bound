@@ -63,23 +63,25 @@ namespace AlbanianXrm.EarlyBound.Logic
             Process process = ProcessHelper.getProcess("where.exe");
             process.StartInfo.Arguments = "pac.launcher.exe";
             process.Start();
+            string pacLauncherPath = process.StandardOutput.ReadToEnd();
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
                 return Resources.CRMSVCUTIL_MISSING;
             }
 
+
+
             process = ProcessHelper.getProcess("pac.launcher.exe");
             var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
             var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " --namespace " + options.CurrentOrganizationOptions.Namespace) +
-                                          " --outdirectory \"" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? Path.GetFullPath(".") : "" + Path.GetDirectoryName(options.CurrentOrganizationOptions.Output) + "\"") +
+                                          " --outdirectory \"" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? Path.GetFullPath(".") : "" + Path.GetDirectoryName(options.CurrentOrganizationOptions.OutputDirectory) + "\"") +
                                           (options.CurrentOrganizationOptions.Language == Language.VB ? " --language VB" : "") +
                                           (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " --serviceContextName " + options.CurrentOrganizationOptions.ServiceContextName) +
                                           $" --settingsTemplateFile \"{Path.Combine(dir, "builderSettings.json")}\"" +
-                                          (options.CurrentOrganizationOptions.RemovePropertyChanged ? " --suppressINotifyPattern" : "");
+                                          (options.CurrentOrganizationOptions.SuppressINotifyPattern ? " --suppressINotifyPattern" : "");
 
-            process.StartInfo.Arguments = "modelbuilder build " + argumentsWithoutConnectionString;
-            MessageBox.Show(process.StartInfo.Arguments);
+            process.StartInfo.Arguments = "modelbuilder build --entitynamesfilter \"account\" " + argumentsWithoutConnectionString;
             process.StartInfo.WorkingDirectory = dir;
 
             HashSet<string> entities = new HashSet<string>();
@@ -188,11 +190,10 @@ namespace AlbanianXrm.EarlyBound.Logic
             //if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
             if (options.CurrentOrganizationOptions.RemoveProxyTypesAssembly) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY, "YES");
             if (options.CurrentOrganizationOptions.RemovePublisherPrefix) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPUBLISHER, "YES");
-            if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
             if (options.CurrentOrganizationOptions.OptionSetEnumProperties) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMPROPERTIES, "YES");
             if (options.CurrentOrganizationOptions.GenerateXmlDocumentation) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_GENERATEXML, "YES");
             if (options.CurrentOrganizationOptions.XmlDocumentationWorkaround) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_FIXXML, "YES");
-            if (options.CurrentOrganizationOptions.GenerateAttributeConstants) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS, "YES");
+            if (options.CurrentOrganizationOptions.EmitFieldsClasses) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTRIBUTECONSTANTS, "YES");
             process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_TWOOPTIONS, ((int)options.CurrentOrganizationOptions.TwoOptions).ToString(CultureInfo.InvariantCulture));
 #if DEBUG
             if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
@@ -202,7 +203,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
 
 
-            ForrestSerializer serializer = new ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb");
+            ForrestSerializer serializer = new ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.OutputDirectory)) + ".alb");
             serializer.Serialize(entitySelections);
             process.Start();
 

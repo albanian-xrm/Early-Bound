@@ -42,7 +42,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             backgroundWorkHandler.EnqueueBackgroundWork(
                 AlBackgroundWorkerFactory.NewWorker(
                     DoWork,
-                    new Tuple<string, bool>((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb", selectAll),
+                    new Tuple<string, bool>((string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.OutputDirectory)) + ".alb", selectAll),
                     WorkEnded
                 ).WithViewModel(myPlugin.pluginViewModel)
                  .WithMessage(myPlugin, Resources.GETTING_ENTITY_LIST)

@@ -34,7 +34,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             backgroundWorkHandler.EnqueueBackgroundWork(
                 AlBackgroundWorkerFactory.NewWorker(
                 Deserialize,
-                (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb",
+                (string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.OutputDirectory)) + ".alb",
                 SelectEntities).WithViewModel(myPlugin.pluginViewModel)
                                .WithMessage(myPlugin, Resources.SELECTING_GENERATED));
         }

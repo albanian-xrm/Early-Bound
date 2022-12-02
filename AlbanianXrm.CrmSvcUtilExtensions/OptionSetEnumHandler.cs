@@ -28,6 +28,12 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
         public OptionSetEnumHandler(CodeCompileUnit codeUnit, IServiceProvider services, bool removePropertyChanged, bool generateXmlDocumentation)
         {
+#if DEBUG
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ATTACHDEBUGGER)))
+            {
+                System.Diagnostics.Debugger.Launch();
+            }
+#endif       
             this.codeUnit = codeUnit;
             var metadataProvider = (IMetadataProviderService)services.GetService(typeof(IMetadataProviderService));
             this.organizationMetadata = metadataProvider.LoadMetadata(services);
@@ -130,7 +136,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                         if (type.Members[i] is CodeMemberProperty property)
                         {
                             var attribute = GetAttributeLogicalName(property);
-                            if (attribute == null || attribute == "statecode") continue;
+                            if (attribute == null) continue;
                             GenerateOptionSetProperty(organizationMetadata.Entities.First(x => x.LogicalName == entity), attribute, type, i, @namespace.Name, property.Name,
                                                       globalOptionsetNames, globalOptionSets, optionSets);
                         }

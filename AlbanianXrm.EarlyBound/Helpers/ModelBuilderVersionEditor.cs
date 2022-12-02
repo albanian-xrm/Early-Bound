@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
 using System.IO;
+using System.Linq;
 
 namespace AlbanianXrm.EarlyBound.Helpers
 {
@@ -26,21 +27,36 @@ namespace AlbanianXrm.EarlyBound.Helpers
         public string GetVersion(string value)
         {
             Process process = ProcessHelper.getProcess("pac.launcher.exe");
+            process.StartInfo.Arguments = "use";
+            Version version = new Version(0,0,0);
             try
             {
                 process.Start();
                 using (StreamReader sr = process.StandardOutput)
                 {
-                    sr.ReadLine(); //Microsoft PowerPlatform CLI
-                    string line = sr.ReadLine();
+                    string line;
+                    while ((line = sr.ReadLine())!= null)
+                    {
+                        var lineParts = line.Split(new char[]{ ' '}, StringSplitOptions.RemoveEmptyEntries);
+                        var thisVersion = new Version(lineParts[0]);
+                        if (thisVersion > version)
+                        {
+                            version = thisVersion;
+                        }
+                        if(lineParts.Contains("(In"))
+                        {
+                            return version.ToString();
+                        }
+                    }
                     if (line != null)
                     {
                         return line.Substring("Version:".Length);
                     }
                 }
+                process.WaitForExit();
             }
             catch { }
-            process.WaitForExit();
+
 
             return value;
         }

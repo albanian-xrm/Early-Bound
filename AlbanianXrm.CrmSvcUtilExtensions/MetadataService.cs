@@ -15,9 +15,9 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         private IOrganizationMetadata cachedMetadata;
         private readonly IMetadataProviderService defaultMetadataService;
 
-        public IOrganizationService ServiceConnection { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IOrganizationService ServiceConnection { get ; set ; }
 
-        public bool IsLiveConnectionRequired => throw new NotImplementedException();
+        public bool IsLiveConnectionRequired { get; set; } = true;
 
         public MetadataService(IMetadataProviderService defaultMetadataService)
         {
@@ -30,6 +30,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_CACHEMEATADATA)))
             {
+                this.IsLiveConnectionRequired = false;
                 Console.WriteLine(Constants.CONSOLE_METADATA);
 
                 var manager = new RecyclableMemoryStreamManager();
@@ -52,6 +53,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     }
                 }
             }
+
             this.defaultMetadataService = defaultMetadataService;
         }
 

@@ -34,7 +34,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             }
 
             var optionSetEnumHandler = new OptionSetEnumHandler(codeUnit, services, removePropertyChanged, generateXmlDocumentation);
-            optionSetEnumHandler.FixStateCode();
+            //optionSetEnumHandler.FixStateCode();
             if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_OPTIONSETENUMS)))
             {
                 optionSetEnumHandler.GenerateOptionSets();

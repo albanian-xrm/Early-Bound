@@ -1,11 +1,10 @@
-﻿using AlbanianXrm.EarlyBound.Properties;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing.Design;
 using System.Windows.Forms;
 
 namespace AlbanianXrm.EarlyBound.Helpers
 {
-    internal class FilePathEditor : UITypeEditor
+    internal class FolderPathEditor : UITypeEditor
     {
         public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
@@ -15,18 +14,13 @@ namespace AlbanianXrm.EarlyBound.Helpers
         public override object EditValue(ITypeDescriptorContext context, System.IServiceProvider provider, object value)
         {
             var organizationOptions = context.Instance as OrganizationOptions;
-            using (OpenFileDialog dialog = new OpenFileDialog())
+            using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
-                dialog.ValidateNames = false;
-                dialog.CheckFileExists = false;
-                dialog.CheckPathExists = true;
-                dialog.Filter = organizationOptions.Language == Language.CS ? Resources.FILTER_C_SHARP : Resources.FILTER_VISUAL_BASIC;
-
-                dialog.FileName = value as string;
+                dialog.SelectedPath = string.IsNullOrEmpty(value as string) ? OrganizationOptions.Defaults.OutputFolder : value as string;
 
                 if (dialog.ShowDialog() == DialogResult.OK)
                 {
-                    return dialog.FileName;
+                    return dialog.SelectedPath;
                 }
             }
             return value;

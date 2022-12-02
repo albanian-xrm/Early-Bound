@@ -68,11 +68,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                 Console.WriteLine($"Generate Attribute '{attributeMetadata.LogicalName}' of entity {attributeMetadata.EntityLogicalName}");
             }
 #endif
-            if (attributeMetadata.LogicalName == "statecode" ||
-                entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out HashSet<string> attributes) &&
+            if (entityAttributes.TryGetValue(attributeMetadata.EntityLogicalName, out HashSet<string> attributes) &&
                 attributes.Contains(attributeMetadata.LogicalName))
             {
-                if ( attributeMetadata is PicklistAttributeMetadata p)
+                if (attributeMetadata is PicklistAttributeMetadata p)
                 {
                     if (!referencedOptionSets.Contains(p.OptionSet.MetadataId.Value))
                     {
@@ -84,6 +83,20 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
                     if (!referencedOptionSets.Contains(mp.OptionSet.MetadataId.Value))
                     {
                         referencedOptionSets.Add(mp.OptionSet.MetadataId.Value);
+                    }
+                }
+                else if (attributeMetadata is StateAttributeMetadata sp)
+                {
+                    if (!referencedOptionSets.Contains(sp.OptionSet.MetadataId.Value))
+                    {
+                        referencedOptionSets.Add(sp.OptionSet.MetadataId.Value);
+                    }
+                }
+                else if (attributeMetadata is StatusAttributeMetadata stp)
+                {
+                    if (!referencedOptionSets.Contains(stp.OptionSet.MetadataId.Value))
+                    {
+                        referencedOptionSets.Add(stp.OptionSet.MetadataId.Value);
                     }
                 }
                 return true;
