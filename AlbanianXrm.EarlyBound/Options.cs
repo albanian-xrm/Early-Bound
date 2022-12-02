@@ -72,20 +72,38 @@ namespace AlbanianXrm.EarlyBound
             }
         }
 
-        Version _RecycableMemoryStream;
+        string _RecycableMemoryStream;
 
         [Category("Version")]
         [DisplayName("Recyclable Memory Stream")]
         [Description("The version of the Recyclable Memory Stream.")]
         [Editor(typeof(MemoryStreamEditor), typeof(UITypeEditor))]
         [XmlIgnore]
-        public Version RecycableMemoryStream
+        public string RecycableMemoryStream
         {
             get { return _RecycableMemoryStream; }
             set
             {
                 if (_RecycableMemoryStream == value) return;
                 _RecycableMemoryStream = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        string _CrmSvcUtilExtensions;
+
+        [Category("Version")]
+        [DisplayName("AlbanianXrm.CrmSvcUtilExtensions")]
+        [Description("The version of the AlbanianXrm.CrmSvcUtilExtensions.")]
+        [Editor(typeof(CrmSvcUtilExtensionsEditor), typeof(UITypeEditor))]
+        [XmlIgnore]
+        public string CrmSvcUtilExtensions
+        {
+            get { return _CrmSvcUtilExtensions; }
+            set
+            {
+                if (_CrmSvcUtilExtensions == value) return;
+                _CrmSvcUtilExtensions = value;
                 NotifyPropertyChanged();
             }
         }

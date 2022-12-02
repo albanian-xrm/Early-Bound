@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Helpers;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Design;
@@ -21,18 +22,33 @@ namespace AlbanianXrm.EarlyBound.Helpers
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
-            return GetVersion(value as Version);
+            return GetVersion(value as string);
         }
 
-        public Version GetVersion(Version value)
-        {
-            string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
-            string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
-            dir = Path.Combine(dir, folder);
+        public string GetVersion(string value)
+        {         
+            var pacVersion = new ModelBuilderVersionEditor().GetVersion("");
+
+            if (string.IsNullOrEmpty(pacVersion))
+            {
+                return value;
+            }
+
+            Process process = ProcessHelper.getProcess("where.exe");
+            process.StartInfo.Arguments = "pac.launcher.exe";
+            process.Start();
+            string pacLauncherPath = process.StandardOutput.ReadLine();
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+            {
+                return value;
+            }
+            string dir = Path.GetDirectoryName(pacLauncherPath).ToUpperInvariant();
+            dir = Path.Combine(dir, "Microsoft.PowerApps.CLI."+pacVersion, "tools");
             FileInfo targetFile = new FileInfo(Path.Combine(dir, targetFileName));
             if (targetFile.Exists)
             {
-                return new Version(FileVersionInfo.GetVersionInfo(targetFile.FullName).FileVersion);
+                return FileVersionInfo.GetVersionInfo(targetFile.FullName).FileVersion;
             }
             return value;
         }
