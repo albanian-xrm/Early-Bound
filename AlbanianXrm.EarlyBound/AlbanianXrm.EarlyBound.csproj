@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AlbanianXrm.EarlyBound</RootNamespace>
     <AssemblyName>AlbanianXrm.EarlyBound</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -51,10 +51,9 @@
     <PackageReference Include="ILMerge.MSBuild.Task" Version="1.0.7" />
     <PackageReference Include="Syncfusion.Tools.Windows" Version="17.2.0.34" />
     <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="17.2.0.34" />
-    <PackageReference Include="XrmToolBoxPackage" Version="1.2022.2.54" Link="Test" />
+    <PackageReference Include="XrmToolBoxPackage" Version="1.2022.10.58" Link="Test" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj" />
     <ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj">
       <Project>{cd3b9b8d-406a-4c3d-b343-d88658c3c6a0}</Project>
       <Name>AlbanianXrm.ForrestSerializer</Name>
@@ -73,8 +72,13 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="builderSettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="..\AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems" Label="Shared" />
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST $(TargetDir)XrmToolBox mkdir $(TargetDir)XrmToolBox&#xD;&#xA;IF NOT EXIST $(TargetDir)XrmToolBox\Plugins mkdir $(TargetDir)XrmToolBox\Plugins&#xD;&#xA;IF NOT EXIST $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound mkdir $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound&#xD;&#xA;move /Y $(TargetDir)AlbanianXrm.CrmSvcUtilExtensions.dll $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\  &#xD;&#xA;move /Y $(TargetDir)Microsoft.IO.RecyclableMemoryStream.dll $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\&#xD;&#xA;del  &quot;$(TargetDir)AlbanianXrm.EarlyBound.dll&quot;&#xD;&#xA;&#xD;&#xA;IF &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; (&#xD;&#xA;    move /Y $(TargetDir)AlbanianXrm.CrmSvcUtilExtensions.pdb $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\  &#xD;&#xA;    move /Y $(TargetDir)Microsoft.IO.RecyclableMemoryStream.pdb $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\&#xD;&#xA;&#xD;&#xA;    del &quot;$(TargetDir)AlbanianXrm.EarlyBound.pdb&quot;&#xD;&#xA;)" />
+    <Exec Command="IF NOT EXIST $(TargetDir)XrmToolBox mkdir $(TargetDir)XrmToolBox&#xD;&#xA;IF NOT EXIST $(TargetDir)XrmToolBox\Plugins mkdir $(TargetDir)XrmToolBox\Plugins&#xD;&#xA;IF NOT EXIST $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound mkdir $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound&#xD;&#xA;move /Y $(TargetDir)builderSettings.json $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\  &#xD;&#xA;move /Y $(TargetDir)AlbanianXrm.CrmSvcUtilExtensions.dll $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\ &#xD;&#xA;move /Y $(TargetDir)Microsoft.IO.RecyclableMemoryStream.dll $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\&#xD;&#xA;del  &quot;$(TargetDir)AlbanianXrm.EarlyBound.dll&quot;&#xD;&#xA;&#xD;&#xA;IF &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; (&#xD;&#xA;    move /Y $(TargetDir)AlbanianXrm.CrmSvcUtilExtensions.pdb $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\  &#xD;&#xA;    move /Y $(TargetDir)Microsoft.IO.RecyclableMemoryStream.pdb $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\&#xD;&#xA;&#xD;&#xA;    del &quot;$(TargetDir)AlbanianXrm.EarlyBound.pdb&quot;&#xD;&#xA;)" />
   </Target>
 </Project>

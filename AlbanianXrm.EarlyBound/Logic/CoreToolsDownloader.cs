@@ -34,7 +34,6 @@ namespace AlbanianXrm.EarlyBound.Logic
                 AlBackgroundWorkerFactory.NewAsyncWorker(DownloadCoreToolsAsync, version, DownloadCoreToolsEnded)
                                          .WithViewModel(myPlugin.pluginViewModel)
                                          .WithMessage(myPlugin, Resources.DOWNLOADING_CORE_TOOLS));
-
         }
 
         public void DownloadCoreToolsEnded(NuGetVersion version, string value, Exception exception)
@@ -49,7 +48,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                 {
                     MessageBox.Show(value, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-                myPlugin.options.CrmSvcUtils = new CrmSvcUtilsEditor().GetVersion(myPlugin.options.CrmSvcUtils);
+            //    myPlugin.options.CrmSvcUtils = new CrmSvcUtilsEditor().GetVersion(myPlugin.options.CrmSvcUtils);
                 myPlugin.options.RecycableMemoryStream = new MemoryStreamEditor().GetVersion(myPlugin.options.RecycableMemoryStream);
             }
             catch (Exception ex)

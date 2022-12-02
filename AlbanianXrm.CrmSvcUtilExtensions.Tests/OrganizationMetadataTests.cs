@@ -1,17 +1,14 @@
 ﻿using AlbanianXrm;
 using AlbanianXrm.Common.Shared;
-using Microsoft.Crm.Services.Utility;
 using Microsoft.IO;
+using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using System.Xml.Serialization;
 using Xunit;
 
 namespace Tests

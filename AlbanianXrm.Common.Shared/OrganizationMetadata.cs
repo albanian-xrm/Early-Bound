@@ -1,6 +1,7 @@
 ﻿#if CRMSVCUTILEXTENSIONS
-using Microsoft.Crm.Services.Utility;
+using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
 #endif
+
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
 using System.Collections.Generic;

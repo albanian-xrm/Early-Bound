@@ -4,7 +4,7 @@
     <ProjectGuid>{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>AlbanianXrm.EarlyBound.Coverage</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <Configurations>Debug;Release;Azure Pipelines</Configurations>
   </PropertyGroup>
   <ItemGroup>

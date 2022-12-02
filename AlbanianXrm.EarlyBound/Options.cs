@@ -19,7 +19,7 @@ namespace AlbanianXrm.EarlyBound
         public Options()
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
-            _CrmSvcUtils = new CrmSvcUtilsEditor().GetVersion(_CrmSvcUtils);
+            _CrmSvcUtils = new ModelBuilderVersionEditor().GetVersion(_CrmSvcUtils);
             _RecycableMemoryStream = new MemoryStreamEditor().GetVersion(_RecycableMemoryStream);
             CacheMetadata = true;
         }
@@ -54,14 +54,14 @@ namespace AlbanianXrm.EarlyBound
         [Description("Try to download a specific version of Microsoft.CrmSdk.CoreTools for compatibility reasons.")]     
         public string SpecificVersion { get; set; }
 
-        Version _CrmSvcUtils;
+        string _CrmSvcUtils;
 
         [Category("Version")]
-        [DisplayName("Core Tools")]
-        [Description("The version of the CRM Service Utility.")]
-        [Editor(typeof(CrmSvcUtilsEditor), typeof(UITypeEditor))]
+        [DisplayName("ModelBuilder")]
+        [Description("The version of the Power Platform Tools CLI.")]
+        [Editor(typeof(ModelBuilderVersionEditor), typeof(UITypeEditor))]
         [XmlIgnore]
-        public Version CrmSvcUtils
+        public string CrmSvcUtils
         {
             get { return _CrmSvcUtils; }
             set
@@ -75,8 +75,8 @@ namespace AlbanianXrm.EarlyBound
         Version _RecycableMemoryStream;
 
         [Category("Version")]
-        [DisplayName("Recycable Memory Stream")]
-        [Description("The version of the Recycable Memory Stream.")]
+        [DisplayName("Recyclable Memory Stream")]
+        [Description("The version of the Recyclable Memory Stream.")]
         [Editor(typeof(MemoryStreamEditor), typeof(UITypeEditor))]
         [XmlIgnore]
         public Version RecycableMemoryStream

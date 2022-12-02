@@ -1,4 +1,4 @@
-﻿using Microsoft.Crm.Services.Utility;
+﻿using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
@@ -61,7 +61,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
                 var noPrefixName = entityMetadata.IsCustomEntity == true ? entityMetadata.SchemaName.Substring(entityMetadata.SchemaName.IndexOf("_", StringComparison.InvariantCulture) + 1) : entityMetadata.SchemaName;
                 var result = noPrefixName;
-                var equal = metadataService.LoadMetadata().Entities.Where(x => noPrefixName == (x.IsCustomEntity == true ? x.SchemaName.Substring(x.SchemaName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.SchemaName)).Select(x => new string[] { x.SchemaName, x.IsCustomEntity == true ? x.SchemaName.Substring(x.SchemaName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.SchemaName }).ToArray();
+                var equal = metadataService.LoadMetadata(services).Entities.Where(x => noPrefixName == (x.IsCustomEntity == true ? x.SchemaName.Substring(x.SchemaName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.SchemaName)).Select(x => new string[] { x.SchemaName, x.IsCustomEntity == true ? x.SchemaName.Substring(x.SchemaName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.SchemaName }).ToArray();
                 if (equal.Length > 1)
                 {
                     for (int i = 0; i < equal.Length; i++)
@@ -92,7 +92,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
 
                 var noPrefixName = entityMetadata.IsCustomEntity == true ? entityMetadata.EntitySetName.Substring(entityMetadata.EntitySetName.IndexOf("_", StringComparison.InvariantCulture) + 1) : entityMetadata.EntitySetName;
                 var result = noPrefixName;
-                var equal = metadataService.LoadMetadata().Entities.Where(x => noPrefixName == (x.IsCustomEntity == true ? x.EntitySetName.Substring(x.EntitySetName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.EntitySetName)).Select(x => new string[] { x.EntitySetName, x.IsCustomEntity == true ? x.EntitySetName.Substring(x.EntitySetName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.EntitySetName }).ToArray();
+                var equal = metadataService.LoadMetadata(services).Entities.Where(x => noPrefixName == (x.IsCustomEntity == true ? x.EntitySetName.Substring(x.EntitySetName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.EntitySetName)).Select(x => new string[] { x.EntitySetName, x.IsCustomEntity == true ? x.EntitySetName.Substring(x.EntitySetName.IndexOf("_", StringComparison.InvariantCulture) + 1) : x.EntitySetName }).ToArray();
                 if (equal.Length > 1)
                 {
                     for (int i = 0; i < equal.Length; i++)

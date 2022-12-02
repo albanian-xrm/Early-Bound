@@ -2,7 +2,7 @@
 using AlbanianXrm.CrmSvcUtilExtensions;
 using AlbanianXrm.CrmSvcUtilExtensions.Tests;
 using FakeItEasy;
-using Microsoft.Crm.Services.Utility;
+using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
 using Xunit;

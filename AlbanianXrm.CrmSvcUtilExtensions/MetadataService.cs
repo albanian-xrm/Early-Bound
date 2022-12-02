@@ -1,8 +1,8 @@
 ﻿using AlbanianXrm.Common.Shared;
-using Microsoft.Crm.Services.Utility;
 using Microsoft.IO;
+using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
+using Microsoft.Xrm.Sdk;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -14,6 +14,10 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
     {
         private IOrganizationMetadata cachedMetadata;
         private readonly IMetadataProviderService defaultMetadataService;
+
+        public IOrganizationService ServiceConnection { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public bool IsLiveConnectionRequired => throw new NotImplementedException();
 
         public MetadataService(IMetadataProviderService defaultMetadataService)
         {
@@ -51,11 +55,11 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
             this.defaultMetadataService = defaultMetadataService;
         }
 
-        public IOrganizationMetadata LoadMetadata()
+        public IOrganizationMetadata LoadMetadata(IServiceProvider service)
         {
             if (cachedMetadata == null)
             {
-                cachedMetadata = defaultMetadataService.LoadMetadata();
+                cachedMetadata = defaultMetadataService.LoadMetadata(service);
             }
             return cachedMetadata;
         }

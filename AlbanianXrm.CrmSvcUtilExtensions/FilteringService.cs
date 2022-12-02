@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using AlbanianXrm.Extensions;
-using Microsoft.Crm.Services.Utility;
+using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
 using Microsoft.Xrm.Sdk.Metadata;
 
 namespace AlbanianXrm.CrmSvcUtilExtensions

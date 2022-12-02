@@ -1,0 +1,6 @@
+﻿{
+  "codewriterfilter": "AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions",
+  "codecustomization": "AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions",
+  "metadataproviderservice": "AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions",
+  "namingservice": "AlbanianXrm.CrmSvcUtilExtensions.NamingService,AlbanianXrm.CrmSvcUtilExtensions"
+}

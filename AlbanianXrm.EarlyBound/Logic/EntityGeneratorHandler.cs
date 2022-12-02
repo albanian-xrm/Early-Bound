@@ -16,6 +16,7 @@ using AlbanianXrm.EarlyBound.Properties;
 using System.Globalization;
 using AlbanianXrm.BackgroundWorker;
 using AlbanianXrm.XrmToolBox.Shared.Extensions;
+using Helpers;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
@@ -47,39 +48,39 @@ namespace AlbanianXrm.EarlyBound.Logic
                  .WithMessage(myPlugin, Resources.GENERATING_ENTITIES));
         }
 
+
+
         private string GenerateEntitiesInner(Options options, Reporter<string> reporter)
         {
             string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
             string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
             dir = Path.Combine(dir, folder);
 
-            if (!File.Exists(Path.Combine(dir, "CrmSvcUtil.exe")))
-            {
-                return Resources.CRMSVCUTIL_MISSING;
-            }
             if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll"))) // specific version included with the plugin
             {
                 return Resources.MEMORYSTREAM_MISSING;
             }
-            Process process = new Process();
+            Process process = ProcessHelper.getProcess("where.exe");
+            process.StartInfo.Arguments = "pac.launcher.exe";
+            process.Start();
+            process.WaitForExit();
+            if (process.ExitCode != 0)
+            {
+                return Resources.CRMSVCUTIL_MISSING;
+            }
+
+            process = ProcessHelper.getProcess("pac.launcher.exe");
             var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
-            var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " /namespace:" + options.CurrentOrganizationOptions.Namespace) +
-                                          " /codewriterfilter:AlbanianXrm.CrmSvcUtilExtensions.FilteringService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                          " /codecustomization:AlbanianXrm.CrmSvcUtilExtensions.CustomizationService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                          " /metadataproviderservice:AlbanianXrm.CrmSvcUtilExtensions.MetadataService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                          " /namingservice:AlbanianXrm.CrmSvcUtilExtensions.NamingService,AlbanianXrm.CrmSvcUtilExtensions" +
-                                          " /out:" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : "\"" + Path.GetFullPath(options.CurrentOrganizationOptions.Output) + "\"") +
-                                          (options.CurrentOrganizationOptions.Language == Language.VB ? " /language:VB" : "") +
-                                          (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " /serviceContextName:" + options.CurrentOrganizationOptions.ServiceContextName);
+            var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " --namespace " + options.CurrentOrganizationOptions.Namespace) +
+                                          " --outdirectory \"" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? Path.GetFullPath(".") : "" + Path.GetDirectoryName(options.CurrentOrganizationOptions.Output) + "\"") +
+                                          (options.CurrentOrganizationOptions.Language == Language.VB ? " --language VB" : "") +
+                                          (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " --serviceContextName " + options.CurrentOrganizationOptions.ServiceContextName) +
+                                          $" --settingsTemplateFile \"{Path.Combine(dir, "builderSettings.json")}\"" +
+                                          (options.CurrentOrganizationOptions.RemovePropertyChanged ? " --suppressINotifyPattern" : "");
 
-            process.StartInfo.Arguments = "/connectionstring:" + connectionString + argumentsWithoutConnectionString;
-
+            process.StartInfo.Arguments = "modelbuilder build " + argumentsWithoutConnectionString;
+            MessageBox.Show(process.StartInfo.Arguments);
             process.StartInfo.WorkingDirectory = dir;
-            process.StartInfo.UseShellExecute = false;
-            process.StartInfo.CreateNoWindow = true;
-            process.StartInfo.RedirectStandardInput = true;
-            process.StartInfo.RedirectStandardOutput = true;
-            process.StartInfo.RedirectStandardError = true;
 
             HashSet<string> entities = new HashSet<string>();
             HashSet<string> relationshipEntities = new HashSet<string>();
@@ -184,7 +185,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             if (entities.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ENTITIES, string.Join(",", entities));
             if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
             if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
-            if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
+            //if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
             if (options.CurrentOrganizationOptions.RemoveProxyTypesAssembly) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROXYTYPESASSEMBLY, "YES");
             if (options.CurrentOrganizationOptions.RemovePublisherPrefix) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPUBLISHER, "YES");
             if (options.CurrentOrganizationOptions.OptionSetEnums) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_OPTIONSETENUMS, "YES");
@@ -200,8 +201,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             myPlugin.pluginViewModel.LaunchCommand = $"{string.Join("\r\n", process.StartInfo.EnvironmentVariables.ToEnumerable().Where(x => x.Key.StartsWith(Constants.ENVIRONMENT_VARIABLE_PREFIX)).Select(x => $"SET {x.Key}={x.Value}"))}\r\n{Path.Combine(dir, "CrmSvcUtil.exe")} /connectionstring:{myPlugin.ConnectionDetail.GetConnectionStringWithoutPassword()}{argumentsWithoutConnectionString}";
             if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
 
-            process.EnableRaisingEvents = true;
-            process.StartInfo.FileName = Path.Combine(dir, "CrmSvcUtil.exe");
+
             ForrestSerializer serializer = new ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.Output) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.Output)) + ".alb");
             serializer.Serialize(entitySelections);
             process.Start();

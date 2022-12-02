@@ -1,6 +1,6 @@
 ﻿using AlbanianXrm.CrmSvcUtilExtensions.Extensions;
 using AlbanianXrm.Extensions;
-using Microsoft.Crm.Services.Utility;
+using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
 using Microsoft.Xrm.Sdk.Metadata;
 using System;
 using System.CodeDom;
@@ -30,7 +30,7 @@ namespace AlbanianXrm.CrmSvcUtilExtensions
         {
             this.codeUnit = codeUnit;
             var metadataProvider = (IMetadataProviderService)services.GetService(typeof(IMetadataProviderService));
-            this.organizationMetadata = metadataProvider.LoadMetadata();
+            this.organizationMetadata = metadataProvider.LoadMetadata(services);
             var entities = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ENTITIES) ?? "").Split(","));
             allAttributes = new HashSet<string>((Environment.GetEnvironmentVariable(Constants.ENVIRONMENT_ALL_ATTRIBUTES) ?? "").Split(","));
             entityAttributes = new Dictionary<string, HashSet<string>>();
