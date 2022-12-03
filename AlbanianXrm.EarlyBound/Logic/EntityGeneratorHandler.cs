@@ -48,31 +48,24 @@ namespace AlbanianXrm.EarlyBound.Logic
                  .WithMessage(myPlugin, Resources.GENERATING_ENTITIES));
         }
 
-
-
         private string GenerateEntitiesInner(Options options, Reporter<string> reporter)
         {
             string dir = Path.GetDirectoryName(typeof(MyPluginControl).Assembly.Location).ToUpperInvariant();
             string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
             dir = Path.Combine(dir, folder);
 
-            if (!File.Exists(Path.Combine(dir, "Microsoft.IO.RecyclableMemoryStream.dll"))) // specific version included with the plugin
+            if (string.IsNullOrEmpty(options.RecycableMemoryStream)) // specific version included with the plugin
             {
                 return Resources.MEMORYSTREAM_MISSING;
             }
-            Process process = ProcessHelper.getProcess("where.exe");
-            process.StartInfo.Arguments = "pac.launcher.exe";
-            process.Start();
-            string pacLauncherPath = process.StandardOutput.ReadToEnd();
-            process.WaitForExit();
-            if (process.ExitCode != 0)
+            if (string.IsNullOrEmpty(options.CrmSvcUtils))
             {
                 return Resources.CRMSVCUTIL_MISSING;
             }
 
 
 
-            process = ProcessHelper.getProcess("pac.launcher.exe");
+            Process process = ProcessHelper.getProcess("pac.launcher.exe");
             var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
             var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " --namespace " + options.CurrentOrganizationOptions.Namespace) +
                                           " --outdirectory \"" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? Path.GetFullPath(".") : "" + Path.GetDirectoryName(options.CurrentOrganizationOptions.OutputDirectory) + "\"") +

@@ -1,84 +1,90 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\AlbanianXrm.EarlyBound.Version.props" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E047E333-0237-4FD9-B80A-1757D706630F}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AlbanianXrm.EarlyBound</RootNamespace>
-    <AssemblyName>AlbanianXrm.EarlyBound</AssemblyName>
-    <TargetFramework>net472</TargetFramework>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <Configurations>Debug;Release;Azure Pipelines</Configurations>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Azure Pipelines|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;PIPELINES</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="AlbanianXrm.XrmToolBox.Shared" Version="1.2021.6.1" />
-    <PackageReference Include="Microsoft.IdentityModel" Version="7.0.0" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="EnvDTE" Version="8.0.2" />
-    <PackageReference Include="ILMerge" Version="3.0.41" />
-    <PackageReference Include="ILMerge.MSBuild.Task" Version="1.0.7" />
-    <PackageReference Include="Syncfusion.Tools.Windows" Version="17.2.0.34" />
-    <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="17.2.0.34" />
-    <PackageReference Include="XrmToolBoxPackage" Version="1.2022.10.58" Link="Test" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj">
-      <Project>{cd3b9b8d-406a-4c3d-b343-d88658c3c6a0}</Project>
-      <Name>AlbanianXrm.ForrestSerializer</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="builderSettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <Import Project="..\AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems" Label="Shared" />
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="IF NOT EXIST $(TargetDir)XrmToolBox mkdir $(TargetDir)XrmToolBox&#xD;&#xA;IF NOT EXIST $(TargetDir)XrmToolBox\Plugins mkdir $(TargetDir)XrmToolBox\Plugins&#xD;&#xA;IF NOT EXIST $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound mkdir $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound&#xD;&#xA;move /Y $(TargetDir)builderSettings.json $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\  &#xD;&#xA;move /Y $(TargetDir)AlbanianXrm.CrmSvcUtilExtensions.dll $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\ &#xD;&#xA;move /Y $(TargetDir)Microsoft.IO.RecyclableMemoryStream.dll $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\&#xD;&#xA;del  &quot;$(TargetDir)AlbanianXrm.EarlyBound.dll&quot;&#xD;&#xA;&#xD;&#xA;IF &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; (&#xD;&#xA;    move /Y $(TargetDir)AlbanianXrm.CrmSvcUtilExtensions.pdb $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\  &#xD;&#xA;    move /Y $(TargetDir)Microsoft.IO.RecyclableMemoryStream.pdb $(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\&#xD;&#xA;&#xD;&#xA;    del &quot;$(TargetDir)AlbanianXrm.EarlyBound.pdb&quot;&#xD;&#xA;)" />
-  </Target>
+	<Import Project="..\AlbanianXrm.EarlyBound.Version.props" />
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProductVersion>8.0.30703</ProductVersion>
+		<SchemaVersion>2.0</SchemaVersion>
+		<ProjectGuid>{E047E333-0237-4FD9-B80A-1757D706630F}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>AlbanianXrm.EarlyBound</RootNamespace>
+		<AssemblyName>AlbanianXrm.EarlyBound</AssemblyName>
+		<TargetFramework>net472</TargetFramework>
+		<FileAlignment>512</FileAlignment>
+		<NuGetPackageImportStamp>
+		</NuGetPackageImportStamp>
+		<Configurations>Debug;Release;Azure Pipelines</Configurations>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Azure Pipelines|AnyCPU'">
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE;PIPELINES</DefineConstants>
+		<Optimize>true</Optimize>
+		<DebugType>pdbonly</DebugType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ErrorReport>prompt</ErrorReport>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="AlbanianXrm.XrmToolBox.Shared" Version="1.2021.6.1" />
+		<PackageReference Include="Microsoft.IdentityModel" Version="7.0.0" Condition="'$(Configuration)'=='Debug'" />
+		<PackageReference Include="EnvDTE" Version="8.0.2" />
+		<PackageReference Include="ILMerge" Version="3.0.41" />
+		<PackageReference Include="ILMerge.MSBuild.Task" Version="1.0.7" />
+		<PackageReference Include="Syncfusion.Tools.Windows" Version="17.2.0.34" />
+		<PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="17.2.0.34" />
+		<PackageReference Include="XrmToolBoxPackage" Version="1.2022.10.58" Link="Test" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj">
+			<Project>{cd3b9b8d-406a-4c3d-b343-d88658c3c6a0}</Project>
+			<Name>AlbanianXrm.ForrestSerializer</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="builderSettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<Import Project="..\AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems" Label="Shared" />
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Message Importance="high" Text="Copying Plugins" />
+		<Exec Command="IF NOT EXIST &quot;$(TargetDir)XrmToolBox&quot; mkdir &quot;$(TargetDir)XrmToolBox&quot;&#xD;&#xA;IF NOT EXIST &quot;$(TargetDir)XrmToolBox\Plugins&quot; mkdir &quot;$(TargetDir)XrmToolBox\Plugins&quot;&#xD;&#xA;IF NOT EXIST &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound&quot; mkdir &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)builderSettings.json&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\builderSettings.json&quot;   &#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\Microsoft.IO.RecyclableMemoryStream.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\Microsoft.IO.RecyclableMemoryStream.dll&quot;&#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\AlbanianXrm.CrmSvcUtilExtensions.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.dll&quot;  &#xD;&#xA;&#xD;&#xA;&#xD;&#xA;IF &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; (&#xD;&#xA;    copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\AlbanianXrm.CrmSvcUtilExtensions.pdb&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.pdb&quot;  &#xD;&#xA;)" />
+	</Target>
+	<Target Name="RunWhenBuild" BeforeTargets="PostBuild" AfterTargets="PostBuildEvent">
+		<Message Importance="high" Text="Building AlbanianXrm.CrmSvcUtilExtensions" />
+		<MSBuild Projects="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj" Properties="Configuration=$(Configuration)" />
+	</Target>
 </Project>

@@ -48,7 +48,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" version="9.0.0.7" />
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" version="2.0.0" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" version="2.2.1" />
 		<PackageReference Include="Microsoft.PowerApps.CLI" Version="1.20.3">
 			<GeneratePathProperty>true</GeneratePathProperty>
 			<PrivateAssets>All</PrivateAssets>

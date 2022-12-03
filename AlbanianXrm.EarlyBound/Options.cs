@@ -21,6 +21,7 @@ namespace AlbanianXrm.EarlyBound
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
             _CrmSvcUtils = new ModelBuilderVersionEditor().GetVersion(_CrmSvcUtils);
             _RecycableMemoryStream = new MemoryStreamEditor().GetVersion(_RecycableMemoryStream);
+            _CrmSvcUtilExtensions = new CrmSvcUtilExtensionsEditor().GetVersion(_CrmSvcUtilExtensions);
             CacheMetadata = true;
         }
 
