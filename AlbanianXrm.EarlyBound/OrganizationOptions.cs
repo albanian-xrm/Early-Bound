@@ -11,15 +11,19 @@ namespace AlbanianXrm.EarlyBound
     {
         internal static class Defaults
         {
-            internal static string OutputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile​), "Downloads/AlbanianEarlyBound");
+            internal static string OutputFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile​), "Downloads", "AlbanianEarlyBound");
 
             public const string EntityTypesFolder = "Entities";
             public const string MessageTypesFolder = "Messages";
             public const string OptionsetTypesFolder = "OptionSets";
         }
 
-      
-        public OrganizationOptions() { }
+
+        public OrganizationOptions() {
+            this.EntityTypesFolder = Defaults.EntityTypesFolder;
+            this.MessageTypesFolder = Defaults.MessageTypesFolder;
+            this.OptionsetTypesFolder = Defaults.OptionsetTypesFolder;
+        }
 
         [DisplayName("Organization")]
         [Description("Current organization")]
@@ -139,7 +143,7 @@ namespace AlbanianXrm.EarlyBound
 
         [Category("AlbanianEarlyBound")]
         [DisplayName("Generate TwoOptions")]
-        [Description("Generate Enumerations or Constants for TwoOptions attribute.")]          
+        [Description("Generate Enumerations or Constants for TwoOptions attribute.")]
         [DefaultValue(TwoOptions.NO)]
         [TypeConverter(typeof(DescriptionEnumConverter))]
         public TwoOptions TwoOptions { get; set; }

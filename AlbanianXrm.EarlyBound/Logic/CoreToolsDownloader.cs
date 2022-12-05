@@ -72,7 +72,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             CancellationToken cancellationToken = CancellationToken.None;
             SourceCacheContext cache = new SourceCacheContext();
 
-            SourceRepository repository = Repository.Factory.GetCoreV3(myPlugin.options.NuGetFeed);
+            SourceRepository repository = Repository.Factory.GetCoreV3(""/*myPlugin.options.NuGetFeed*/);
             PackageSearchResource packageSearch = await repository.GetResourceAsync<PackageSearchResource>();
             FindPackageByIdResource findPackageById = await repository.GetResourceAsync<FindPackageByIdResource>();
             if (version == null)
@@ -95,7 +95,7 @@ namespace AlbanianXrm.EarlyBound.Logic
                      logger,
                      cancellationToken))
                 {
-                    return string.Format(Resources.Culture, Resources.CORE_TOOLS_NOT_FOUND, coreToolsId, myPlugin.options.NuGetFeed);
+                    return string.Format(Resources.Culture, Resources.CORE_TOOLS_NOT_FOUND, coreToolsId, ""/*myPlugin.options.NuGetFeed*/);
                 }
 
                 using (PackageArchiveReader packageReader = new PackageArchiveReader(packageStream))

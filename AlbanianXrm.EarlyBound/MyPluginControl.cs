@@ -134,14 +134,25 @@ namespace AlbanianXrm.EarlyBound
                 options.CurrentOrganizationOptions = current;
                 LogInfo(Resources.SETTINGS_FOUND);
             }
+            if (optionsGrid.SelectedObject != null)
+            {
+                (optionsGrid.SelectedObject as Options).PropertyChanged -= Options_PropertyChanged;
+            }
             optionsGrid.SelectedObject = options;
+            btnDownloadCLI.Visible = options.BtnGetCLIVisible;
         }
 
         private void Options_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(options.CrmSvcUtils) || e.PropertyName == nameof(options.RecycableMemoryStream))
+            var options = sender as Options;
+            if (e.PropertyName == nameof(options.ModelBuilder) || e.PropertyName == nameof(options.RecycableMemoryStream))
             {
-                pluginViewModel.Generate_Enabled = options.CrmSvcUtils != null && options.RecycableMemoryStream != null;
+                pluginViewModel.Generate_Enabled = options.ModelBuilder != null && options.RecycableMemoryStream != null;
+            }
+
+            if (e.PropertyName == nameof(options.BtnGetCLIVisible))
+            {
+                btnDownloadCLI.Visible = options.BtnGetCLIVisible;
             }
         }
 
@@ -230,9 +241,10 @@ namespace AlbanianXrm.EarlyBound
             metadataTree.EndUpdate(true);
         }
 
-        private void BtnCoreTools_Click(object sender, EventArgs e)
+        private void BtnDownloadCLI_Click(object sender, EventArgs e)
         {
-            CoreToolsDownloader.DownloadCoreTools(options.SpecificVersion);
+            this.ConnectionDetail.OpenUrlWithBrowserProfile(new Uri("https://aka.ms/PowerAppsCLI"));
+            //  CoreToolsDownloader.DownloadCoreTools(options.SpecificVersion);
         }
 
         private void BtnGenerateEntities_Click(object sender, EventArgs e)

@@ -58,24 +58,22 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 return Resources.MEMORYSTREAM_MISSING;
             }
-            if (string.IsNullOrEmpty(options.CrmSvcUtils))
+            if (string.IsNullOrEmpty(options.ModelBuilder))
             {
                 return Resources.CRMSVCUTIL_MISSING;
             }
 
-
-
             Process process = ProcessHelper.getProcess("pac.launcher.exe");
             var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();
             var argumentsWithoutConnectionString = (string.IsNullOrEmpty(options.CurrentOrganizationOptions.Namespace) ? "" : " --namespace " + options.CurrentOrganizationOptions.Namespace) +
-                                          " --outdirectory \"" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? Path.GetFullPath(".") : "" + Path.GetDirectoryName(options.CurrentOrganizationOptions.OutputDirectory) + "\"") +
+                                          " --outdirectory \"" + (string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? Path.GetFullPath(".") : options.CurrentOrganizationOptions.OutputDirectory) + "\"" +
                                           (options.CurrentOrganizationOptions.Language == Language.VB ? " --language VB" : "") +
                                           (string.IsNullOrEmpty(options.CurrentOrganizationOptions.ServiceContextName) ? "" : " --serviceContextName " + options.CurrentOrganizationOptions.ServiceContextName) +
                                           $" --settingsTemplateFile \"{Path.Combine(dir, "builderSettings.json")}\"" +
                                           (options.CurrentOrganizationOptions.SuppressINotifyPattern ? " --suppressINotifyPattern" : "");
 
             process.StartInfo.Arguments = "modelbuilder build --entitynamesfilter \"account\" " + argumentsWithoutConnectionString;
-            process.StartInfo.WorkingDirectory = dir;
+          
 
             HashSet<string> entities = new HashSet<string>();
             HashSet<string> relationshipEntities = new HashSet<string>();
@@ -192,11 +190,13 @@ namespace AlbanianXrm.EarlyBound.Logic
             if (options.LaunchDebugger) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ATTACHDEBUGGER, "YES");
             if (options.VerboseLogging) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_VERBOSE, "YES");
 #endif
-            myPlugin.pluginViewModel.LaunchCommand = $"{string.Join("\r\n", process.StartInfo.EnvironmentVariables.ToEnumerable().Where(x => x.Key.StartsWith(Constants.ENVIRONMENT_VARIABLE_PREFIX)).Select(x => $"SET {x.Key}={x.Value}"))}\r\n{Path.Combine(dir, "CrmSvcUtil.exe")} /connectionstring:{myPlugin.ConnectionDetail.GetConnectionStringWithoutPassword()}{argumentsWithoutConnectionString}";
+            myPlugin.pluginViewModel.LaunchCommand = $"{string.Join("\r\n", process.StartInfo.EnvironmentVariables.ToEnumerable().Where(x => x.Key.StartsWith(Constants.ENVIRONMENT_VARIABLE_PREFIX)).Select(x => $"SET {x.Key}={x.Value}"))}\r\npac modelbuilder build {argumentsWithoutConnectionString}";
             if (options.CacheMetadata) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_CACHEMEATADATA, "YES");
 
-
-            ForrestSerializer serializer = new ForrestSerializer((string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? "Test.cs" : Path.GetFullPath(options.CurrentOrganizationOptions.OutputDirectory)) + ".alb");
+            string outputPath = string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? "AlbanianEarlyBound" : Path.GetFullPath(options.CurrentOrganizationOptions.OutputDirectory);
+            Directory.CreateDirectory(outputPath);
+            process.StartInfo.WorkingDirectory = outputPath;
+            ForrestSerializer serializer = new ForrestSerializer(Path.Combine(outputPath, Path.GetFileName(outputPath)+".alb") );
             serializer.Serialize(entitySelections);
             process.Start();
 

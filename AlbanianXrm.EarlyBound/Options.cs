@@ -11,15 +11,11 @@ namespace AlbanianXrm.EarlyBound
 {
     public class Options : INotifyPropertyChanged
     {
-        private static class Defaults
-        {
-            public const string NuGetFeed = "https://api.nuget.org/v3/index.json";
-        }
-
         public Options()
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
-            _CrmSvcUtils = new ModelBuilderVersionEditor().GetVersion(_CrmSvcUtils);
+            _ModelBuilder = new ModelBuilderVersionEditor().GetVersion(_ModelBuilder);
+            _BtnGetCLIVisible = string.IsNullOrEmpty(_ModelBuilder);
             _RecycableMemoryStream = new MemoryStreamEditor().GetVersion(_RecycableMemoryStream);
             _CrmSvcUtilExtensions = new CrmSvcUtilExtensionsEditor().GetVersion(_CrmSvcUtilExtensions);
             CacheMetadata = true;
@@ -39,36 +35,30 @@ namespace AlbanianXrm.EarlyBound
         [TypeConverter(typeof(YesNoConverter))]
         public bool CacheMetadata { get; set; }
 
-        private string _NuGetFeed;
-        [Category("General")]
-        [DisplayName("NuGet Feed")]
-        [Description("The path of the NuGet feed. You can use a directory or a private NuGet feed.")]
-        [DefaultValue(Defaults.NuGetFeed)]
-        public string NuGetFeed
+
+        private bool _BtnGetCLIVisible;
+
+        [XmlIgnore]
+        public bool BtnGetCLIVisible
         {
-            get { return _NuGetFeed ?? Defaults.NuGetFeed; }
-            set { _NuGetFeed = string.IsNullOrEmpty(value) ? Defaults.NuGetFeed : value; }
+            get { return _BtnGetCLIVisible; }
         }
 
-        [Category("General")]
-        [DisplayName("Specific Version")]
-        [Description("Try to download a specific version of Microsoft.CrmSdk.CoreTools for compatibility reasons.")]     
-        public string SpecificVersion { get; set; }
-
-        string _CrmSvcUtils;
-
+        string _ModelBuilder;
         [Category("Version")]
         [DisplayName("ModelBuilder")]
         [Description("The version of the Power Platform Tools CLI.")]
         [Editor(typeof(ModelBuilderVersionEditor), typeof(UITypeEditor))]
         [XmlIgnore]
-        public string CrmSvcUtils
+        public string ModelBuilder
         {
-            get { return _CrmSvcUtils; }
+            get { return _ModelBuilder; }
             set
             {
-                if (_CrmSvcUtils == value) return;
-                _CrmSvcUtils = value;
+                if (_ModelBuilder == value) return;
+                _ModelBuilder = value;
+                _BtnGetCLIVisible = string.IsNullOrEmpty(value);
+                NotifyPropertyChanged(nameof(BtnGetCLIVisible));
                 NotifyPropertyChanged();
             }
         }

@@ -1,7 +1,7 @@
 pool:
   vmImage: 'windows-2019'
 
-name: $(SourceBranchName)+1.$(Date:yyyy.MM)$(Rev:.r)
+name: $(SourceBranchName)+2.$(Date:yyyy.MM)$(Rev:.r)
 
 variables:
   disable.coverage.autogenerate: 'true'
