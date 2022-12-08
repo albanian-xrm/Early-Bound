@@ -25,9 +25,9 @@ namespace AlbanianXrm.EarlyBound
         private readonly Logic.EntityMetadataHandler EntityMetadataHandler;
         private readonly Logic.AttributeMetadataHandler AttributeMetadataHandler;
         private readonly Logic.RelationshipMetadataHandler RelationshipMetadataHandler;
-        private readonly Logic.CoreToolsDownloader CoreToolsDownloader;
         private readonly Logic.EntityGeneratorHandler EntityGeneratorHandler;
         private readonly Logic.EntitySelectionHandler EntitySelectionHandler;
+        private readonly Logic.ExtensionsMoverHandler ExtensionsMoverHandler;
         private readonly Logic.FilterSelectedHandler FilterSelectedHandler;
         private readonly Logic.FindEntityHandler FindEntityHandler;
         private readonly AlBackgroundWorkHandler BackgroundWorkHandler;
@@ -47,7 +47,7 @@ namespace AlbanianXrm.EarlyBound
             pluginViewModel = MyPluginFactory.NewPluginViewModel();
             BackgroundWorkHandler = MyPluginFactory.NewBackgroundWorkHandler();
             AttributeMetadataHandler = MyPluginFactory.NewAttributeMetadataHandler();
-            CoreToolsDownloader = MyPluginFactory.NewCoreToolsDownloader();
+            ExtensionsMoverHandler = MyPluginFactory.NewExtensionsMoverHandler();
             EntityGeneratorHandler = MyPluginFactory.NewEntityGeneratorHandler(metadataTree, txtOutput);
             RelationshipMetadataHandler = MyPluginFactory.NewRelationshipMetadataHandler();
             EntitySelectionHandler = MyPluginFactory.NewEntitySelectionHandler(metadataTree, AttributeMetadataHandler, RelationshipMetadataHandler);
@@ -140,6 +140,8 @@ namespace AlbanianXrm.EarlyBound
             }
             optionsGrid.SelectedObject = options;
             btnDownloadCLI.Visible = options.BtnGetCLIVisible;
+            btnCopyExtensions.Visible = options.BtnCopyExtensionsVisible;
+            btnGenerateEntities.Visible = options.BtnGenerateVisible;
         }
 
         private void Options_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -153,6 +155,14 @@ namespace AlbanianXrm.EarlyBound
             if (e.PropertyName == nameof(options.BtnGetCLIVisible))
             {
                 btnDownloadCLI.Visible = options.BtnGetCLIVisible;
+            }
+            if(e.PropertyName == nameof(options.BtnCopyExtensionsVisible))
+            {
+                btnCopyExtensions.Visible = options.BtnCopyExtensionsVisible;
+            }
+            if (e.PropertyName == nameof(options.BtnGenerateVisible))
+            {
+                btnGenerateEntities.Visible = options.BtnGenerateVisible;
             }
         }
 
@@ -245,6 +255,11 @@ namespace AlbanianXrm.EarlyBound
         {
             this.ConnectionDetail.OpenUrlWithBrowserProfile(new Uri("https://aka.ms/PowerAppsCLI"));
             //  CoreToolsDownloader.DownloadCoreTools(options.SpecificVersion);
+        }
+
+        private void BtnCopyExtensions_Click(object sender, EventArgs e)
+        {
+            ExtensionsMoverHandler.CopyCrmSvcUtilExtensionsToCLI();
         }
 
         private void BtnGenerateEntities_Click(object sender, EventArgs e)
@@ -382,5 +397,7 @@ namespace AlbanianXrm.EarlyBound
         {
             Clipboard.SetText(pluginViewModel.LaunchCommand);
         }
+
+    
     }
 }

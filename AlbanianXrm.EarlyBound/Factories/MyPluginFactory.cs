@@ -35,11 +35,6 @@ namespace AlbanianXrm.EarlyBound.Factories
             return new AttributeMetadataHandler(myPlugin, backgroundWorkHandler);
         }
 
-        public CoreToolsDownloader NewCoreToolsDownloader()
-        {
-            return new CoreToolsDownloader(myPlugin, backgroundWorkHandler);
-        }
-
         public EntitySelectionHandler NewEntitySelectionHandler(TreeViewAdv metadataTree, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler)
         {
             return new EntitySelectionHandler(myPlugin, backgroundWorkHandler, metadataTree, attributeMetadataHandler, relationshipMetadataHandler);
@@ -48,6 +43,11 @@ namespace AlbanianXrm.EarlyBound.Factories
         public EntityMetadataHandler NewEntityMetadataHandler(TreeViewAdv metadataTree, EntitySelectionHandler entitySelectionHandler, AttributeMetadataHandler attributeMetadataHandler, RelationshipMetadataHandler relationshipMetadataHandler, SfComboBox cmbFindEntity)
         {
             return new EntityMetadataHandler(myPlugin, backgroundWorkHandler, metadataTree, entitySelectionHandler, attributeMetadataHandler, relationshipMetadataHandler, cmbFindEntity);
+        }
+
+        public ExtensionsMoverHandler NewExtensionsMoverHandler()
+        {
+            return new ExtensionsMoverHandler(myPlugin, backgroundWorkHandler);
         }
 
         public RelationshipMetadataHandler NewRelationshipMetadataHandler()
@@ -74,5 +74,7 @@ namespace AlbanianXrm.EarlyBound.Factories
         {
             return pluginViewModel;
         }
+
+      
     }
 }

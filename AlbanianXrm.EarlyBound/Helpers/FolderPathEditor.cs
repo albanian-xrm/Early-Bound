@@ -13,9 +13,9 @@ namespace AlbanianXrm.EarlyBound.Helpers
 
         public override object EditValue(ITypeDescriptorContext context, System.IServiceProvider provider, object value)
         {
-            var organizationOptions = context.Instance as OrganizationOptions;
             using (FolderBrowserDialog dialog = new FolderBrowserDialog())
             {
+                dialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
                 dialog.SelectedPath = string.IsNullOrEmpty(value as string) ? OrganizationOptions.Defaults.OutputFolder : value as string;
 
                 if (dialog.ShowDialog() == DialogResult.OK)

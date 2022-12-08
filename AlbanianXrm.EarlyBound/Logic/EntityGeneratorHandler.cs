@@ -54,7 +54,11 @@ namespace AlbanianXrm.EarlyBound.Logic
             string folder = Path.GetFileNameWithoutExtension(typeof(MyPluginControl).Assembly.Location);
             dir = Path.Combine(dir, folder);
 
-            if (string.IsNullOrEmpty(options.RecycableMemoryStream)) // specific version included with the plugin
+            if (options.RecycableMemoryStream == null || options.RecycableMemoryStream <= new Version(0, 0, 0)) // specific version included with the plugin
+            {
+                return Resources.MEMORYSTREAM_MISSING;
+            }
+            if (options.CrmSvcUtilExtensions == null || options.CrmSvcUtilExtensions <= new Version(0, 0, 0)) // specific version included with the plugin
             {
                 return Resources.MEMORYSTREAM_MISSING;
             }
@@ -72,8 +76,8 @@ namespace AlbanianXrm.EarlyBound.Logic
                                           $" --settingsTemplateFile \"{Path.Combine(dir, "builderSettings.json")}\"" +
                                           (options.CurrentOrganizationOptions.SuppressINotifyPattern ? " --suppressINotifyPattern" : "");
 
-            process.StartInfo.Arguments = "modelbuilder build --entitynamesfilter \"account\" " + argumentsWithoutConnectionString;
-          
+            process.StartInfo.Arguments = "modelbuilder build " + argumentsWithoutConnectionString;
+
 
             HashSet<string> entities = new HashSet<string>();
             HashSet<string> relationshipEntities = new HashSet<string>();
@@ -175,7 +179,11 @@ namespace AlbanianXrm.EarlyBound.Logic
                 }
             }
 
-            if (entities.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ENTITIES, string.Join(",", entities));
+            if (entities.Any())
+            {
+                process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ENTITIES, string.Join(",", entities));
+                process.StartInfo.Arguments += $" --entitynamesfilter \"{ string.Join(",", entities)}\"";
+            }
             if (allAttributes.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_ATTRIBUTES, string.Join(",", allAttributes));
             if (allRelationships.Any()) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_ALL_RELATIONSHIPS, string.Join(",", allRelationships));
             //if (options.CurrentOrganizationOptions.RemovePropertyChanged) process.StartInfo.EnvironmentVariables.Add(Constants.ENVIRONMENT_REMOVEPROPERTYCHANGED, "YES");
@@ -196,7 +204,7 @@ namespace AlbanianXrm.EarlyBound.Logic
             string outputPath = string.IsNullOrEmpty(options.CurrentOrganizationOptions.OutputDirectory) ? "AlbanianEarlyBound" : Path.GetFullPath(options.CurrentOrganizationOptions.OutputDirectory);
             Directory.CreateDirectory(outputPath);
             process.StartInfo.WorkingDirectory = outputPath;
-            ForrestSerializer serializer = new ForrestSerializer(Path.Combine(outputPath, Path.GetFileName(outputPath)+".alb") );
+            ForrestSerializer serializer = new ForrestSerializer(Path.Combine(outputPath, Path.GetFileName(outputPath) + ".alb"));
             serializer.Serialize(entitySelections);
             process.Start();
 

@@ -1,33 +1,36 @@
 ﻿<?xml version="1.0"?>
 <package >
-  <metadata>
-    <id>AlbanianXrm.EarlyBound</id>
-    <version>$version$</version>
-    <title>Albanian Early Bound</title>
-    <authors>Betim Beja</authors>
-    <owners>Betim Beja</owners>
-    <license type="expression">MIT</license>
-    <projectUrl>https://github.com/albanian-xrm/early-bound</projectUrl>
-    <repository type="git" url="https://github.com/albanian-xrm/early-bound" />
-    <iconUrl>https://raw.githubusercontent.com/albanian-xrm/early-bound/master/Logo_80x80.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Generates Early Bound Entities. Uses CrmSvcUtil from the SDK which can be downloaded from any NuGet source (even local directory for isolated environments).</description>
-    <releaseNotes>
+	<metadata>
+		<id>AlbanianXrm.EarlyBound</id>
+		<version>$version$</version>
+		<title>Albanian Early Bound</title>
+		<authors>Betim Beja</authors>
+		<owners>Betim Beja</owners>
+		<license type="expression">MIT</license>
+		<projectUrl>https://github.com/albanian-xrm/early-bound</projectUrl>
+		<repository type="git" url="https://github.com/albanian-xrm/early-bound" />
+		<iconUrl>https://raw.githubusercontent.com/albanian-xrm/early-bound/master/Logo_80x80.png</iconUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Generates Early Bound Entities. Uses `pac modelbuilder build`.</description>
+		<releaseNotes>
 v$version$:
-- Added option to download a specific version of Microsoft.CrmSdk.CoreTools for compatibility reasons. Version 9.1.0.108 introduced breaking changes!
-- Fixed some breaking changes introduced from version 9.1.0.108 of Microsoft.CrmSdk.CoreTools
+- Major Update! Using `pac modelbuilder build`
 
 For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
-    </releaseNotes>
-    <copyright>Copyright 2021</copyright>
-    <tags>XrmToolBox Xrm AlbanianXrm EarlyBound</tags>
-    <dependencies>
-      <dependency id="XrmToolBox" version="1.2021.5.47" />
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound.dll" target="lib\net462\plugins" />
-    <file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
-    <file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\Microsoft.IO.RecyclableMemoryStream.dll" target="lib\net462\plugins\AlbanianXrm.EarlyBound" />
-  </files>
+		</releaseNotes>
+		<copyright>Copyright 2022</copyright>
+		<tags>XrmToolBox Xrm AlbanianXrm EarlyBound</tags>
+		<dependencies>
+			<dependency id="XrmToolBox" version="1.2021.5.47" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound.dll" target="lib\net472\plugins" />
+		<file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.dll" target="lib\net472\plugins\AlbanianXrm.EarlyBound" />
+		<file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\Microsoft.IO.RecyclableMemoryStream.dll" target="lib\net472\plugins\AlbanianXrm.EarlyBound" />
+		<file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\System.Buffers.dll" target="lib\net472\plugins\AlbanianXrm.EarlyBound" />
+		<file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\System.Memory.dll" target="lib\net472\plugins\AlbanianXrm.EarlyBound" />
+		<file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\System.Numerics.Vectors.dll" target="lib\net472\plugins\AlbanianXrm.EarlyBound" />
+		<file src="bin\$configuration$\net462\XrmToolBox\plugins\AlbanianXrm.EarlyBound\System.Runtime.CompilerServices.Unsafe.dll" target="lib\net472\plugins\AlbanianXrm.EarlyBound" />
+	</files>
 </package>

@@ -14,10 +14,12 @@ namespace AlbanianXrm.EarlyBound
         public Options()
         {
             OrganizationOptions = new Dictionary<string, OrganizationOptions>();
-            _ModelBuilder = new ModelBuilderVersionEditor().GetVersion(_ModelBuilder);
-            _BtnGetCLIVisible = string.IsNullOrEmpty(_ModelBuilder);
+            _ModelBuilder = new ModelBuilderVersionEditor().GetVersion(_ModelBuilder);       
             _RecycableMemoryStream = new MemoryStreamEditor().GetVersion(_RecycableMemoryStream);
             _CrmSvcUtilExtensions = new CrmSvcUtilExtensionsEditor().GetVersion(_CrmSvcUtilExtensions);
+            _BtnGetCLIVisible = string.IsNullOrEmpty(_ModelBuilder);
+            _BtnCopyExtensionsVisible = this.AlbanianEarlyBound != _CrmSvcUtilExtensions;
+            _BtnGenerateVisible = this._CrmSvcUtilExtensions > new Version(0, 0, 0);
             CacheMetadata = true;
         }
 
@@ -44,6 +46,22 @@ namespace AlbanianXrm.EarlyBound
             get { return _BtnGetCLIVisible; }
         }
 
+        private bool _BtnGenerateVisible;
+
+        [XmlIgnore]
+        public bool BtnGenerateVisible
+        {
+            get { return _BtnGenerateVisible; }
+        }
+
+        private bool _BtnCopyExtensionsVisible;
+
+        [XmlIgnore]
+        public bool BtnCopyExtensionsVisible
+        {
+            get { return _BtnCopyExtensionsVisible; }
+        }
+
         string _ModelBuilder;
         [Category("Version")]
         [DisplayName("ModelBuilder")]
@@ -63,14 +81,14 @@ namespace AlbanianXrm.EarlyBound
             }
         }
 
-        string _RecycableMemoryStream;
+        Version _RecycableMemoryStream;
 
         [Category("Version")]
         [DisplayName("Recyclable Memory Stream")]
         [Description("The version of the Recyclable Memory Stream.")]
         [Editor(typeof(MemoryStreamEditor), typeof(UITypeEditor))]
         [XmlIgnore]
-        public string RecycableMemoryStream
+        public Version RecycableMemoryStream
         {
             get { return _RecycableMemoryStream; }
             set
@@ -81,20 +99,24 @@ namespace AlbanianXrm.EarlyBound
             }
         }
 
-        string _CrmSvcUtilExtensions;
+        Version _CrmSvcUtilExtensions;
 
         [Category("Version")]
         [DisplayName("AlbanianXrm.CrmSvcUtilExtensions")]
         [Description("The version of the AlbanianXrm.CrmSvcUtilExtensions.")]
         [Editor(typeof(CrmSvcUtilExtensionsEditor), typeof(UITypeEditor))]
         [XmlIgnore]
-        public string CrmSvcUtilExtensions
+        public Version CrmSvcUtilExtensions
         {
             get { return _CrmSvcUtilExtensions; }
             set
             {
                 if (_CrmSvcUtilExtensions == value) return;
                 _CrmSvcUtilExtensions = value;
+                _BtnCopyExtensionsVisible = this.AlbanianEarlyBound != _CrmSvcUtilExtensions;
+                _BtnGenerateVisible = this._CrmSvcUtilExtensions > new Version(0, 0, 0);
+                NotifyPropertyChanged(nameof(BtnGenerateVisible));
+                NotifyPropertyChanged(nameof(BtnCopyExtensionsVisible));
                 NotifyPropertyChanged();
             }
         }

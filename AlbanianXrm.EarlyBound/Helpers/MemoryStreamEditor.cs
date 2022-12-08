@@ -2,6 +2,6 @@
 {
     internal class MemoryStreamEditor : VersionEditor
     {
-        internal MemoryStreamEditor() : base("Microsoft.IO.RecyclableMemoryStream.dll") { }
+        internal MemoryStreamEditor() : base("AlbanianEarlyBound\\Microsoft.IO.RecyclableMemoryStream.dll") { }
     }
 }

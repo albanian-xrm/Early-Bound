@@ -22,16 +22,32 @@ namespace AlbanianXrm.EarlyBound.Helpers
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
-            return GetVersion(value as string);
+            return GetVersion(value as Version);
         }
 
-        public string GetVersion(string value)
-        {         
+        public Version GetVersion(Version value)
+        {
+            var dir = GetPACDir();
+            if (string.IsNullOrEmpty(dir))
+            {
+                return value;
+            }
+
+            FileInfo targetFile = new FileInfo(Path.Combine(dir, targetFileName));
+            if (targetFile.Exists)
+            {
+                return new Version(FileVersionInfo.GetVersionInfo(targetFile.FullName).FileVersion);
+            }
+            return value;
+        }
+
+        public static string GetPACDir()
+        {
             var pacVersion = new ModelBuilderVersionEditor().GetVersion("");
 
             if (string.IsNullOrEmpty(pacVersion))
             {
-                return value;
+                return "";
             }
 
             Process process = ProcessHelper.getProcess("where.exe");
@@ -41,16 +57,10 @@ namespace AlbanianXrm.EarlyBound.Helpers
             process.WaitForExit();
             if (process.ExitCode != 0)
             {
-                return value;
+                return "";
             }
             string dir = Path.GetDirectoryName(pacLauncherPath).ToUpperInvariant();
-            dir = Path.Combine(dir, "Microsoft.PowerApps.CLI."+pacVersion, "tools");
-            FileInfo targetFile = new FileInfo(Path.Combine(dir, targetFileName));
-            if (targetFile.Exists)
-            {
-                return FileVersionInfo.GetVersionInfo(targetFile.FullName).FileVersion;
-            }
-            return value;
+            return Path.Combine(dir, "Microsoft.PowerApps.CLI." + pacVersion, "tools");
         }
     }
 }
