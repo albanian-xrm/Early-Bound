@@ -11,7 +11,7 @@
 		<AppDesignerFolder>Properties</AppDesignerFolder>
 		<RootNamespace>AlbanianXrm.EarlyBound</RootNamespace>
 		<AssemblyName>AlbanianXrm.EarlyBound</AssemblyName>
-		<TargetFramework>net472</TargetFramework>
+		<TargetFramework>net48</TargetFramework>
 		<FileAlignment>512</FileAlignment>
 		<NuGetPackageImportStamp>
 		</NuGetPackageImportStamp>
@@ -49,6 +49,7 @@
 		<PackageReference Include="EnvDTE" Version="8.0.2" />
 		<PackageReference Include="ILMerge" Version="3.0.41" />
 		<PackageReference Include="ILMerge.MSBuild.Task" Version="1.0.7" />
+		<PackageReference Include="Microsoft.PowerPlatform.Dataverse.ModelBuilderLib" Version="1.0.16" />
 		<PackageReference Include="Syncfusion.Tools.Windows" Version="17.2.0.34" />
 		<PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="17.2.0.34" />
 		<PackageReference Include="XrmToolBoxPackage" Version="1.2022.10.58" Link="Test" />
@@ -84,7 +85,7 @@
 		<Exec Command="IF NOT EXIST &quot;$(TargetDir)XrmToolBox&quot; mkdir &quot;$(TargetDir)XrmToolBox&quot;&#xD;&#xA;IF NOT EXIST &quot;$(TargetDir)XrmToolBox\Plugins&quot; mkdir &quot;$(TargetDir)XrmToolBox\Plugins&quot;&#xD;&#xA;IF NOT EXIST &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound&quot; mkdir &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)builderSettings.json&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\builderSettings.json&quot;   &#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\Microsoft.IO.RecyclableMemoryStream.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\Microsoft.IO.RecyclableMemoryStream.dll&quot;&#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\System.Buffers.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\System.Buffers.dll&quot;&#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\System.Memory.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\System.Memory.dll&quot;&#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\System.Numerics.Vectors.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\System.Numerics.Vectors.dll&quot;&#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\System.Runtime.CompilerServices.Unsafe.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\System.Runtime.CompilerServices.Unsafe.dll&quot;&#xD;&#xA;copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\AlbanianXrm.CrmSvcUtilExtensions.dll&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.dll&quot;  &#xD;&#xA;del &quot;$(TargetDir)AlbanianXrm.EarlyBound.dll&quot;&#xD;&#xA;&#xD;&#xA;IF &quot;$(ConfigurationName)&quot;==&quot;Debug&quot; (&#xD;&#xA;    copy /Y &quot;..\AlbanianXrm.CrmSvcUtilExtensions\bin\$(ConfigurationName)\net48\AlbanianXrm.CrmSvcUtilExtensions.pdb&quot; &quot;$(TargetDir)XrmToolBox\Plugins\AlbanianXrm.EarlyBound\AlbanianXrm.CrmSvcUtilExtensions.pdb&quot;  &#xD;&#xA;    del &quot;$(TargetDir)AlbanianXrm.EarlyBound.pdb&quot;&#xD;&#xA;)" />
 	</Target>
 	<Target Name="RunWhenBuild" BeforeTargets="PostBuild" AfterTargets="PostBuildEvent">
-		<Message Importance="high" Text="Building AlbanianXrm.CrmSvcUtilExtensions" />
-		<MSBuild Projects="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj" Properties="Configuration=$(Configuration)" />
+		<Message Importance="high" Text="Building AlbanianXrm.ModelBuilderExtensions" />
+		<MSBuild Projects="..\AlbanianXrm.ModelBuilderExtensions\AlbanianXrm.ModelBuilderExtensions.csproj" Properties="Configuration=$(Configuration)" />
 	</Target>
 </Project>

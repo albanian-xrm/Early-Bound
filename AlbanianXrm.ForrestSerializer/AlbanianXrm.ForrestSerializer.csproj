@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AlbanianXrm</RootNamespace>
     <AssemblyName>AlbanianXrm.ForrestSerializer</AssemblyName>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <Configurations>Debug;Release;Azure Pipelines</Configurations>   

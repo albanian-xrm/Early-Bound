@@ -12,22 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </ProjectReference>
     <ProjectReference Include="..\AlbanianXrm.ForrestSerializer.Tests\AlbanianXrm.ForrestSerializer.Tests.csproj">
-      <PrivateAssets>all</PrivateAssets>
-      <ExcludeAssets>All</ExcludeAssets>
-      <IncludeAssets>none</IncludeAssets>
-    </ProjectReference>
-    <ProjectReference Include="..\AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj">
       <PrivateAssets>all</PrivateAssets>
       <ExcludeAssets>All</ExcludeAssets>
       <IncludeAssets>none</IncludeAssets>

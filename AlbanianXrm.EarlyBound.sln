@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.EarlyBound", "AlbanianXrm.EarlyBound\AlbanianXrm.EarlyBound.csproj", "{E047E333-0237-4FD9-B80A-1757D706630F}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.CrmSvcUtilExtensions", "AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj", "{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD5FC625-EBE4-424A-9770-7E20A998FC55}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,8 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.CrmSvcUtilExtensions.Tests", "AlbanianXrm.CrmSvcUtilExtensions.Tests\AlbanianXrm.CrmSvcUtilExtensions.Tests.csproj", "{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "AlbanianXrm.Common.Shared", "AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.shproj", "{8664D2B2-4CDE-40AC-8E44-F2F4F308592B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.ForrestSerializer", "AlbanianXrm.ForrestSerializer\AlbanianXrm.ForrestSerializer.csproj", "{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}"
@@ -30,12 +26,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.Coverage", "Alb
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.ModelBuilderExtensions.Tests", "AlbanianXrm.ModelBuilderExtensions.Tests\AlbanianXrm.ModelBuilderExtensions.Tests.csproj", "{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AlbanianXrm.ModelBuilderExtensions", "AlbanianXrm.ModelBuilderExtensions\AlbanianXrm.ModelBuilderExtensions.csproj", "{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{8664d2b2-4cde-40ac-8e44-f2f4f308592b}*SharedItemsImports = 13
-		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{e047e333-0237-4fd9-b80a-1757d706630f}*SharedItemsImports = 5
-		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{f3efcbf0-762e-493d-99ea-f7d2c56dd30b}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Azure Pipelines|Any CPU = Azure Pipelines|Any CPU
 		Debug|Any CPU = Debug|Any CPU
@@ -48,18 +43,6 @@ Global
 		{E047E333-0237-4FD9-B80A-1757D706630F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E047E333-0237-4FD9-B80A-1757D706630F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E047E333-0237-4FD9-B80A-1757D706630F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
 		{CD3B9B8D-406A-4C3D-B343-D88658C3C6A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -78,16 +61,33 @@ Global
 		{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.ActiveCfg = Azure Pipelines|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Azure Pipelines|Any CPU.Build.0 = Azure Pipelines|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3EFCBF0-762E-493D-99EA-F7D2C56DD30B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C} = {7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}
 		{CF21D357-572C-4F9F-A586-FC32A95B0FED} = {7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}
 		{6E7020D4-A279-4D8E-B5D6-DEA31FAEF370} = {7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}
+		{4F4F88C3-EBF3-446D-B4EC-3BEEC7C8CC4C} = {7FEA8CFB-98CE-4DE0-93D5-73958D692F9B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0C7AFA91-C6E5-4A8D-B256-0B0F008F3951}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{8664d2b2-4cde-40ac-8e44-f2f4f308592b}*SharedItemsImports = 13
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{e047e333-0237-4fd9-b80a-1757d706630f}*SharedItemsImports = 5
+		AlbanianXrm.Common.Shared\AlbanianXrm.Common.Shared.projitems*{f3efcbf0-762e-493d-99ea-f7d2c56dd30b}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

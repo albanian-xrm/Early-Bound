@@ -17,6 +17,7 @@ using System.Globalization;
 using AlbanianXrm.BackgroundWorker;
 using AlbanianXrm.XrmToolBox.Shared.Extensions;
 using Helpers;
+using Microsoft.PowerPlatform.Dataverse.ModelBuilderLib;
 
 namespace AlbanianXrm.EarlyBound.Logic
 {
@@ -66,6 +67,9 @@ namespace AlbanianXrm.EarlyBound.Logic
             {
                 return Resources.CRMSVCUTIL_MISSING;
             }
+
+            ProcessModelInvoker i = new ProcessModelInvoker(new string[] { });
+            i.Invoke(myPlugin.Service);
 
             Process process = ProcessHelper.getProcess("pac.launcher.exe");
             var connectionString = myPlugin.ConnectionDetail.GetConnectionStringWithPassword();

@@ -52,24 +52,15 @@
 	<ItemGroup>
 		<PackageReference Include="FakeItEasy" Version="5.1.1" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
-		<PackageReference Include="Microsoft.PowerApps.CLI" Version="1.20.3">
-			<GeneratePathProperty>true</GeneratePathProperty>
-			<PrivateAssets>All</PrivateAssets>
-			<ExcludeAssets>All</ExcludeAssets>
-		</PackageReference>
 		<PackageReference Include="xunit" Version="2.4.2" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<ProjectReference Include="..\AlbanianXrm.CrmSvcUtilExtensions\AlbanianXrm.CrmSvcUtilExtensions.csproj">
+		<ProjectReference Include="..\AlbanianXrm.ModelBuilderExtensions\AlbanianXrm.ModelBuilderExtensions.csproj">
 			<Project>{f3efcbf0-762e-493d-99ea-f7d2c56dd30b}</Project>
-			<Name>AlbanianXrm.CrmSvcUtilExtensions</Name>
+			<Name>AlbanianXrm.ModelBuilderExtensions</Name>
 			<Private>true</Private>
 		</ProjectReference>
-		<Reference Include="Microsoft.PowerPlatform.Dataverse.ModelBuilderLib.dll">
-			<Private>True</Private>
-			<HintPath>$(PkgMicrosoft_PowerApps_CLI)\tools\Microsoft.PowerPlatform.Dataverse.ModelBuilderLib.dll</HintPath>
-		</Reference>
 	</ItemGroup>
 </Project>
