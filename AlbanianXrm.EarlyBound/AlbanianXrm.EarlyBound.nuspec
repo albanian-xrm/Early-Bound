@@ -14,7 +14,8 @@
     <description>Generates Early Bound Entities. Uses CrmSvcUtil from the SDK which can be downloaded from any NuGet source (even local directory for isolated environments).</description>
     <releaseNotes>
 v$version$:
-- Added option to download a specific version of Microsoft.CrmSdk.CoreTools for compatibility reasons. Version 9.1.0.108 introduced breaking changes!
+- Removed Nuget assemblies dependencies.
+- Added option to download a specific version of Microsoft.CrmSdk.CoreTools for compatibility reasons. Version 9.1.0.108 introduced breaking changes! Please use version 9.1.0.92
 - Fixed some breaking changes introduced from version 9.1.0.108 of Microsoft.CrmSdk.CoreTools
 
 For older releases go here: https://github.com/albanian-xrm/Early-Bound/releases
